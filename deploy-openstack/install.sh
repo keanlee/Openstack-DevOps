@@ -33,7 +33,7 @@ fi
 
 debug(){
 if [[ $1 -ne 0 ]]; then 
-echo $RED Faild install package, please check your yum repos $NO_COLOR 
+echo $2
 exit 1
 fi
 }
