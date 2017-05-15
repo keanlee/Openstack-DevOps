@@ -38,22 +38,6 @@ exit 1
 fi
 }
 
-function ntp()
-{
-    yum install ntp -y
-    cat /etc/ntp.conf |grep "server $NTP_SERVER_IP iburst" || {
-        cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-        ntpdate $NTP_SERVER_IP
-        log_out "$?" "ntp time sync from server "
-        sed -i "/server 0.centos.pool.ntp.org iburst/a\server $NTP_SERVER_IP iburst" /etc/ntp.conf
-        sed -i "/server 0.centos.pool.ntp.org iburst/d" /etc/ntp.conf
-        sed -i "/server 1.centos.pool.ntp.org iburst/d" /etc/ntp.conf
-        sed -i "/server 2.centos.pool.ntp.org iburst/d" /etc/ntp.conf
-        sed -i "/server 3.centos.pool.ntp.org iburst/d" /etc/ntp.conf
-        systemctl enable ntpd.service && systemctl start ntpd.service
-        log_out "$?" "systemctl start ntp.service"
-    }
-}
 
 
 
