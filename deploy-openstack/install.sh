@@ -13,7 +13,12 @@ BLUE="$ESC[0;34m"
 WHITE="$ESC[0;37m"
 #PURPLE="$ESC[0;35m"
 CYAN="$ESC[0;36m"
-source ./variable 
+
+source ./VARIABLE 
+
+README=$(cat ./README.txt)
+echo $GREEN $README $NO_COLOR 
+
 help(){
 echo $RED --------Usage as below ---------  $NO_COLOR    
     echo  $BLUE sh $0 install controller $NO_COLOR  
