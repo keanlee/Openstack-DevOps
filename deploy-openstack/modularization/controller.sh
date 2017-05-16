@@ -86,6 +86,94 @@ rabbitmqctl set_permissions openstack ".*" ".*" ".*"  1>/dev/null
 #Use rabbitmq-web 
 rabbitmq-plugins enable rabbitmq_management
 systemctl restart rabbitmq-server.service
+}
+
+function memcache(){
+#install and configuration memecache 
+#Need variable MGMT_IP
+#The Identity service authentication mechanism for services uses Memcached to cache tokens. 
+#The memcached service typically runs on the controller node. 
+#For production deployments, we recommend enabling a combination of firewalling, authentication, and encryption to secure it.
+yum install memcached python-memcached -y 1>/dev/null
+sed -i "s/127.0.0.1/$MGMT_IP/g" /etc/sysconfig/memcached
+systemctl enable memcached.service && 1>/dev/null
+systemctl start memcached.service
+}
+
+function database_create(){
+#create database and user in mariadb for openstack component
+#$1 is the database name (comonent name and usename) 
+#$2 is password of database
+
+mysql -uroot -p$MARIADB_PASSWORD -e "create database $1 character set utf8;grant all privileges on $1.* to $1@localhost \
+identified by '$2';flush privileges;"  
+debug "$?" "Create database $1 Failed "
+}
+
+function keystone(){
+#The OpenStack Identity service provides a single point of integration for managing 
+#authentication, authorization, and a catalog of services.
+#Please refer:  https://docs.openstack.org/newton/install-guide-rdo/common/get-started-identity.html
+#create database for keystone 
+database_create keystone $KEYSTONE_DBPASS
+yum install openstack-keystone httpd mod_wsgi -y  1>/dev/null
+
+#Edit keystone configuration file 
+cp -f ./configuration-file/keystone.conf   /etc/keystone/
+sed -i "s/controller/$MGMT_IP/g"  /etc/keystone/keystone.conf
+sed -i "s/KEYSTONE_DBPASS/$KEYSTONE_DBPASS/g" /etc/keystone/keystone.conf
+#Populate the Identity service database
+su -s /bin/sh -c "keystone-manage db_sync" keystone
+#Initialize Fernet key repositories
+keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
+keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
+#Bootstrap the Identity service
+  keystone-manage bootstrap --bootstrap-password $ADMIN_PASS \
+  --bootstrap-admin-url http://$MGMT_IP:35357/v3/ \
+  --bootstrap-internal-url http://$MGMT_IP:35357/v3/ \
+  --bootstrap-public-url http://$MGMT_IP:5000/v3/ \
+  --bootstrap-region-id RegionOne
+
+chown -R keystone.keystone /etc/keystone/credential-keys
+chown -R keystone.keystone /etc/keystone/fernet-keys
+
+#Configure the Apache HTTP server
+sed -i "/ServerName www.example.com:80/a\ServerName $MGMT_IP" /etc/httpd/conf/httpd.conf  1>/dev/null
+ln -s /usr/share/keystone/wsgi-keystone.conf /etc/httpd/conf.d/     1>/dev/null
+systemctl enable httpd.service     1>/dev/null
+systemctl start httpd.service
+function openrc_file_create(){
+    echo >  $(pwd)/admin-openrc
+    cat > $(pwd)/admin-openrc <<EOF
+export OS_PROJECT_DOMAIN_NAME=default
+export OS_USER_DOMAIN_NAME=default
+export OS_PROJECT_NAME=admin
+export OS_USERNAME=admin
+export OS_PASSWORD=$ADMIN_PASS
+export OS_AUTH_URL=http://$MGMT_IP:10006/v3
+export OS_IDENTITY_API_VERSION=3
+export OS_IMAGE_API_VERSION=2
+EOF
+
+     echo > $(pwd)/demo-openrc
+     cat > $(pwd)/demo-openrc <<EOF
+export OS_PROJECT_DOMAIN_NAME=Default
+export OS_USER_DOMAIN_NAME=Default
+export OS_PROJECT_NAME=demo
+export OS_USERNAME=demo
+export OS_PASSWORD=$DEMO_PASS
+export OS_AUTH_URL=http://$MGMT_IP:5000/v3
+export OS_IDENTITY_API_VERSION=3
+export OS_IMAGE_API_VERSION=2
+EOF
+
+mv $(pwd)/admin-openrc  /root &&
+mv $(pwd)/demo-openrc  /root  &&
+echo $GREEN openrc file created and location at /root directory $NO_COLOR
 
 }
+
+}
+
+
 
