@@ -76,12 +76,16 @@ function rabbitmq_configuration(){
 #Except Horizone and keystone ,each component need connect to Rabbitmq 
 yum install rabbitmq-server  -y 1>/dev/null
 debug "$1" "$RED Install rabbitmq-server failed $NO_COLOR"
-systemctl enable rabbitmq-server.service && 
+systemctl enable rabbitmq-server.service 1>/dev/null && 
 systemctl start rabbitmq-server.service
 rabbitmqctl add_user openstack $RABBIT_PASS  1>/dev/null
 #Permit configuration, write, and read access for the openstack user:
 rabbitmqctl set_permissions openstack ".*" ".*" ".*"  1>/dev/null
-
+#rabbitmq-plugins list
+#enable rabbitmq_management boot after the os boot 
+#Use rabbitmq-web 
+rabbitmq-plugins enable rabbitmq_management
+systemctl restart rabbitmq-server.service
 
 }
 
