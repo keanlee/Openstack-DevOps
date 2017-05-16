@@ -5,8 +5,10 @@ STATUS=$(systemctl status firewalld | grep Active | awk -F ":" '{print $2}' | aw
 function iptabels(){
 iptables -I  INPUT -p tcp --dport 22    -j ACCEPT
 iptables -A  INPUT -p tcp --dport 80    -j ACCEPT
-iptables -A  INPUT -p tcp --dport 10050 -j ACCEPT
-iptables -A  INPUT -p tcp --dport 10051 -j ACCEPT
+#add rabbitmq port 
+iptables -A  INPUT -p tcp --dport 5672 -j ACCEPT
+#add rabbitmq web plugin port 
+iptables -A  INPUT -p tcp --dport 15672 -j ACCEPT
 iptables-save > /etc/sysconfig/iptables
 }
 
