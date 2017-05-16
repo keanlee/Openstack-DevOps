@@ -38,7 +38,7 @@ function keystone(){
 #authentication, authorization, and a catalog of services.
 #Please refer:  https://docs.openstack.org/newton/install-guide-rdo/common/get-started-identity.html
 #install mariadb and create database for keystone 
-mysql_configuration
+
 database_create keystone $KEYSTONE_DBPASS
 yum install openstack-keystone httpd mod_wsgi -y  1>/dev/null
 
@@ -98,6 +98,7 @@ echo $GREEN openrc file created and location at /root directory $NO_COLOR
 }
 
 function create_keystone_administrative_account(){
+
 #Configure the administrative account
 export OS_USERNAME=admin
 export OS_PASSWORD=$ADMIN_PASS
@@ -127,6 +128,8 @@ echo $GREEN Finished create domain, project, users and roles on $YELLOW $(hostna
 create_keystone_administrative_account
 
 echo $BLUE Verify operation of the Identity service before installing other services On $YELLOW $(hostname) $NO_COLOR
+#Unset the temporary OS_AUTH_URL and OS_PASSWORD environment variable
+unset OS_AUTH_URL OS_PASSWORD
 #As the admin user, request an authentication token
 openstack --os-auth-url http://$MGMT_IP:35357/v3 --os-project-domain-name default \
 --os-user-domain-name default --os-project-name admin --os-username admin \
