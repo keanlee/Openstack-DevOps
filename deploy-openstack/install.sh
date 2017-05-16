@@ -33,7 +33,7 @@ fi
 
 debug(){
 if [[ $1 -ne 0 ]]; then 
-echo $2
+echo $RED $2 $NO_COLOR
 exit 1
 fi
 }
