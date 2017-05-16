@@ -46,7 +46,7 @@ debug "$1" "$RED Install mariadb mariadb-server python2-PyMySQL failed $NO_COLOR
 bind-address = $MGMT_IP
 default-storage-engine = innodb
 innodb_file_per_table
-max_connections=5096
+max_connections=4096
 collation-server = utf8_general_ci
 character-set-server = utf8
 init-connect = 'SET NAMES utf8'
@@ -73,6 +73,7 @@ echo $GREEN Finished the Mariadb install and configuration on $YELLOW $(hostname
 
 function rabbitmq_configuration(){
 #RABBIT_PASS  
+#Except Horizone and keystone ,each component need connect to Rabbitmq 
 yum install rabbitmq-server  -y 1>/dev/null
 debug "$1" "$RED Install rabbitmq-server failed $NO_COLOR"
 systemctl enable rabbitmq-server.service && 
