@@ -72,7 +72,7 @@ echo $GREEN Finished the Mariadb install and configuration on $YELLOW $(hostname
 }
 
 function rabbitmq_configuration(){
-#RABBIT_PASS  
+#RABBIT_P 
 #Except Horizone and keystone ,each component need connect to Rabbitmq 
 yum install rabbitmq-server  -y 1>/dev/null
 debug "$1" "$RED Install rabbitmq-server failed $NO_COLOR"
