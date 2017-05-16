@@ -3,8 +3,6 @@
 function packages_of_controller(){
 #-----------------install all of package of controller node ------------------------------------
 echo $BLUE Beginning install packages of controller node On $(hostname) , please be wait ... $NO_COLOR 
- yum install mariadb mariadb-server python2-PyMySQL -y 1>/dev/null 
-    debug "$1" "$RED Install mariadb mariadb-server python2-PyMySQL failed $NO_COLOR"
     
  yum install openstack-selinux python-openstackclient -y 1>/dev/null 
     debug "$?" "$RED Install openstack-selinux python-openstackclient failed $NO_COLOR"
@@ -37,9 +35,11 @@ echo $GREEN Finshed install all packages of controller on $YELLOW $(hostname) $N
 }
 
 function mysql_configuration(){
-echo $BLUE Beginning configuration mysql ,keystone ,memcache,glance,nova for controller node on $(hostname) $NO_COLOR
+echo $BLUE Beginning configuration mysql for controller node on $YELLOW $(hostname) $NO_COLOR
 # set the bind-address key to the management IP address of the controller node to enable access by other nodes via the management network
 # refer https://docs.openstack.org/newton/install-guide-rdo/environment-sql-database.html
+yum install mariadb mariadb-server python2-PyMySQL -y 1>/dev/null 
+debug "$1" "$RED Install mariadb mariadb-server python2-PyMySQL failed $NO_COLOR"   
     echo > /etc/my.cnf.d/openstack.cnf
     cat > /etc/my.cnf.d/openstack.cnf <<EOF
 [mysqld]
@@ -68,6 +68,19 @@ y
 y
 EOF
 debug "$?" "$RED Mysql configuration failed $NO_COLOR"
+echo $GREEN Finished the Mariadb install and configuration on $YELLOW $(hostname) $NO_COLOR 
 }
 
+function rabbitmq_configuration(){
+#RABBIT_PASS  
+yum install rabbitmq-server  -y 1>/dev/null
+debug "$1" "$RED Install rabbitmq-server failed $NO_COLOR"
+systemctl enable rabbitmq-server.service && 
+systemctl start rabbitmq-server.service
+rabbitmqctl add_user openstack $RABBIT_PASS  1>/dev/null
+#Permit configuration, write, and read access for the openstack user:
+rabbitmqctl set_permissions openstack ".*" ".*" ".*"  1>/dev/null
+
+
+}
 

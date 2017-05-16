@@ -1,7 +1,12 @@
 #!/bin/bash 
 #Edit the below variable to adapt your Env..
 CONTROLLER_IP=192.168.0.1
+
 #set the mangement ip as below 
 MGMT_IP=192.168.0.1
+
 #set mariadb password 
 MARIADB_PASSWORD=qaz123
+
+#set the rabbitmq password as below 
+RABBIT_PASS=rabbitmq
