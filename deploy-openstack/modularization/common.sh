@@ -61,4 +61,6 @@ identified by '$2';flush privileges;"
 debug "$?" "Create database $1 Failed "
 }
 
+#install mariadb and setup it 
+mysql_configuration
 
