@@ -1,38 +1,8 @@
 #!/bin/bash
+#author by keanlee 
 
-function packages_of_controller(){
-#-----------------install all of package of controller node ------------------------------------
-echo $BLUE Beginning install packages of controller node On $(hostname) , please be wait ... $NO_COLOR 
-    
- yum install openstack-selinux python-openstackclient -y 1>/dev/null 
-    debug "$?" "$RED Install openstack-selinux python-openstackclient failed $NO_COLOR"
-    
- yum install openstack-keystone httpd mod_wsgi  memcached python-memcached -y 1>/dev/null
-    debug "$?" "$RED Install openstack-keystone failed $NO_COLOR"
-    
- yum install openstack-glance  -y  1>/dev/null
-    debug "$?" "$RED Install openstack-glance failed $NO_COLOR"
-    
- yum install openstack-nova-api openstack-nova-cert openstack-nova-conductor openstack-nova-console openstack-nova-novncproxy openstack-nova-scheduler -y 1>/dev/null
-    debug  "$?" "$RED Install openstack-nova-api failed $NO_COLOR"
-    
- yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch -y 1>/dev/null
-    debug  "$?" "$RED Install openstack-neutron failed $NO_COLOR"
-    
- yum install openstack-dashboard  -y 1>/dev/null
-    debug  "$?" "$RED Install openstack-dashboard failed $NO_COLOR"
-   
- yum install openstack-cinder  -y 1>/dev/null
-    debug  "$?" "$RED Install openstack-cinder failed $NO_COLOR"
-   
- yum install openstack-ceilometer-api openstack-ceilometer-collector openstack-ceilometer-notification openstack-ceilometer-central python-ceilometerclient -y 1>/dev/null
-    debug  "$?" "$RED Install ceilometer failed $NO_COLOR"
-   
- yum install python-rbd -y 1>/dev/null
-    debug  "$?" "$RED Install python-rbd failed $NO_COLOR "
-
-echo $GREEN Finshed install all packages of controller on $YELLOW $(hostname) $NO_COLOR 
-}
+yum install openstack-selinux python-openstackclient -y 1>/dev/null 
+debug "$?" "$RED Install openstack-selinux python-openstackclient failed $NO_COLOR"
 
 function mysql_configuration(){
 echo $BLUE Beginning configuration mysql for controller node on $YELLOW $(hostname) $NO_COLOR
@@ -114,7 +84,8 @@ function keystone(){
 #The OpenStack Identity service provides a single point of integration for managing 
 #authentication, authorization, and a catalog of services.
 #Please refer:  https://docs.openstack.org/newton/install-guide-rdo/common/get-started-identity.html
-#create database for keystone 
+#install mariadb and create database for keystone 
+mysql_configuration
 database_create keystone $KEYSTONE_DBPASS
 yum install openstack-keystone httpd mod_wsgi -y  1>/dev/null
 
@@ -143,6 +114,7 @@ ln -s /usr/share/keystone/wsgi-keystone.conf /etc/httpd/conf.d/     1>/dev/null
 systemctl enable httpd.service     1>/dev/null
 systemctl start httpd.service
 function openrc_file_create(){
+#create admin-openrc and demo-openrc file 
     echo >  $(pwd)/admin-openrc
     cat > $(pwd)/admin-openrc <<EOF
 export OS_PROJECT_DOMAIN_NAME=default
@@ -170,10 +142,63 @@ EOF
 mv $(pwd)/admin-openrc  /root &&
 mv $(pwd)/demo-openrc  /root  &&
 echo $GREEN openrc file created and location at /root directory $NO_COLOR
-
 }
 
+function create_keystone_administrative_account(){
+#Configure the administrative account
+export OS_USERNAME=admin
+export OS_PASSWORD=$ADMIN_PASS
+export OS_PROJECT_NAME=admin
+export OS_USER_DOMAIN_NAME=Default
+export OS_PROJECT_DOMAIN_NAME=Default
+export OS_AUTH_URL=http://$MGMT_IP:35357/v3
+export OS_IDENTITY_API_VERSION=3
+
+#Create a domain, projects, users, and roles
+echo $BLUE Beginning create a domain, projects, users, and roles On $YELLOW $(hostname) $NO_COLOR
+#This guide uses a service project that contains a unique user for each service 
+#that you add to your environment. Create the service project
+openstack project create --domain default --description "Service Project" service &&
+#Regular (non-admin) tasks should use an unprivileged project and user. As an example, this guide creates the demo project and user
+openstack project create --domain default --description "Demo Project" demo  &&
+#Create the demo user
+openstack user create --domain default --password $DEMO_PASS demo   &&
+#Create the user role
+openstack role create user  &&
+#Add the user role to the demo project and user
+openstack role add --project demo --user demo user  &&
+debug "$?" "Create a domain, projects, users, and roles failed "
+echo $GREEN Finished create domain, project, users and roles on $YELLOW $(hostname) $NO_COLOR 
 }
+#execute function to create keystone administrative account 
+create_keystone_administrative_account
 
+echo $BLUE Verify operation of the Identity service before installing other services On $YELLOW $(hostname) $NO_COLOR
+#As the admin user, request an authentication token
+openstack --os-auth-url http://$MGMT_IP:35357/v3 --os-project-domain-name default \
+--os-user-domain-name default --os-project-name admin --os-username admin \
+--os-auth-type password --os-password $ADMIN_PASS  token issue   &&
 
+#As the demo user, request an authentication token
+openstack --os-auth-url http://$MGMT:5000/v3 --os-project-domain-name default \
+--os-user-domain-name default --os-project-name demo --os-username demo \
+--os-auth-type password --os-password $DEMO_PASS token issue   &&
+debug "$?" "Verify operation of the Identity service failed "
+echo $GREEN Verify operation of the Identity service success $NO_COLOR  &&
 
+#execute this function to create openrc file 
+openrc_file_create
+#check the admin-openrc file 
+source  /root/admin-openrc 
+#Request an authentication token
+openstack token issue
+debug "$?" "admin-openrc file not work "
+echo $GREEN Created openrc file and the admin-openrc can work normally $NO_COLOR 
+}
+#----------------------------Keystone ------------------
+echo $GREEN Beginning install $YELLOW KEYSTONE $NO_COLOR $GREEN ... $NO_COLOR
+#Execute below function to install keystone 
+rabbitmq_configuration
+memcache
+keystone
+echo $GREEN Finished the $YELLOW KEYSTONE $NO_COLOR $GREEN component install $NO_COLOR 
