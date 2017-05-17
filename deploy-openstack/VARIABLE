@@ -10,3 +10,18 @@ MARIADB_PASSWORD=qaz123
 
 #set the rabbitmq password as below 
 RABBIT_PASS=rabbitmq
+
+#--------------------Keystone ------------------
+#set keystone database password 
+KEYSTONE_DBPASS=keystone_dbpassword
+ADMIN_PASS=admin
+DEMO_PASS=demo
+#Which directory you want to store the admin-openrc file ?
+OPENRC_DIR=/root
+
+#-----------------Glance-------------
+#glance database password
+GLANCE_DBPASS=glancedb
+#glance password use for keystone
+GLANCE_PASS=glance
+
