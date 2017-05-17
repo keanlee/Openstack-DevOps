@@ -156,7 +156,6 @@ yum install openstack-selinux python-openstackclient -y 1>/dev/null
 debug "$?" "$RED Install openstack-selinux python-openstackclient failed $NO_COLOR"
 #------Function ------
 ntp
-mysql_configuration
 rabbitmq_configuration
 memcache
 keystone

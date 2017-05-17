@@ -3,7 +3,7 @@
 #----------------disable selinux-------------------------
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config #disable selinux in conf file 
 setenforce 0  &&
-echo $GREEN Disable the selinux by config file  .The current selinux Status: $YELLOW $(getenforce) $NO_COLOR
+echo $GREEN Disable the selinux by config file. The current selinux Status:$NO_COLOR $YELLOW $(getenforce) $NO_COLOR
 
 function ntp(){
 yum install ntp -y  1>/dev/null
@@ -66,6 +66,4 @@ identified by '$2';flush privileges;"
 debug "$?" "Create database $1 Failed "
 }
 
-#install mariadb and setup it 
-#mysql_configuration
 

@@ -3,10 +3,10 @@
 CONTROLLER_IP=192.168.0.1
 
 #set the mangement ip as below 
-MGMT_IP=192.168.0.1
+MGMT_IP=10.245.58.205
 
 #set mariadb password 
-MARIADB_PASSWORD=qaz123
+MARIADB_PASSWORD=admin
 
 #set the rabbitmq password as below 
 RABBIT_PASS=rabbitmq
@@ -17,7 +17,7 @@ KEYSTONE_DBPASS=keystone_dbpassword
 ADMIN_PASS=admin
 DEMO_PASS=demo
 #Which directory you want to store the admin-openrc file ?
-OPENRC_DIR=/root
+OPENRC_DIR=/home
 
 #-----------------Glance-------------
 #glance database password

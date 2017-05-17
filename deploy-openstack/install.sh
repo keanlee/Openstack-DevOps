@@ -18,7 +18,7 @@ source ./VARIABLE
 
 README=$(cat ./README.txt)
 echo $GREEN $README $NO_COLOR 
-
+echo $YELLOW This script will be deploy OpenStack on $NO_CLOLOR $GREEN $(cat /etc/redhat-release) $NO_CLOLOR
 help(){
 echo $RED --------Usage as below ---------  $NO_COLOR    
     echo  $BLUE sh $0 install controller $NO_COLOR  
@@ -29,6 +29,7 @@ echo $RED --------Usage as below ---------  $NO_COLOR
 
 if [[ $# = 0 || $# -gt 1 ]]; then 
 help
+exit 1
 fi
 
 debug(){
@@ -37,6 +38,19 @@ echo $RED $2 $NO_COLOR
 exit 1
 fi
 }
+
+#---------------keystone -----------
+case $1 in
+keystone)
+source ./bin/common.sh
+ntp
+mysql_configuration
+source ./bin/keystone.sh
+;;
+*)
+help
+;;
+esac
 
 
 
