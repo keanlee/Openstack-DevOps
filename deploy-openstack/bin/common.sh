@@ -62,5 +62,5 @@ debug "$?" "Create database $1 Failed "
 }
 
 #install mariadb and setup it 
-mysql_configuration
+#mysql_configuration
 
