@@ -154,6 +154,7 @@ echo $GREEN Beginning install $YELLOW KEYSTONE $NO_COLOR $GREEN ... $NO_COLOR
 #Execute below function to install keystone 
 yum install openstack-selinux python-openstackclient -y 1>/dev/null 
 debug "$?" "$RED Install openstack-selinux python-openstackclient failed $NO_COLOR"
+ntp
 rabbitmq_configuration
 memcache
 keystone
