@@ -6,12 +6,12 @@ function openrc_file_create(){
 #create admin-openrc and demo-openrc file 
     echo >  $(pwd)/admin-openrc
     cat > $(pwd)/admin-openrc <<EOF
-export OS_PROJECT_DOMAIN_NAME=default
-export OS_USER_DOMAIN_NAME=default
+export OS_PROJECT_DOMAIN_NAME=Default
+export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_NAME=admin
 export OS_USERNAME=admin
 export OS_PASSWORD=$ADMIN_PASS
-export OS_AUTH_URL=http://$MGMT_IP:10006/v3
+export OS_AUTH_URL=http://$MGMT_IP:35357/v3
 export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2
 EOF
@@ -30,7 +30,7 @@ EOF
 
 mv $(pwd)/admin-openrc  $OPENRC_DIR &&
 mv $(pwd)/demo-openrc  $OPENRC_DIR  &&
-echo $GREEN openrc file created and location at /root directory $NO_COLOR
+echo $GREEN openrc file created and location at $OPENRC_DIR directory $NO_COLOR
 }
 
 function create_keystone_administrative_account(){
@@ -104,6 +104,7 @@ create_keystone_administrative_account
 echo $BLUE Verify operation of the Identity service before installing other services On $YELLOW $(hostname) $NO_COLOR
 #Unset the temporary OS_AUTH_URL and OS_PASSWORD environment variable
 unset OS_AUTH_URL OS_PASSWORD
+
 #As the admin user, request an authentication token
 openstack --os-auth-url http://$MGMT_IP:35357/v3 --os-project-domain-name default \
 --os-user-domain-name default --os-project-name admin --os-username admin \
@@ -118,21 +119,27 @@ echo $GREEN Verify operation of the Identity service success $NO_COLOR  &&
 
 #execute this function to create openrc file 
 openrc_file_create
-#check the admin-openrc file 
+
+echo $BLUE Check the admin-openrc file which location at $OPENRC_DIR whether or not work $NO_COLOR 
 source  $OPENRC_DIR/admin-openrc 
+
 #Request an authentication token
 openstack token issue
-debug "$?" "admin-openrc file not work "
-echo $GREEN Created openrc file and the admin-openrc can work normally $NO_COLOR 
+debug "$?" "The admin-openrc file which location at $OPENRC_DIR can not be work "
+echo $GREEN Created openrc file and the admin-openrc can be work normally $NO_COLOR 
+
 }
+
 #----------------------------Keystone ------------------
 echo $GREEN Beginning install $YELLOW KEYSTONE $NO_COLOR $GREEN ... $NO_COLOR
 #Execute below function to install keystone 
 yum install openstack-selinux python-openstackclient -y 1>/dev/null 
 debug "$?" "$RED Install openstack-selinux python-openstackclient failed $NO_COLOR"
+
 #------Function ------
 ntp
 rabbitmq_configuration
 memcache
 keystone_main
+
 echo $GREEN Finished the $YELLOW KEYSTONE $NO_COLOR $GREEN component install $NO_COLOR 

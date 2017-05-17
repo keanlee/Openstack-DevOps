@@ -62,7 +62,7 @@ function database_create(){
 #$2 is password of database
 
 mysql -uroot -p$MARIADB_PASSWORD -e "create database $1 character set utf8;grant all privileges on $1.* to $1@localhost \
-identified by '$2';flush privileges;"  
+identified by '$2';GRANT ALL PRIVILEGES ON $1.* TO 'keystone'@'%'  IDENTIFIED BY '$2';flush privileges;"  
 debug "$?" "Create database $1 Failed "
 }
 
