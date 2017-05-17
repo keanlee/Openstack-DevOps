@@ -1,5 +1,10 @@
 #!/bin/bash 
 
+#----------------disable selinux-------------------------
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config #disable selinux in conf file 
+setenforce 0  &&
+echo $GREEN  ----->The Selinux Status: $YELLOW $( getenforce) $NO_COLOR 
+
 function ntp(){
 yum install ntp -y  1>/dev/null
 cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
@@ -31,7 +36,7 @@ collation-server = utf8_general_ci
 character-set-server = utf8
 init-connect = 'SET NAMES utf8'
 EOF
-systemctl enable mariadb.service 1>/dev/null && 
+systemctl enable mariadb.service 1>/dev/null 2>&1 && 
 systemctl start mariadb.service
 #sed -i '/Group=mysql/a\LimitNOFILE=65535' /usr/lib/systemd/system/mariadb.service
 #systemctl daemon-reload
