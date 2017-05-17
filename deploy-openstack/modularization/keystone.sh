@@ -92,8 +92,8 @@ export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2
 EOF
 
-mv $(pwd)/admin-openrc  /root &&
-mv $(pwd)/demo-openrc  /root  &&
+mv $(pwd)/admin-openrc  $OPENRC_DIR &&
+mv $(pwd)/demo-openrc  $OPENRC_DIR  &&
 echo $GREEN openrc file created and location at /root directory $NO_COLOR
 }
 
@@ -145,7 +145,7 @@ echo $GREEN Verify operation of the Identity service success $NO_COLOR  &&
 #execute this function to create openrc file 
 openrc_file_create
 #check the admin-openrc file 
-source  /root/admin-openrc 
+source  $OPENRC_DIR/admin-openrc 
 #Request an authentication token
 openstack token issue
 debug "$?" "admin-openrc file not work "
