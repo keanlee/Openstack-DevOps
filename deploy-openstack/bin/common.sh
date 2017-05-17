@@ -73,7 +73,7 @@ yum install rabbitmq-server  -y 1>/dev/null
 debug "$1" "$RED Install rabbitmq-server failed $NO_COLOR"
 systemctl enable rabbitmq-server.service 1>/dev/null && 
 systemctl start rabbitmq-server.service
-debug "$?" "systemctl start rabbitmq-server.service Faild, Did you edit the /etc/hosts ?"
+debug "$?" "systemctl start rabbitmq-server.service Faild, Did you edit the /etc/hosts ? "
 rabbitmqctl add_user openstack $RABBIT_PASS  1>/dev/null
 #Permit configuration, write, and read access for the openstack user:
 rabbitmqctl set_permissions openstack ".*" ".*" ".*"  1>/dev/null
