@@ -1,9 +1,6 @@
 #!/bin/bash
 #author by keanlee 
-
-yum install openstack-selinux python-openstackclient -y 1>/dev/null 
-debug "$?" "$RED Install openstack-selinux python-openstackclient failed $NO_COLOR"
-
+#This script need VARIABLE and common.sh
 function rabbitmq_configuration(){
 #RABBIT_P 
 #Except Horizone and keystone ,each component need connect to Rabbitmq 
@@ -154,6 +151,8 @@ echo $GREEN Created openrc file and the admin-openrc can work normally $NO_COLOR
 #----------------------------Keystone ------------------
 echo $GREEN Beginning install $YELLOW KEYSTONE $NO_COLOR $GREEN ... $NO_COLOR
 #Execute below function to install keystone 
+yum install openstack-selinux python-openstackclient -y 1>/dev/null 
+debug "$?" "$RED Install openstack-selinux python-openstackclient failed $NO_COLOR"
 rabbitmq_configuration
 memcache
 keystone
