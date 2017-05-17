@@ -66,4 +66,32 @@ identified by '$2';flush privileges;"
 debug "$?" "Create database $1 Failed "
 }
 
+function rabbitmq_configuration(){
+#RABBIT_P 
+#Except Horizone and keystone ,each component need connect to Rabbitmq 
+yum install rabbitmq-server  -y 1>/dev/null
+debug "$1" "$RED Install rabbitmq-server failed $NO_COLOR"
+systemctl enable rabbitmq-server.service 1>/dev/null && 
+systemctl start rabbitmq-server.service
+debug "$?" "systemctl start rabbitmq-server.service Faild, Did you edit the /etc/hosts ?"
+rabbitmqctl add_user openstack $RABBIT_PASS  1>/dev/null
+#Permit configuration, write, and read access for the openstack user:
+rabbitmqctl set_permissions openstack ".*" ".*" ".*"  1>/dev/null
+#rabbitmq-plugins list
+#enable rabbitmq_management boot after the os boot 
+#Use rabbitmq-web 
+rabbitmq-plugins enable rabbitmq_management
+systemctl restart rabbitmq-server.service
+}
 
+function memcache(){
+#install and configuration memecache 
+#Need variable MGMT_IP
+#The Identity service authentication mechanism for services uses Memcached to cache tokens. 
+#The memcached service typically runs on the controller node. 
+#For production deployments, we recommend enabling a combination of firewalling, authentication, and encryption to secure it.
+yum install memcached python-memcached -y 1>/dev/null
+sed -i "s/127.0.0.1/$MGMT_IP/g" /etc/sysconfig/memcached
+systemctl enable memcached.service && 1>/dev/null
+systemctl start memcached.service
+}
