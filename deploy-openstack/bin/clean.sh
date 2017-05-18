@@ -26,4 +26,9 @@ yum clean all
 #--------------clean glance---------
 yum erase openstack-glance 1>/dev/null 
 rm -rf /etc/glance
- 
+
+#-------------clean nova for controller -------
+yum erase openstack-nova-api openstack-nova-conductor \
+openstack-nova-console openstack-nova-novncproxy \
+openstack-nova-scheduler -y 
+rm -rf /etc/nova

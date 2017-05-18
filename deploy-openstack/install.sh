@@ -48,6 +48,8 @@ mysql_configuration
 source ./bin/keystone.sh
 sleep 5
 source ./bin/glance.sh
+sleep 5
+source ./bin/compute.sh 
 ;;
 *)
 help
