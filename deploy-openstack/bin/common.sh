@@ -8,6 +8,13 @@ setenforce 0  &&
 echo $GREEN Disable the selinux by config file. The current selinux Status:$NO_COLOR $YELLOW $(getenforce) $NO_COLOR
 
 function ntp(){
+cat 1>&2 <<__EOF__
+$MAGENTA==========================================================
+            Begin to delpoy ntp
+==========================================================
+$NO_COLOR
+__EOF__
+
 yum install ntp -y  1>/dev/null
 cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 ntpdate $NTP_SERVER_IP 1>/dev/null
@@ -22,6 +29,13 @@ systemctl start ntpd.service
 }
 
 function mysql_configuration(){
+cat 1>&2 <<__EOF__
+$MAGENTA==========================================================
+            Begin to delpoy Mariadb
+==========================================================
+$NO_COLOR
+__EOF__
+
 echo $BLUE Beginning configuration mysql for controller node on $YELLOW $(hostname) $NO_COLOR
 # set the bind-address key to the management IP address of the controller node to enable access by other nodes via the management network
 # refer https://docs.openstack.org/newton/install-guide-rdo/environment-sql-database.html
@@ -62,28 +76,45 @@ function database_create(){
 #create database and user in mariadb for openstack component
 #$1 is the database name (comonent name and usename) 
 #$2 is password of database
-
+cat 1>&2 <<__EOF__
+$MAGENTA==========================================================
+            Create $1 database in mariadb 
+==========================================================
+$NO_COLOR
+__EOF__
 mysql -uroot -p$MARIADB_PASSWORD -e "create database $1 character set utf8;grant all privileges on $1.* to $1@localhost \
 identified by '$2';GRANT ALL PRIVILEGES ON $1.* TO 'keystone'@'%'  IDENTIFIED BY '$2';flush privileges;"  
 debug "$?" "Create database $1 Failed "
 }
 
 function rabbitmq_configuration(){
+cat 1>&2 <<__EOF__
+$MAGENTA==========================================================
+            Begin to delpoy RabbitMQ 
+==========================================================
+$NO_COLOR
+__EOF__
+
 #RABBIT_P 
 #Except Horizone and keystone ,each component need connect to Rabbitmq 
+echo $BLUE Install rabbitmq-server ... $NO_COLOR
 yum install rabbitmq-server  -y 1>/dev/null
 debug "$1" "$RED Install rabbitmq-server failed $NO_COLOR"
 systemctl enable rabbitmq-server.service 1>/dev/null && 
 systemctl start rabbitmq-server.service
 debug "$?" "systemctl start rabbitmq-server.service Faild, Did you edit the /etc/hosts ? "
+
 rabbitmqctl add_user openstack $RABBIT_PASS  1>/dev/null
-#Permit configuration, write, and read access for the openstack user:
+echo $BLUE Permit configuration, write, and read access for the openstack user ...$NO_COLOR
 rabbitmqctl set_permissions openstack ".*" ".*" ".*"  1>/dev/null
+
 #rabbitmq-plugins list
 #enable rabbitmq_management boot after the os boot 
 #Use rabbitmq-web 
 rabbitmq-plugins enable rabbitmq_management
-systemctl restart rabbitmq-server.service
+systemctl restart rabbitmq-server.service &&
+debug "$?" "Restart rabbitmq-server.service fail after enable rabbitmq_management "
+echo $GREEN You can browse rabbitmq web via 15672 port $NO_COLOR
 }
 
 function memcache(){

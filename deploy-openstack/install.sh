@@ -21,7 +21,7 @@ echo $GREEN $README $NO_COLOR
 echo $YELLOW This script will be deploy OpenStack on $NO_COLOR $GREEN $(cat /etc/redhat-release) $NO_COLOR
 
 help(){
-echo $RED --------Usage as below ---------  $NO_COLOR    
+echo $MAGENTA --------Usage as below ---------  $NO_COLOR    
     echo  $BLUE sh $0 install controller $NO_COLOR  
     echo  $BLUE sh $0 install ha_proxy  $NO_COLOR
     echo  $BLUE sh $0 install compute   $NO_COLOR
@@ -42,11 +42,12 @@ fi
 
 #---------------keystone -----------
 case $1 in
-keystone)
+controller)
 source ./bin/common.sh
-ntp
 mysql_configuration
 source ./bin/keystone.sh
+sleep 5
+source ./bin/glance.sh
 ;;
 *)
 help

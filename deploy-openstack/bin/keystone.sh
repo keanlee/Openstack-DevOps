@@ -140,6 +140,13 @@ debug "$?" "$RED Install openstack-selinux python-openstackclient failed $NO_COL
 ntp
 rabbitmq_configuration
 memcache
+
+cat 1>&2 <<__EOF__
+$MAGENTA==========================================================
+            Begin to delpy Keystone
+==========================================================
+$NO_COLOR
+__EOF__
 keystone_main
 
 echo $GREEN Congratulation you finished the ${YELLOW}KEYSTONE \(include httpd mod_wsgi\)${NO_COLOR}${GREEN} component \

@@ -9,6 +9,7 @@ MGMT_IP=10.245.58.205
 MARIADB_PASSWORD=admin
 
 #set the rabbitmq password as below 
+RABBIT_HOSTS=10.245.58.205
 RABBIT_PASS=rabbitmq
 
 #--------------------Keystone ------------------

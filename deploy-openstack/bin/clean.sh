@@ -19,4 +19,9 @@ yum erase python2-keystonemiddleware python2-keystoneauth1 python2-keystoneclien
 rm -rf /usr/share/keystone
 rm -rf /etc/keystone
 rm -rf /etc/httpd 
-yum clean all 
+yum clean all
+
+#--------------clean glance---------
+yum erase openstack-glance 1>/dev/null 
+rm -rf /etc/glance
+ 
