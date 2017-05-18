@@ -1,4 +1,6 @@
 #!/bin/bash 
+#This script will prepare the env for install openstack 
+#Include function ntp mysql rabbitmq memcache  
 
 #----------------disable selinux-------------------------
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config #disable selinux in conf file 

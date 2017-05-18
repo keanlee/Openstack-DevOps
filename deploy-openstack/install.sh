@@ -18,7 +18,8 @@ source ./bin/VARIABLE
 
 README=$(cat ./README.txt)
 echo $GREEN $README $NO_COLOR 
-echo $YELLOW This script will be deploy OpenStack on $NO_CLOLOR $GREEN $(cat /etc/redhat-release) $NO_CLOLOR
+echo $YELLOW This script will be deploy OpenStack on $NO_COLOR $GREEN $(cat /etc/redhat-release) $NO_COLOR
+
 help(){
 echo $RED --------Usage as below ---------  $NO_COLOR    
     echo  $BLUE sh $0 install controller $NO_COLOR  

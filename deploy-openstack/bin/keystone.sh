@@ -142,4 +142,5 @@ rabbitmq_configuration
 memcache
 keystone_main
 
-echo $GREEN Finished the $YELLOW KEYSTONE $NO_COLOR $GREEN component install $NO_COLOR 
+echo $GREEN Congratulation you finished the ${YELLOW}KEYSTONE \(include httpd mod_wsgi\)${NO_COLOR}${GREEN} component \
+install.For more info about keystone you can refer /usr/share/doc/openstack-keystone-10.0.1/README.rst file  $NO_COLOR
