@@ -74,7 +74,7 @@ database_create keystone $KEYSTONE_DBPASS
 yum install openstack-keystone httpd mod_wsgi -y  1>/dev/null
 
 #Edit keystone configuration file 
-cp -f ./configuration-files/keystone.conf   /etc/keystone/
+cp -f ./etc/keystone.conf   /etc/keystone/
 sed -i "s/controller/$MGMT_IP/g"  /etc/keystone/keystone.conf
 sed -i "s/KEYSTONE_DBPASS/$KEYSTONE_DBPASS/g" /etc/keystone/keystone.conf
 #Populate the Identity service database

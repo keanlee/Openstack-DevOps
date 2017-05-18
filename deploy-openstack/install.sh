@@ -14,7 +14,7 @@ WHITE="$ESC[0;37m"
 #PURPLE="$ESC[0;35m"
 CYAN="$ESC[0;36m"
 
-source ./VARIABLE 
+source ./bin/VARIABLE 
 
 README=$(cat ./README.txt)
 echo $GREEN $README $NO_COLOR 
