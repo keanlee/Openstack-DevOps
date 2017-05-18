@@ -29,5 +29,7 @@ GLANCE_PASS=glance
 #-----------------Compute--------
 NOVA_DBPASS=novadb
 NOVA_API_DBPASS=novaapi
-
 NOVA_PASS=novapass
+#controller management ip 
+MY_IP=10.245.58.205
+
