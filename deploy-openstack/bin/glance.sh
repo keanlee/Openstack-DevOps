@@ -90,7 +90,6 @@ echo $GREEN openstack $2 endpoint create success $NO_COLOR
 function glance_main(){
 #this function need variable:  GLANCE_DBPASS, GLANCE_PASS
 
-echo $BLUE create Glance database ...$NO_COLOR
 database_create glance $GLANCE_DBPASS
 create_service_credentials $GLANCE_PASS glance
 
@@ -138,17 +137,22 @@ debug "$?"  "Start daemon openstack-glance-api openstack-glance-registry failed,
 }
 
 function verify_glance(){
-echo $BLUE Verify operation of the Image service using CirrOS, a small Linux image that helps you test your OpenStack deployment $NO_COLOR
-source $OPENRC_DIR/admin-openrc
+cat 1>&2 <<__EOF__
+$MAGENTA===================================================================
+      Verify operation of the Image service using CirrOS, 
+  a small Linux image that helps you test your OpenStack deployment
+===================================================================
+$NO_COLOR
+__EOF__
 
-echo $BLUE Download the cirros image to Verfiy Glance whether or not work $NO_COLOR
-#add adjust if download wget later 
-wget http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img   &&
+source $OPENRC_DIR/admin-openrc
+#wget http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img   &&
 
 echo $BLUE Upload the image to the Image service using the QCOW2 disk format,\
 bare container format, and public visibility so all projects can access it $NO_COLOR
+sleep 5
 openstack image create "cirros" \
---file ./cirros-0.3.4-x86_64-disk.img \
+--file ./lib/cirros-0.3.4-x86_64-disk.img \
 --disk-format qcow2 --container-format bare \
 --public
 debug "$?" "Upload image to glance failed"
@@ -158,13 +162,22 @@ echo $GREEN Upload image cirros Success $NO_COLOR
 else
 debug "1" " Upload image cirros to glance Failed"
 fi
-#need update later 
+
+cat 1>&2 <<__EOF__
+$GREEN===================================================================================
+
+     Congratulation you finished the ${YELLOW}Glance${NO_COLOR} ${GREEN}component install 
+
+===================================================================================
+$NO_COLOR
+__EOF__
+
 }
 
 cat 1>&2 <<__EOF__
-$MAGENTA==========================================================
+$MAGENTA=================================================================
             Begin to deploy glance 
-==========================================================
+=================================================================
 $NO_COLOR
 __EOF__
 

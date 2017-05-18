@@ -1,4 +1,6 @@
 #!/bin/bash
+#yum erase openstack-selinux python-openstackclient 1>/dev/null
+
 yum erase -y mariadb-* mariadb-libs 1>/dev/null 
 yum erase -y python2-PyMySQL 1>/dev/null
 rm -rf /var/lib/mysql

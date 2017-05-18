@@ -76,14 +76,10 @@ function database_create(){
 #create database and user in mariadb for openstack component
 #$1 is the database name (comonent name and usename) 
 #$2 is password of database
-cat 1>&2 <<__EOF__
-$MAGENTA==========================================================
-            Create $1 database in mariadb 
-==========================================================
-$NO_COLOR
-__EOF__
-mysql -uroot -p$MARIADB_PASSWORD -e "create database $1 character set utf8;grant all privileges on $1.* to $1@localhost \
-identified by '$2';GRANT ALL PRIVILEGES ON $1.* TO 'keystone'@'%'  IDENTIFIED BY '$2';flush privileges;"  
+
+echo $BLUE      Create $1 database in mariadb  $NO_COLOR
+mysql -uroot -p$MARIADB_PASSWORD -e "CREATE DATABASE $1;GRANT ALL PRIVILEGES ON $1.* TO '$1'@'localhost' \
+IDENTIFIED BY '$2';GRANT ALL PRIVILEGES ON $1.* TO '$1'@'%'  IDENTIFIED BY '$2';flush privileges;"  
 debug "$?" "Create database $1 Failed "
 }
 

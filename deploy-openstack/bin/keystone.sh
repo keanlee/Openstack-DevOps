@@ -131,8 +131,8 @@ echo $GREEN Created openrc file and the admin-openrc can be work normally $NO_CO
 }
 
 #----------------------------Keystone ------------------
-echo $GREEN Beginning install $YELLOW KEYSTONE $NO_COLOR $GREEN ... $NO_COLOR
 #Execute below function to install keystone 
+echo $BLUE Install openstack-selinux and  python-openstackclient ...$NO_COLOR
 yum install openstack-selinux python-openstackclient -y 1>/dev/null 
 debug "$?" "$RED Install openstack-selinux python-openstackclient failed $NO_COLOR"
 
@@ -142,12 +142,17 @@ rabbitmq_configuration
 memcache
 
 cat 1>&2 <<__EOF__
-$MAGENTA==========================================================
-            Begin to delpy Keystone
-==========================================================
+$MAGENTA================================================================
+            Begin to delpoy Keystone
+================================================================
 $NO_COLOR
 __EOF__
 keystone_main
 
-echo $GREEN Congratulation you finished the ${YELLOW}KEYSTONE \(include httpd mod_wsgi\)${NO_COLOR}${GREEN} component \
-install.For more info about keystone you can refer /usr/share/doc/openstack-keystone-10.0.1/README.rst file  $NO_COLOR
+cat 1>&2 <<__EOF__
+$GREEN================================================================================================================
+  Congratulation you finished the ${YELLOW}KEYSTONE (include httpd mod_wsgi)${NO_COLOR}${GREEN} component 
+install.For more info about keystone you can refer /usr/share/doc/openstack-keystone-10.0.1/README.rst file      
+================================================================================================================
+$NO_COLOR
+__EOF__

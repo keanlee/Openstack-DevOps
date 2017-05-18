@@ -26,3 +26,8 @@ GLANCE_DBPASS=glancedb
 #glance password use for keystone
 GLANCE_PASS=glance
 
+#-----------------Compute--------
+NOVA_DBPASS=novadb
+NOVA_API_DBPASS=novaapi
+
+NOVA_PASS=novapass
