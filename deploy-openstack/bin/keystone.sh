@@ -95,7 +95,7 @@ chown -R keystone.keystone /etc/keystone/fernet-keys
 #Configure the Apache HTTP server
 sed -i "/ServerName www.example.com:80/a\ServerName $MGMT_IP" /etc/httpd/conf/httpd.conf  1>/dev/null
 ln -s /usr/share/keystone/wsgi-keystone.conf /etc/httpd/conf.d/     1>/dev/null
-systemctl enable httpd.service     1>/dev/null
+systemctl enable httpd.service     1>/dev/null 2>&1
 systemctl start httpd.service
 
 #execute function to create keystone administrative account 

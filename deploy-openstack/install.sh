@@ -18,7 +18,7 @@ source ./bin/VARIABLE
 
 README=$(cat ./README.txt)
 echo $GREEN $README $NO_COLOR 
-echo $YELLOW This script will be deploy OpenStack on $NO_COLOR $GREEN $(cat /etc/redhat-release) $NO_COLOR
+echo $GREEN This script will be deploy OpenStack on ${NO_COLOR}${YELLOW}$(cat /etc/redhat-release) $NO_COLOR
 
 help(){
 echo $MAGENTA --------Usage as below ---------  $NO_COLOR    
@@ -49,7 +49,10 @@ source ./bin/keystone.sh
 sleep 5
 source ./bin/glance.sh
 sleep 5
-source ./bin/compute.sh 
+source ./bin/compute.sh controller  
+;;
+compute)
+source ./bin/compute.sh compute
 ;;
 *)
 help

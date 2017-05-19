@@ -12,6 +12,7 @@
 #fi
 #}
 
+#---------------compute.sh just support controller and compute parameter---------
 
 function nova_controller(){
 #nova for controllrer node 
@@ -75,12 +76,56 @@ __EOF__
 
 function nova_compute(){
 #This section describes how to install and configure the Compute service on a compute node
+cat 1>&2 <<__EOF__
+$MAGENTA=================================================================
+      Begin to deploy nova on ${YELLOW}$(hostname)${NO_COLOR}${GREEN} which as compute node
+=================================================================
+$NO_COLOR
+__EOF__
+
+echo $BLUE install openstack-nova-compute ... $NO_COLOR
 yum install openstack-nova-compute -y 1>/dev/null
 debug "$?" "Install openstack-nova-compute failed "
 
+echo $BLUE Copy nova.conf and edit it ... $NO_COLOR
+cp -f ./etc/nova.conf  /etc/nova/
+sed -i "s/COMPUTE_MANAGEMENT_INTERFACE_IP_ADDRESS/$COMPUTE_MANAGEMENT_INTERFACE_IP_ADDRESS/g" /etc/nova/nova.conf
+sed -i "s/RABBIT_PASS/$RABBIT_PASS/g" /etc/nova/nova.conf
+sed -i "s/controller/$MGMT_IP/g" /etc/nova/nova.conf
+sed -i "s/NOVA_PASS/$NOVA_PASS/g" /etc/nova/nova.conf
 
+if [[ $(egrep -c '(vmx|svm)' /proc/cpuinfo) = 0 ]];then 
+echo $YELLOW Your compute node does not support hardware acceleration and  configure libvirt to use QEMU instead of KVM $NO_COLOR
+sed -i "/\[libvirt\]/a\virt_type\ =\ qemu" /etc/nova/nova.conf
+fi 
 
+systemctl enable libvirtd.service openstack-nova-compute.service  1>/dev/null 2>&1
+systemctl start libvirtd.service openstack-nova-compute.service  
+debug "$?" "systemctl start libvirtd or openstack-nova-compute failed \
+.If the nova-compute service fails to start, check /var/log/nova/nova-compute.log.
+The error message AMQP server on controller:5672 is unreachable likely indicates
+that the firewall on the controller node is preventing access to port 5672"
+echo $GRREN This node most of runing libvirtd.service openstack-nova-compute.service $NO_COLOR 
 
+cat 1>&2 <<__EOF__
+$GREEN=====================================================================
+       
+    Congratulation you finished to deploy nova on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
+ 
+=====================================================================
+$NO_COLOR
+__EOF__
 }
+
+case $1 in
+controller)
 nova_controller
+;;
+compute)
+nova_compute
+;;
+*)
+debug "1" "compute.sh just support controller and compute parameter, your $1 is not support "
+;;
+esac 
 

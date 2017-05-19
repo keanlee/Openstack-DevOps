@@ -24,7 +24,7 @@ sed -i "/server 1.centos.pool.ntp.org iburst/d" /etc/ntp.conf
 sed -i "/server 2.centos.pool.ntp.org iburst/d" /etc/ntp.conf
 sed -i "/server 3.centos.pool.ntp.org iburst/d" /etc/ntp.conf
 sed -i "21 i server $NTP_SERVER_IP iburst " /etc/ntp.conf
-systemctl enable ntpd.service 1>/dev/null && 
+systemctl enable ntpd.service 1>/dev/null 2>&1 && 
 systemctl start ntpd.service
 }
 
@@ -101,7 +101,7 @@ __EOF__
 echo $BLUE Install rabbitmq-server ... $NO_COLOR
 yum install rabbitmq-server  -y 1>/dev/null
 debug "$1" "$RED Install rabbitmq-server failed $NO_COLOR"
-systemctl enable rabbitmq-server.service 1>/dev/null && 
+systemctl enable rabbitmq-server.service 1>/dev/null 2>&1 && 
 systemctl start rabbitmq-server.service
 debug "$?" "systemctl start rabbitmq-server.service Faild, Did you edit the /etc/hosts ? "
 
@@ -112,7 +112,7 @@ rabbitmqctl set_permissions openstack ".*" ".*" ".*"  1>/dev/null
 #rabbitmq-plugins list
 #enable rabbitmq_management boot after the os boot 
 #Use rabbitmq-web 
-rabbitmq-plugins enable rabbitmq_management
+rabbitmq-plugins enable rabbitmq_management 1>/dev/null 2>&1
 systemctl restart rabbitmq-server.service &&
 debug "$?" "Restart rabbitmq-server.service fail after enable rabbitmq_management "
 echo $GREEN You can browse rabbitmq web via 15672 port $NO_COLOR
@@ -126,6 +126,6 @@ function memcache(){
 #For production deployments, we recommend enabling a combination of firewalling, authentication, and encryption to secure it.
 yum install memcached python-memcached -y 1>/dev/null
 sed -i "s/127.0.0.1/$MGMT_IP/g" /etc/sysconfig/memcached
-systemctl enable memcached.service && 1>/dev/null
+systemctl enable memcached.service   1>/dev/null 2>&1 &&
 systemctl start memcached.service
 }
