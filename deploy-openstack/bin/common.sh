@@ -78,8 +78,13 @@ function database_create(){
 #$2 is password of database
 
 echo $BLUE      Create $1 database in mariadb  $NO_COLOR
-mysql -uroot -p$MARIADB_PASSWORD -e "CREATE DATABASE $1;GRANT ALL PRIVILEGES ON $1.* TO '$1'@'localhost' \
-IDENTIFIED BY '$2';GRANT ALL PRIVILEGES ON $1.* TO '$1'@'%'  IDENTIFIED BY '$2';flush privileges;"  
+local USER=$1
+if [[ $1 = nova_api ]];then
+USER=nova
+fi 
+
+mysql -uroot -p$MARIADB_PASSWORD -e "CREATE DATABASE $1;GRANT ALL PRIVILEGES ON $1.* TO '$USER'@'localhost' \
+IDENTIFIED BY '$2';GRANT ALL PRIVILEGES ON $1.* TO '$USER'@'%'  IDENTIFIED BY '$2';flush privileges;"  
 debug "$?" "Create database $1 Failed "
 }
 

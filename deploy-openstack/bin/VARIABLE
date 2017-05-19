@@ -27,8 +27,9 @@ GLANCE_DBPASS=glancedb
 GLANCE_PASS=glance
 
 #-----------------Compute--------
+#both nova and nova_api database use this
 NOVA_DBPASS=novadb
-NOVA_API_DBPASS=novaapi
+
 NOVA_PASS=novapass
 #controller management ip 
 MY_IP=10.245.58.205
