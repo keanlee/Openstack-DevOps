@@ -26,7 +26,7 @@ GLANCE_DBPASS=glancedb
 #glance password use for keystone
 GLANCE_PASS=glance
 
-#-----------------Compute--------
+#-----------------Nova--------
 #both nova and nova_api database use this
 NOVA_DBPASS=novadb
 
@@ -35,4 +35,14 @@ NOVA_PASS=novapass
 MY_IP=10.245.58.205
 
 COMPUTE_MANAGEMENT_INTERFACE_IP_ADDRESS=10.245.59.227
+
+#--------------------Neutron-----------
+NEUTRON_DBPASS=neutrondb
+
+NEUTRON_PASS=neutron
+
+#use for linuxbridge_agent.ini this need make sure 
+PROVIDER_INTERFACE_NAME=
+OVERLAY_INTERFACE_IP_ADDRESS=
+
 

@@ -77,9 +77,9 @@ __EOF__
 function nova_compute(){
 #This section describes how to install and configure the Compute service on a compute node
 cat 1>&2 <<__EOF__
-$MAGENTA=================================================================
+$MAGENTA=======================================================================
       Begin to deploy nova on ${YELLOW}$(hostname)${NO_COLOR}${GREEN} which as compute node
-=================================================================
+=======================================================================
 $NO_COLOR
 __EOF__
 
