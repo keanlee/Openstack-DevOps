@@ -108,13 +108,15 @@ that the firewall on the controller node is preventing access to port 5672"
 echo $GRREN This node most of runing libvirtd.service openstack-nova-compute.service $NO_COLOR 
 
 cat 1>&2 <<__EOF__
-$GREEN=====================================================================
+$GREEN=====================================================================================
        
-    Congratulation you finished to deploy nova on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
+         Congratulation you finished to deploy nova on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
  
-=====================================================================
+You can go to controller node to verify it by <openstack compute service list> command
+=====================================================================================
 $NO_COLOR
 __EOF__
+
 }
 
 case $1 in
