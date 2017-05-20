@@ -2,6 +2,28 @@
 #This script will prepare the env for install openstack 
 #Include function ntp mysql rabbitmq memcache  
 
+# ansi colors for formatting heredoc
+ESC=$(printf "\e")
+GREEN="$ESC[0;32m"
+NO_COLOR="$ESC[0;0m"
+RED="$ESC[0;31m"
+MAGENTA="$ESC[0;35m"
+YELLOW="$ESC[0;33m"
+BLUE="$ESC[0;34m"
+WHITE="$ESC[0;37m"
+#PURPLE="$ESC[0;35m"
+CYAN="$ESC[0;36m"
+
+source ./bin/VARIABLE 
+
+debug(){
+if [[ $1 -ne 0 ]]; then 
+echo $RED $2 $NO_COLOR
+exit 1
+fi
+}
+
+
 #----------------disable selinux-------------------------
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config #disable selinux in conf file 
 setenforce 0  &&
