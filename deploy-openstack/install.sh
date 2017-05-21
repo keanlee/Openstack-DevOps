@@ -22,7 +22,7 @@ exit 1
 fi
 
 
-#---------------keystone -----------
+#---------------compnment choose -----------
 case $1 in
 controller)
 source ./bin/common.sh
@@ -32,6 +32,10 @@ sleep 5
 source ./bin/glance.sh
 sleep 5
 source ./bin/compute.sh controller  
+sleep 5
+source ./bin/neutron.sh controller 
+sleep 5
+source ./bin/dashboard.sh 
 ;;
 compute)
 source ./bin/compute.sh compute

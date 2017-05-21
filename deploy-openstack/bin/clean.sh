@@ -31,4 +31,10 @@ rm -rf /etc/glance
 yum erase openstack-nova-api openstack-nova-conductor \
 openstack-nova-console openstack-nova-novncproxy \
 openstack-nova-scheduler -y 
-rm -rf /etc/nova
+rm -rf /etc/nova  
+
+#---------clean neutron for compute and controller 
+yum erase openstack-neutron-linuxbridge ebtables ipset  -y 1>/dev/null 
+
+yum erase openstack-neutron openstack-neutron-ml2 openstack-neutron-linuxbridge ebtables  -y 1>/dev/null 
+rm -rf /etc/neutron 

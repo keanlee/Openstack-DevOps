@@ -65,18 +65,18 @@ if [[ $2 = nova ]];then
 openstack endpoint create --region RegionOne ${SERVICE1} public http://$MGMT_IP:${PORTS}/v2.1/%\(tenant_id\)s
 openstack endpoint create --region RegionOne ${SERVICE1} internal http://$MGMT_IP:${PORTS}/v2.1/%\(tenant_id\)s
 openstack endpoint create --region RegionOne ${SERVICE1} admin http://$MGMT_IP:${PORTS}/v2.1/%\(tenant_id\)s
-debug "$?" "openstack endpoint create failed "
+debug "$?" "openstack endpoint create $2 failed "
 
 elif [[ $2 = cinder ]];then
 openstack endpoint create --region RegionOne ${SERVICE1} public http://$MGMT_IP:${PORTS}/v1/%\(tenant_id\)s
 openstack endpoint create --region RegionOne ${SERVICE1} internal http://$MGMT_IP:${PORTS}/v1/%\(tenant_id\)s
 openstack endpoint create --region RegionOne ${SERVICE1} admin http://$MGMT_IP:${PORTS}/v1/%\(tenant_id\)s
-debug "$?" "openstack endpoint create failed "
+debug "$?" "openstack endpoint create $2 failed "
 
 openstack endpoint create --region RegionOne volumev2 public http://$MGMT_IP:${PORTS}/v2/%\(tenant_id\)s
 openstack endpoint create --region RegionOne volumev2 internal http://$MGMT_IP:${PORTS}/v2/%\(tenant_id\)s
 openstack endpoint create --region RegionOne volumev2 admin http://$MGMT_IP:${PORTS}/v2/%\(tenant_id\)s
-debug "$?" "openstack endpoint create failed "
+debug "$?" "openstack endpoint create $2 failed "
 
 else 
 openstack endpoint create --region RegionOne ${SERVICE1} public http://$MGMT_IP:${PORTS}
