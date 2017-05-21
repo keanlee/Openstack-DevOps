@@ -14,7 +14,8 @@ yum erase ntp -y 1>/dev/null
 rabbitmqctl  delete_user openstack
 rabbitmqctl  list_users
 yum erase rabbitmq-server -y 1>/dev/null
-
+yum erase memcached python-memcached -y 1>/dev/null 
+rm -rf /etc/sysconfig/memcached.rpmsave
 
 yum erase openstack-keystone httpd mod_wsgi httpd-tools -y 1>/dev/null
 yum erase python2-keystonemiddleware python2-keystoneauth1 python2-keystoneclient  -y 1>/dev/null
@@ -32,6 +33,9 @@ yum erase openstack-nova-api openstack-nova-conductor \
 openstack-nova-console openstack-nova-novncproxy \
 openstack-nova-scheduler -y 
 rm -rf /etc/nova  
+
+#-----------clean nova for compute 
+yum erase openstack-nova-compute -y 1>/dev/null 
 
 #---------clean neutron for compute and controller 
 yum erase openstack-neutron-linuxbridge ebtables ipset  -y 1>/dev/null 

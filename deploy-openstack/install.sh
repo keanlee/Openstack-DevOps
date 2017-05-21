@@ -2,7 +2,7 @@
 #author by keanlee on May 15th of 2017 
 
 cd $(cd $(dirname $0); pwd)
-
+source ./bin/common.sh
 
 README=$(cat ./README.txt)
 echo $GREEN $README $NO_COLOR 
@@ -25,7 +25,6 @@ fi
 #---------------compnment choose -----------
 case $1 in
 controller)
-source ./bin/common.sh
 mysql_configuration
 source ./bin/keystone.sh
 sleep 5

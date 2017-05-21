@@ -94,6 +94,10 @@ SECRET_KEY='9c4137d0e48a1f01e14a'
 # We recommend you use memcached for development; otherwise after every reload
 # of the django development server, you will have to login again. To use
 # memcached set CACHES to something like
+
+#if you don't install memcached and you need to change the cache to file 
+#author by keanlee on May 21th 
+
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 CACHES = {
     'default': {
@@ -126,7 +130,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #]
 
 OPENSTACK_HOST = "controller"
-OPENSTACK_KEYSTONE_URL = "http://%s:10008/v3" % OPENSTACK_HOST
+OPENSTACK_KEYSTONE_URL = "http://%s:5000/v3" % OPENSTACK_HOST
 OPENSTACK_KEYSTONE_DEFAULT_ROLE = "user"
 
 # Enables keystone web single-sign-on if set to True.

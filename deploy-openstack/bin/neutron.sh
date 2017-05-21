@@ -16,12 +16,12 @@
 function neutron_controller(){
 cat 1>&2 <<__EOF__
 $MAGENTA=================================================================
-      Begin to deploy Neutron on ${YELLOW}$(hostname)${NO_COLOR}${GREEN} which as controller node
+      Begin to deploy Neutron on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} which as controller node
 =================================================================
 $NO_COLOR
 __EOF__
 
-database_create neutron $NEUTRON_DBPAS
+database_create neutron  $NEUTRON_DBPASS
 create_service_credentials $NEUTRON_PASS neutron
 
 #Option 1 deploys the simplest possible architecture that only supports attaching instances to provider (external) networks. 
@@ -32,9 +32,9 @@ create_service_credentials $NEUTRON_PASS neutron
 #floating IP addresses provide connectivity to instances using self-service networks from external networks such as the Internet.
 
 #Option 2 also supports attaching instances to provider networks
-echo $BLUE Using the option 2 of neutron ... $NO_COLOR 
-echo $Blue Install openstack-neutron openstack-neutron-ml2  openstack-neutron-linuxbridge ebtables ... $NO_COLOR 
-yum install openstack-neutron openstack-neutron-ml2  openstack-neutron-linuxbridge ebtables 1>/dev/null
+echo $BLUE Using the option 2 of neutron to deploy ... $NO_COLOR 
+echo $BLUE Install openstack-neutron openstack-neutron-ml2  openstack-neutron-linuxbridge ebtables ... $NO_COLOR 
+yum install openstack-neutron openstack-neutron-ml2  openstack-neutron-linuxbridge ebtables -y 1>/dev/null
 debug "$?" "Install openstack-neutron openstack-neutron-ml2  openstack-neutron-linuxbridge ebtables failed "
 
 echo $BLUE Copy and edite configuration file of Neutron $NO_COLOR 

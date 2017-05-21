@@ -4,15 +4,15 @@
 
 function cinder_controller(){
 cat 1>&2 <<__EOF__
-$MAGENTA=================================================================
-      Begin to deploy Cinder on ${YELLOW}$(hostname)${NO_COLOR}${GREEN} which as controller node
-=================================================================
+$MAGENTA=====================================================================
+      Begin to deploy Cinder on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} which as controller node
+=====================================================================
 $NO_COLOR
 __EOF__
 
 database_create  cinder $CINDERDB_PASS
 
-create_service_credentials  $CINDER_PASS  cinder 
+create_service_credentials $CINDER_PASS cinder 
 
 echo $BLUE Install openstack-cinder on ${YELLOW}$(hostname)$NO_COLOR 
 yum install openstack-cinder -y  1>/dev/null 

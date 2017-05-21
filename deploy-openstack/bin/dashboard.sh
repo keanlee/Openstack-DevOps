@@ -7,7 +7,7 @@ function dashboard(){
 
 cat 1>&2 <<__EOF__
 $MAGENTA==========================================================================
-      Begin to deploy Dashboard on ${YELLOW}$(hostname)${NO_COLOR}${GREEN} which as controller node
+      Begin to deploy Dashboard on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} which as controller node
 ==========================================================================
 $NO_COLOR
 __EOF__

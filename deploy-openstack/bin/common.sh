@@ -169,7 +169,7 @@ echo $BLUE To create the service credentials, complete these steps: $NO_COLOR
 
 source $OPENRC_DIR/admin-openrc
 echo $BLUE create the service credentials: $NO_COLOR
-echo $BLUE Create the glance user  $NO_COLOR
+echo $BLUE Create the $2  user  $NO_COLOR
 openstack user create --domain default --password $1  $2  &&
 
 echo $BLUE Add the admin role to the $2 user and service project $NO_COLOR
@@ -195,16 +195,24 @@ local PORTS=9696
 cinder)
 local SERVICE=Block Storage
 local PORTS=8776
-#update here later 
+local SERVICE1=volume
 ;;
 *)
 debug "1" "The second parameter is the service name: nova glance neutron cinder etc,your $2 is unkown "
 ;;
 esac 
+sleep 2
 openstack service create --name $2 --description "OpenStack ${SERVICE}" ${SERVICE1}
-debug "$?" "openstack service create failed "
+debug "$?" "openstack service $2 create failed "
 
-echo $BLUE Create the Image service API endpoints $NO_COLOR
+if [[ $2 = cinder ]];then 
+openstack service create --name cinderv2 --description "OpenStack ${SERVICE}" volumev2
+debug "$?" "openstack service volumev2 create failed "
+else 
+continue 
+fi
+
+echo $BLUE Create the ${YELLOW}$SERVICE${NO_COLOR}${BLUE} service API endpoints $NO_COLOR
 
 if [[ $2 = nova ]];then 
 openstack endpoint create --region RegionOne ${SERVICE1} public http://$MGMT_IP:${PORTS}/v2.1/%\(tenant_id\)s
