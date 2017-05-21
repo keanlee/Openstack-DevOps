@@ -42,7 +42,15 @@ NEUTRON_DBPASS=neutrondb
 NEUTRON_PASS=neutron
 
 #use for linuxbridge_agent.ini this need make sure 
-PROVIDER_INTERFACE_NAME=
-OVERLAY_INTERFACE_IP_ADDRESS=
+PROVIDER_INTERFACE_NAME=ens4
+OVERLAY_INTERFACE_IP_ADDRESS=10.245.58.205
+
+#Edit the /etc/neutron/metadata_agent.ini 
+METADATA_SECRET=secert_here
+
+#Neutron for compute node 
+COMPUTE_PROVIDER_INTERFACE_NAME=etho
+COMPUTE_OVERLAY_INTERFACE_IP_ADDRESS=10.245.59.227
+
 
 

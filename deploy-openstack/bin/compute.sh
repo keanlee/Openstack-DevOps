@@ -44,6 +44,9 @@ sed -i "s/controller/$MGMT_IP/g" /etc/nova/nova.conf
 sed -i "s/NOVA_DBPASS/$NOVA_DBPASS/g" /etc/nova/nova.conf
 sed -i "s/NOVA_PASS/$NOVA_PASS/g" /etc/nova/nova.conf
 
+sed -i "s/NEUTRON_PASS/$NEUTRON_PASS/g"  /etc/nova/nova.conf
+sed -i "s/METADATA_SECRET/$METADATA_SECRET/g" /etc/nova/nova.conf
+
 echo $BLUE Populate the Compute databases $NO_COLOR
 su -s /bin/sh -c "nova-manage api_db sync" nova
 debug "$?" "nova-manage api_db sync failed "
@@ -93,6 +96,7 @@ sed -i "s/COMPUTE_MANAGEMENT_INTERFACE_IP_ADDRESS/$COMPUTE_MANAGEMENT_INTERFACE_
 sed -i "s/RABBIT_PASS/$RABBIT_PASS/g" /etc/nova/nova.conf
 sed -i "s/controller/$MGMT_IP/g" /etc/nova/nova.conf
 sed -i "s/NOVA_PASS/$NOVA_PASS/g" /etc/nova/nova.conf
+
 
 if [[ $(egrep -c '(vmx|svm)' /proc/cpuinfo) = 0 ]];then 
 echo $YELLOW Your compute node does not support hardware acceleration and  configure libvirt to use QEMU instead of KVM $NO_COLOR

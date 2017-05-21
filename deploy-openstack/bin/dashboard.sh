@@ -2,13 +2,6 @@
 #The Dashboard (horizon) is a web interface that enables cloud administrators and users to manage various OpenStack resources and services.
 
 #----------Test only -----
-source ./VARIABLE
-debug(){
-if [[ $1 -ne 0 ]]; then
-echo $RED $2 $NO_COLOR
-exit 1
-fi
-}
 
 function dashboard(){
 
@@ -23,7 +16,7 @@ echo $BLUE Install openstack-dashboard ... $NO_COLOR
 yum install openstack-dashboard -y 1>/dev/null
 debug "$?" "Install openstack-dashboard failed "
 
-cp -f ../etc/dashboard/local_settings /etc/openstack-dashboard
+cp -f ./etc/dashboard/local_settings /etc/openstack-dashboard
 sed -i "s/127.0.0.1/$MGMT_IP/g"  /etc/openstack-dashboard/local_settings
 sed -i "s/controller/$MGMT_IP/g" /etc/openstack-dashboard/local_settings
 
