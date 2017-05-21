@@ -81,7 +81,7 @@ function nova_compute(){
 #This section describes how to install and configure the Compute service on a compute node
 cat 1>&2 <<__EOF__
 $MAGENTA=======================================================================
-      Begin to deploy nova on ${YELLOW}$(hostname)${NO_COLOR}${GREEN} which as compute node
+      Begin to deploy nova on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} which as compute node
 =======================================================================
 $NO_COLOR
 __EOF__
@@ -112,12 +112,12 @@ that the firewall on the controller node is preventing access to port 5672"
 echo $GRREN This node most of runing libvirtd.service openstack-nova-compute.service $NO_COLOR 
 
 cat 1>&2 <<__EOF__
-$GREEN=====================================================================================
+$GREEN=========================================================================================
        
          Congratulation you finished to deploy nova on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
  
 You can go to controller node to verify it by <openstack compute service list> command
-=====================================================================================
+=========================================================================================
 $NO_COLOR
 __EOF__
 

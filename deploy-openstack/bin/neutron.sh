@@ -104,13 +104,13 @@ __EOF__
 function neutron_compute(){
 cat 1>&2 <<__EOF__
 $MAGENTA=================================================================
-      Begin to deploy Neutron on ${YELLOW}$(hostname)${NO_COLOR}${GREEN} which as compute node
+      Begin to deploy Neutron on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} which as compute node
 =================================================================
 $NO_COLOR
 __EOF__
 
 echo $BLUE Install openstack-neutron-linuxbridge ebtables ipset $NO_COLOR 
-yum install openstack-neutron-linuxbridge ebtables ipset 1>/dev/null 
+yum install openstack-neutron-linuxbridge ebtables ipset -y 1>/dev/null 
 debug "$?" "Install openstack-neutron-linuxbridge ebtables ipset failed "
 
 echo $BLUE Copy conf file and edit it $NO_COLOR 
@@ -143,8 +143,9 @@ Verify it by below command on Controller node:
 =====================================================================================
 $NO_COLOR
 __EOF__
-
 }
+
+
 case $1 in
 controller)
 neutron_controller
