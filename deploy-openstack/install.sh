@@ -36,9 +36,13 @@ sleep 5
 source ./bin/neutron.sh controller 
 sleep 5
 source ./bin/dashboard.sh 
+sleep 5 
+source ./bin/cinder.sh controller
 ;;
 compute)
 source ./bin/compute.sh compute
+source ./bin/neutron.sh compute
+#update cinder later 
 ;;
 *)
 help
