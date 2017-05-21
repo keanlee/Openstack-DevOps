@@ -58,5 +58,5 @@ CINDERDB_PASS=cinderdb
 CINDER_PASS=cinderpass
 
 
-
+MY_IP=10.245.58.205
 
