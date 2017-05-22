@@ -7,10 +7,10 @@
 #CONTROLLER_NET1_CARD_NAME=eth0
 
 #list the compute node management networkd card name (for example : eth0 em1)
-COMPUTE_NET_CARD_NAME=bridge0
+COMPUTE_NET_CARD_NAME=ens4
 
-#nova management ip here
-COMPUTE_NET1_CARD_NAME=eno1
+#nova EXTERNAL NETWORK CARD  here
+COMPUTE_NET1_CARD_NAME=eth0
 
 NTP_SERVER_IP=10.245.58.205
 

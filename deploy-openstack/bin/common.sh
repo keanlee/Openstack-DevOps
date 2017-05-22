@@ -146,6 +146,7 @@ function memcache(){
 #The Identity service authentication mechanism for services uses Memcached to cache tokens. 
 #The memcached service typically runs on the controller node. 
 #For production deployments, we recommend enabling a combination of firewalling, authentication, and encryption to secure it.
+echo $BLUE Install memcached python-memcached ... $NO_COLOR 
 yum install memcached python-memcached -y 1>/dev/null
 sed -i "s/127.0.0.1/$MGMT_IP/g" /etc/sysconfig/memcached
 systemctl enable memcached.service   1>/dev/null 2>&1 &&
