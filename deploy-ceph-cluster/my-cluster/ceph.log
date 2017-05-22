@@ -1,0 +1,112 @@
+[ceph_deploy.conf][DEBUG ] found configuration file at: /root/.cephdeploy.conf
+[ceph_deploy.cli][INFO  ] Invoked (1.5.25): /usr/bin/ceph-deploy new compute1
+[ceph_deploy.new][DEBUG ] Creating new cluster named ceph
+[ceph_deploy.new][INFO  ] making sure passwordless SSH succeeds
+[compute1][DEBUG ] connected to host: controller1 
+[compute1][INFO  ] Running command: ssh -CT -o BatchMode=yes compute1
+[compute1][DEBUG ] connected to host: compute1 
+[compute1][DEBUG ] detect platform information from remote host
+[compute1][DEBUG ] detect machine type
+[compute1][DEBUG ] find the location of an executable
+[compute1][INFO  ] Running command: /usr/sbin/ip link show
+[compute1][INFO  ] Running command: /usr/sbin/ip addr show
+[compute1][DEBUG ] IP addresses found: ['10.245.59.232', '10.245.59.227']
+[ceph_deploy.new][DEBUG ] Resolving host compute1
+[ceph_deploy.new][DEBUG ] Monitor compute1 at 10.245.59.227
+[ceph_deploy.new][DEBUG ] Monitor initial members are ['compute1']
+[ceph_deploy.new][DEBUG ] Monitor addrs are ['10.245.59.227']
+[ceph_deploy.new][DEBUG ] Creating a random mon key...
+[ceph_deploy.new][DEBUG ] Writing monitor keyring to ceph.mon.keyring...
+[ceph_deploy.new][DEBUG ] Writing initial config to ceph.conf...
+[ceph_deploy.conf][DEBUG ] found configuration file at: /root/.cephdeploy.conf
+[ceph_deploy.cli][INFO  ] Invoked (1.5.25): /usr/bin/ceph-deploy install controller1 compute1 compute2
+[ceph_deploy.install][DEBUG ] Installing stable version hammer on cluster ceph hosts controller1 compute1 compute2
+[ceph_deploy.install][DEBUG ] Detecting platform for host controller1 ...
+[controller1][DEBUG ] connected to host: controller1 
+[controller1][DEBUG ] detect platform information from remote host
+[controller1][DEBUG ] detect machine type
+[ceph_deploy.install][INFO  ] Distro info: CentOS Linux 7.3.1611 Core
+[controller1][INFO  ] installing ceph on controller1
+[controller1][INFO  ] Running command: yum clean all
+[controller1][DEBUG ] Loaded plugins: fastestmirror
+[controller1][DEBUG ] Cleaning repos: base ceph epel extras openstack-newton qemu updates
+[controller1][DEBUG ] Cleaning up everything
+[controller1][DEBUG ] Cleaning up list of fastest mirrors
+[controller1][INFO  ] adding EPEL repository
+[controller1][INFO  ] Running command: yum -y install epel-release
+[controller1][DEBUG ] Loaded plugins: fastestmirror
+[controller1][DEBUG ] Determining fastest mirrors
+[controller1][DEBUG ] Resolving Dependencies
+[controller1][DEBUG ] --> Running transaction check
+[controller1][DEBUG ] ---> Package epel-release.noarch 0:7-9 will be installed
+[controller1][DEBUG ] --> Finished Dependency Resolution
+[controller1][DEBUG ] 
+[controller1][DEBUG ] Dependencies Resolved
+[controller1][DEBUG ] 
+[controller1][DEBUG ] ================================================================================
+[controller1][DEBUG ]  Package                 Arch              Version        Repository       Size
+[controller1][DEBUG ] ================================================================================
+[controller1][DEBUG ] Installing:
+[controller1][DEBUG ]  epel-release            noarch            7-9            epel             14 k
+[controller1][DEBUG ] 
+[controller1][DEBUG ] Transaction Summary
+[controller1][DEBUG ] ================================================================================
+[controller1][DEBUG ] Install  1 Package
+[controller1][DEBUG ] 
+[controller1][DEBUG ] Total download size: 14 k
+[controller1][DEBUG ] Installed size: 24 k
+[controller1][DEBUG ] Downloading packages:
+[controller1][DEBUG ] Running transaction check
+[controller1][DEBUG ] Running transaction test
+[controller1][DEBUG ] Transaction test succeeded
+[controller1][DEBUG ] Running transaction
+[controller1][DEBUG ]   Installing : epel-release-7-9.noarch                                      1/1 
+[controller1][DEBUG ]   Verifying  : epel-release-7-9.noarch                                      1/1 
+[controller1][DEBUG ] 
+[controller1][DEBUG ] Installed:
+[controller1][DEBUG ]   epel-release.noarch 0:7-9                                                     
+[controller1][DEBUG ] 
+[controller1][DEBUG ] Complete!
+[controller1][INFO  ] Running command: yum -y install yum-priorities
+[controller1][DEBUG ] Loaded plugins: fastestmirror
+[controller1][WARNING] Repository epel is listed more than once in the configuration
+[controller1][DEBUG ] Loading mirror speeds from cached hostfile
+[controller1][DEBUG ] Resolving Dependencies
+[controller1][DEBUG ] --> Running transaction check
+[controller1][DEBUG ] ---> Package yum-plugin-priorities.noarch 0:1.1.31-40.el7 will be installed
+[controller1][DEBUG ] --> Finished Dependency Resolution
+[controller1][DEBUG ] 
+[controller1][DEBUG ] Dependencies Resolved
+[controller1][DEBUG ] 
+[controller1][DEBUG ] ================================================================================
+[controller1][DEBUG ]  Package                     Arch         Version              Repository  Size
+[controller1][DEBUG ] ================================================================================
+[controller1][DEBUG ] Installing:
+[controller1][DEBUG ]  yum-plugin-priorities       noarch       1.1.31-40.el7        base        27 k
+[controller1][DEBUG ] 
+[controller1][DEBUG ] Transaction Summary
+[controller1][DEBUG ] ================================================================================
+[controller1][DEBUG ] Install  1 Package
+[controller1][DEBUG ] 
+[controller1][DEBUG ] Total download size: 27 k
+[controller1][DEBUG ] Installed size: 28 k
+[controller1][DEBUG ] Downloading packages:
+[controller1][DEBUG ] Running transaction check
+[controller1][DEBUG ] Running transaction test
+[controller1][DEBUG ] Transaction test succeeded
+[controller1][DEBUG ] Running transaction
+[controller1][DEBUG ]   Installing : yum-plugin-priorities-1.1.31-40.el7.noarch                   1/1 
+[controller1][DEBUG ]   Verifying  : yum-plugin-priorities-1.1.31-40.el7.noarch                   1/1 
+[controller1][DEBUG ] 
+[controller1][DEBUG ] Installed:
+[controller1][DEBUG ]   yum-plugin-priorities.noarch 0:1.1.31-40.el7                                  
+[controller1][DEBUG ] 
+[controller1][DEBUG ] Complete!
+[controller1][DEBUG ] Configure Yum priorities to include obsoletes
+[controller1][WARNING] check_obsoletes has been enabled for Yum priorities plugin
+[controller1][INFO  ] Running command: rpm --import https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc
+[controller1][WARNING] curl: (35) Encountered end of file
+[controller1][WARNING] error: https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc: import read failed(2).
+[controller1][ERROR ] RuntimeError: command returned non-zero exit status: 1
+[ceph_deploy][ERROR ] RuntimeError: Failed to execute command: rpm --import https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc
+

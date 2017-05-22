@@ -16,9 +16,9 @@ CYAN="$ESC[0;36m"
 
 source ./bin/VARIABLE 
 
-debug(){
+function debug(){
 if [[ $1 -ne 0 ]]; then 
-echo $RED $2 $NO_COLOR
+echo $RED ERROR:  $2 $NO_COLOR
 exit 1
 fi
 }

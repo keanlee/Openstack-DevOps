@@ -45,13 +45,38 @@ __EOF__
 
 }
 
+function cinder_compute(){
+yum install lvm2 -y 1>/dev/null
+echo $BLUE Your partitions is below:      $NO_COLOR 
+lsblk
+echo $BLUE Partitioned disk: $NO_COLOR 
+cat /proc/partitions | awk '{print $4}' | sed -n '3,$p' | grep "[a-z]$"
+systemctl enable lvm2-lvmetad.service   1>/dev/null 2>&1
+systemctl start lvm2-lvmetad.service
+debug "$?" "start lvm2-lvmetad failed "
+
+echo $YELLOW Please choose one form above output to create the LVM physical volume $NO_COLOR
+read PARTITION
+echo $BLUE Create the LVM physical volume /dev/$PARTITION: $NO_COLOR 
+pvcreate /dev/$PARTITION
+debug "$?" "pvcreate /dev/$PARTITION failed "
+
+echo $BLUE Create the LVM volume group cinder-volumes: $NO_COLOR
+vgcreate cinder-volumes /dev/$PARTITION
+debug "$?"  "vgcreate cinder-volumes /dev/$PARTITION failed"
+
+
+
+
+
+}
+
 case $1 in
 controller)
 cinder_controller
 ;;
 compute)
 cinder_compute
-#update this later for compute
 ;;
 *)
 debug "1" "cinder.sh just support controller and compute parameter, your $1 is not support "
