@@ -91,7 +91,7 @@ yum install openstack-nova-compute -y 1>/dev/null
 debug "$?" "Install openstack-nova-compute failed "
 
 echo $BLUE Copy nova.conf and edit it ... $NO_COLOR
-cp -f ./etc/nova.conf  /etc/nova/
+cp -f ./etc/compute/nova.conf  /etc/nova
 sed -i "s/COMPUTE_MANAGEMENT_INTERFACE_IP_ADDRESS/$COMPUTE_MANAGEMENT_INTERFACE_IP_ADDRESS/g" /etc/nova/nova.conf
 sed -i "s/RABBIT_PASS/$RABBIT_PASS/g" /etc/nova/nova.conf
 sed -i "s/controller/$MGMT_IP/g" /etc/nova/nova.conf
@@ -109,7 +109,8 @@ debug "$?" "systemctl start libvirtd or openstack-nova-compute failed \
 .If the nova-compute service fails to start, check /var/log/nova/nova-compute.log.
 The error message AMQP server on controller:5672 is unreachable likely indicates
 that the firewall on the controller node is preventing access to port 5672"
-echo $GRREN This node most of runing libvirtd.service openstack-nova-compute.service $NO_COLOR 
+
+echo $GREEN This node has alreadly runing libvirtd.service openstack-nova-compute.service $NO_COLOR 
 
 cat 1>&2 <<__EOF__
 $GREEN=========================================================================================
@@ -128,6 +129,7 @@ controller)
 nova_controller
 ;;
 compute)
+ntp
 nova_compute
 ;;
 *)

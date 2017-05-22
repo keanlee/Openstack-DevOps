@@ -22,8 +22,10 @@ fi
 }
 
 function controller(){
+echo $BLUE scp deplory script to target hosts $NO_COLOR 
+cat ./controller-hosts | while read line ; do scp -r deploy-openstack/ $line:/root/; debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
 
-echo "update later "
+cat ./controller-hosts | while read line ; do ssh -n $line /bin/bash /root/deploy-openstack/install.sh controller ; debug "$?" "bash remote execute on remote host <$line> error "; done
 
 }
 
@@ -36,5 +38,11 @@ cat ./compute-hosts | while read line ; do scp -r deploy-openstack/ $line:/root/
 cat ./compute-hosts | while read line ; do ssh -n $line /bin/bash /root/deploy-openstack/install.sh compute ; debug "$?" "bash remote execute on remote host <$line> error "; done
 
 }
-
-compute 
+case $1 in
+begin)
+compute
+;;
+*)
+debug "1" "$0 just support <begin> parameter, your $1 is not support "
+;;
+esac

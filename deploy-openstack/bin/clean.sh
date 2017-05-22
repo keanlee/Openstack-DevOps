@@ -11,6 +11,8 @@ rm -rf /var/log/mariadb
 rm -rf /usr/share/mariadb  
 yum clean all   1>/dev/null 
 yum erase ntp -y 1>/dev/null
+rm -rf /etc/ntp.conf.rpmsave
+
 rabbitmqctl  delete_user openstack
 rabbitmqctl  list_users
 yum erase rabbitmq-server -y 1>/dev/null

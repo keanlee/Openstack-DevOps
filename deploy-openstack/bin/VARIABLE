@@ -1,15 +1,30 @@
 #!/bin/bash 
 #Edit the below variable to adapt your Env..
-CONTROLLER_IP=192.168.0.1
 
+#------------------------Need to edit it first -----------------------
 #set the mangement ip as below 
+#CONTROLLER_NET_CARD_NAME=ens4  #type the 
+#CONTROLLER_NET1_CARD_NAME=eth0
+
+#list the compute node management networkd card name (for example : eth0 em1)
+COMPUTE_NET_CARD_NAME=bridge0
+
+#nova management ip here
+COMPUTE_NET1_CARD_NAME=eno1
+
+NTP_SERVER_IP=10.245.58.205
+
+
 MGMT_IP=10.245.58.205
+#$(ifconfig $CONTROLLER_NET_CARD_NAME | grep inet | sed -n '1p' | awk '{print $2}')
+
 
 #set mariadb password 
 MARIADB_PASSWORD=admin
 
 #set the rabbitmq password as below 
 RABBIT_HOSTS=10.245.58.205
+#$(ifconfig $CONTROLLER_NET_CARD_NAME | grep inet | sed -n '1p' | awk '{print $2}')
 RABBIT_PASS=rabbitmq
 
 #--------------------Keystone ------------------
@@ -33,8 +48,9 @@ NOVA_DBPASS=novadb
 NOVA_PASS=novapass
 #controller management ip 
 MY_IP=10.245.58.205
+#$(ifconfig $CONTROLLER_NET_CARD_NAME | grep inet | sed -n '1p' | awk '{print $2}')
 
-COMPUTE_MANAGEMENT_INTERFACE_IP_ADDRESS=10.245.59.227
+COMPUTE_MANAGEMENT_INTERFACE_IP_ADDRESS=$(ifconfig $COMPUTE_NET_CARD_NAME | grep inet | sed -n '1p' | awk '{print $2}')
 
 #--------------------Neutron-----------
 NEUTRON_DBPASS=neutrondb
@@ -42,15 +58,15 @@ NEUTRON_DBPASS=neutrondb
 NEUTRON_PASS=neutron
 
 #use for linuxbridge_agent.ini this need make sure 
-PROVIDER_INTERFACE_NAME=ens4
-OVERLAY_INTERFACE_IP_ADDRESS=10.245.58.205
+PROVIDER_INTERFACE_NAME=$(COMPUTE_NET1_CARD_NAME)
+OVERLAY_INTERFACE_IP_ADDRESS=$(ifconfig $COMPUTE_NET_CARD_NAME | grep inet | sed -n '1p' | awk '{print $2}')
 
 #Edit the /etc/neutron/metadata_agent.ini 
 METADATA_SECRET=secert_here
 
 #Neutron for compute node 
-COMPUTE_PROVIDER_INTERFACE_NAME=etho
-COMPUTE_OVERLAY_INTERFACE_IP_ADDRESS=10.245.59.227
+COMPUTE_PROVIDER_INTERFACE_NAME=eth0
+COMPUTE_OVERLAY_INTERFACE_IP_ADDRESS=$(ifconfig $COMPUTE_NET_CARD_NAME | grep inet | sed -n '1p' | awk '{print $2}')
 
 #Cinder for controller 
 
@@ -59,4 +75,5 @@ CINDER_PASS=cinderpass
 
 
 MY_IP=10.245.58.205
+$(ifconfig $CONTROLLER_NET_CARD_NAME | grep inet | sed -n '1p' | awk '{print $2}')
 
