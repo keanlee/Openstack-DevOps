@@ -1,9 +1,9 @@
 #!/bin/bash
 #author by keanlee 
-#This script need VARIABLE and common.sh
+#This script request  common.sh
 
 function openrc_file_create(){
-#create admin-openrc and demo-openrc file 
+echo $BLUE create admin-openrc and demo-openrc file $NO_COLOR
     echo >  $(pwd)/admin-openrc
     cat > $(pwd)/admin-openrc <<EOF
 export OS_PROJECT_DOMAIN_NAME=Default
@@ -30,41 +30,41 @@ EOF
 
 mv $(pwd)/admin-openrc  $OPENRC_DIR &&
 mv $(pwd)/demo-openrc  $OPENRC_DIR  &&
-echo $GREEN openrc file created and location at $OPENRC_DIR directory $NO_COLOR
+echo $GREEN openrc file created and location at ${YELLOW}$OPENRC_DIR${NO_COLOR}${GREEN} directory $NO_COLOR
 }
 
 function create_keystone_administrative_account(){
-#Configure the administrative account
+echo $BLUE Configure the administrative account ... $NO_COLOR
 export OS_USERNAME=admin
-export OS_PASSWORD=$ADMIN_PASS
+export OS_PASSWORD=${ADMIN_PASS}
 export OS_PROJECT_NAME=admin
 export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_DOMAIN_NAME=Default
-export OS_AUTH_URL=http://$MGMT_IP:35357/v3
+export OS_AUTH_URL=http://${MGMT_IP}:35357/v3
 export OS_IDENTITY_API_VERSION=3
 
-#Create a domain, projects, users, and roles
 echo $BLUE Beginning create a domain, projects, users, and roles On $YELLOW $(hostname) $NO_COLOR
 #This guide uses a service project that contains a unique user for each service 
 #that you add to your environment. Create the service project
 openstack project create --domain default --description "Service Project" service &&
-debug "$?" "openstack project create --domain default --description "Service Project" service failed "
+debug "$?" "openstack project create --domain default --description \"Service Project\" service failed "
 
 #Regular (non-admin) tasks should use an unprivileged project and user. As an example, this guide creates the demo project and user
 openstack project create --domain default --description "Demo Project" demo  &&
-debug "$?" "openstack project create --domain default --description "Demo Project" demo failed "
+debug "$?" "openstack project create --domain default --description \"Demo Project\" demo failed "
 
-#Create the demo user
-openstack user create --domain default --password $DEMO_PASS demo   &&
-debug "$?"  "openstack user create --domain default --password $DEMO_PASS demo"
+echo $BLUE Create the demo user ... $NO_COLOR
+openstack user create --domain default --password ${DEMO_PASS} demo   &&
+debug "$?"  "openstack user create --domain default --password ${DEMO_PASS} demo failed "
 
-#Create the user role
+echo $BLUE Create the user role  $NO_COLOR
 openstack role create user  &&
 debug "$?" "openstack role create user failed "
 
-#Add the user role to the demo project and user
+echo $BLUE Add the user role to the demo project and user $NO_COLOR
 openstack role add --project demo --user demo user  &&
 debug "$?" "Create a domain, projects, users, and roles failed "
+
 echo $GREEN Finished create domain, project, users and roles on $YELLOW $(hostname) $NO_COLOR 
 }
 
@@ -75,29 +75,34 @@ function keystone_main(){
 #install mariadb and create database for keystone 
 
 database_create keystone $KEYSTONE_DBPASS
+echo $BLUE Install openstack-keystone httpd mod_wsgi ... $NO_COLOR
 yum install openstack-keystone httpd mod_wsgi -y  1>/dev/null
 
 #Edit keystone configuration file 
 cp -f ./etc/keystone.conf   /etc/keystone/
 sed -i "s/controller/$MGMT_IP/g"  /etc/keystone/keystone.conf
 sed -i "s/KEYSTONE_DBPASS/$KEYSTONE_DBPASS/g" /etc/keystone/keystone.conf
-#Populate the Identity service database
+
+#Since copy the conf to target need to chown 
+chown -R keystone:keystone /etc/keystone/keystone.conf
+
+echo $BLUE Populate the Identity service database ... $NO_COLOR
 su -s /bin/sh -c "keystone-manage db_sync" keystone
-#Initialize Fernet key repositories
+
+echo $BLUE Initialize Fernet key repositories ... $NO_COLOR
 keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
 keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
-#Bootstrap the Identity service
-  keystone-manage bootstrap --bootstrap-password $ADMIN_PASS \
-  --bootstrap-admin-url http://$MGMT_IP:35357/v3/ \
-  --bootstrap-internal-url http://$MGMT_IP:35357/v3/ \
-  --bootstrap-public-url http://$MGMT_IP:5000/v3/ \
-  --bootstrap-region-id RegionOne
 
-chown -R keystone.keystone /etc/keystone/credential-keys
-chown -R keystone.keystone /etc/keystone/fernet-keys
+echo $BLUE Bootstrap the Identity service ... $NO_COLOR
+keystone-manage bootstrap --bootstrap-password ${ADMIN_PASS} \
+--bootstrap-admin-url http://${MGMT_IP}:35357/v3/  \
+--bootstrap-internal-url http://${MGMT_IP}:35357/v3/  \
+--bootstrap-public-url http://${MGMT_IP}:5000/v3/   \
+--bootstrap-region-id RegionOne
 
-#Configure the Apache HTTP server
+echo $BLUE Configure the Apache HTTP server ... $NO_COLOR
 sed -i "/ServerName www.example.com:80/a\ServerName $MGMT_IP" /etc/httpd/conf/httpd.conf  1>/dev/null
+echo $BLUE Create a link to the /usr/share/keystone/wsgi-keystone.conf file: $NO_COLOR
 ln -s /usr/share/keystone/wsgi-keystone.conf /etc/httpd/conf.d/     1>/dev/null
 systemctl enable httpd.service     1>/dev/null 2>&1
 systemctl start httpd.service
@@ -109,16 +114,17 @@ echo $BLUE Verify operation of the Identity service before installing other serv
 #Unset the temporary OS_AUTH_URL and OS_PASSWORD environment variable
 unset OS_AUTH_URL OS_PASSWORD
 
-#As the admin user, request an authentication token
-openstack --os-auth-url http://$MGMT_IP:35357/v3 --os-project-domain-name default \
+echo $BLUE As the admin user, request an authentication token $NO_COLOR
+openstack --os-auth-url http://${MGMT_IP}:35357/v3 --os-project-domain-name default \
 --os-user-domain-name default --os-project-name admin --os-username admin \
---os-auth-type password --os-password $ADMIN_PASS  token issue   &&
+--os-auth-type password --os-password ${ADMIN_PASS}  token issue   &&
+debug "$?"  "As the admin user, request an authentication token Failed "
 
-#As the demo user, request an authentication token
-openstack --os-auth-url http://$MGMT:5000/v3 --os-project-domain-name default \
+
+echo $BLUE As the demo user, request an authentication token  $NO_COLOR
+openstack --os-auth-url http://${MGMT_IP}:5000/v3 --os-project-domain-name default \
 --os-user-domain-name default --os-project-name demo --os-username demo \
---os-auth-type password --os-password $DEMO_PASS token issue   &&
-debug "$?" "Verify operation of the Identity service failed "
+--os-auth-type password --os-password ${DEMO_PASS} token issue   &&
 echo $GREEN Verify operation of the Identity service success $NO_COLOR  &&
 
 #execute this function to create openrc file 
@@ -131,7 +137,6 @@ source  $OPENRC_DIR/admin-openrc
 openstack token issue
 debug "$?" "The admin-openrc file which location at $OPENRC_DIR can not be work "
 echo $GREEN Created openrc file and the admin-openrc can be work normally $NO_COLOR 
-
 }
 
 #----------------------------Keystone ------------------
@@ -140,7 +145,7 @@ echo $BLUE Install openstack-selinux and  python-openstackclient ...$NO_COLOR
 yum install openstack-selinux python-openstackclient -y 1>/dev/null 
 debug "$?" "$RED Install openstack-selinux python-openstackclient failed $NO_COLOR"
 
-#------Function ------
+#------Request Functions ------
 ntp
 rabbitmq_configuration
 memcache

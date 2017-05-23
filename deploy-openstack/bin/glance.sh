@@ -53,7 +53,7 @@ execute su -s /bin/sh -c \"glance-manage db_sync\" glance or check glance.api lo
 echo $GREEN Ignore the above  any deprecation messages in this output $NO_COLOR 
 
 #Start the Image services and configure them to start when the system boots
-systemctl enable openstack-glance-api.service openstack-glance-registry.service  1>/dev/null
+systemctl enable openstack-glance-api.service openstack-glance-registry.service  1>/dev/null 2>&1
 systemctl start openstack-glance-api.service openstack-glance-registry.service
 debug "$?"  "Start daemon openstack-glance-api openstack-glance-registry failed,Maybe you should check the conf file "
 }

@@ -9,11 +9,14 @@ echo $GREEN $README $NO_COLOR
 echo $GREEN This script will be deploy OpenStack on ${NO_COLOR}${YELLOW}$(cat /etc/redhat-release) $NO_COLOR
 
 help(){
-echo $MAGENTA --------Usage as below ---------  $NO_COLOR    
-    echo  $BLUE sh $0 install controller $NO_COLOR  
-    echo  $BLUE sh $0 install ha_proxy  $NO_COLOR
-    echo  $BLUE sh $0 install compute   $NO_COLOR
- 
+cat 1>&2 <<__EOF__
+$MAGENTA================================================================
+            --------Usage as below ---------
+             sh $0 install controller
+             sh $0 install compute
+================================================================
+$NO_COLOR
+__EOF__
 }
 
 if [[ $# = 0 || $# -gt 1 ]]; then 
@@ -25,18 +28,21 @@ fi
 #---------------compnment choose -----------
 case $1 in
 controller)
+
 mysql_configuration
+
 source ./bin/keystone.sh
 sleep 5
 source ./bin/glance.sh
 sleep 5
-source ./bin/compute.sh controller  
+source ./bin/nova.sh controller  
 sleep 5
 source ./bin/neutron.sh controller 
 sleep 5
-source ./bin/dashboard.sh 
-sleep 5 
 source ./bin/cinder.sh controller
+sleep 5
+source ./bin/dashboard.sh 
+ 
 ;;
 compute)
 source ./bin/compute.sh compute

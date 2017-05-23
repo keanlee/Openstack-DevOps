@@ -36,18 +36,22 @@ $MAGENTA==========================================================
 ==========================================================
 $NO_COLOR
 __EOF__
-
+echo $BLUE Install ntp ... $NO_COLOR
 yum install ntp -y  1>/dev/null
+
 cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-ntpdate $NTP_SERVER_IP 1>/dev/null
 hwclock --systohc
+
 sed -i "/server 0.centos.pool.ntp.org iburst/d" /etc/ntp.conf
 sed -i "/server 1.centos.pool.ntp.org iburst/d" /etc/ntp.conf
 sed -i "/server 2.centos.pool.ntp.org iburst/d" /etc/ntp.conf
 sed -i "/server 3.centos.pool.ntp.org iburst/d" /etc/ntp.conf
 sed -i "21 i server $NTP_SERVER_IP iburst " /etc/ntp.conf
+
 systemctl enable ntpd.service 1>/dev/null 2>&1 && 
 systemctl start ntpd.service
+
+ntpdate $NTP_SERVER_IP 1>/dev/null
 }
 
 function mysql_configuration(){

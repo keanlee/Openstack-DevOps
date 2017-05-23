@@ -67,7 +67,7 @@ debug "$?" "ln -s failed for /etc/neutron/plugin.ini "
 
 echo $BLUE Populate the database ...  $NO_COLOR
 su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf \
---config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron
+--config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron  1>/dev/null
 debug "$?" "Populate the database of neutron failed "
 
 systemctl restart openstack-nova-api.service 
@@ -118,7 +118,7 @@ debug "$?" "Install openstack-neutron-linuxbridge ebtables ipset failed "
 echo $BLUE Copy conf file and edit it $NO_COLOR 
 cp -f ./etc/compute/neutron/neutron.conf  /etc/neutron
 sed -i "s/RABBIT_PASS/$RABBIT_PASS/g" /etc/neutron/neutron.conf 
-sed -i "s/controller/$MGMT_IP/g"  /etc/neutron/neutron.conf
+sed -i "s/controller/$CONTROLLER_VIP/g"  /etc/neutron/neutron.conf
 sed -i "s/NEUTRON_PASS/$NEUTRON_PASS/g" /etc/neutron/neutron.conf
 
 cp -f ./etc/compute/neutron/linuxbridge_agent.ini  /etc/neutron/plugins/ml2
