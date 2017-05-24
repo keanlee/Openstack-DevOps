@@ -4,6 +4,8 @@
 #------------------------Need to choose the network card  first -----------------------
 
 function NET_NAME_IP(){
+#This function can list your network card with it's ip address 
+
 cat 1>&2 <<__EOF__
 $MAGENTA=================================================================
      Network Cards on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} list below: 
@@ -11,8 +13,8 @@ $MAGENTA=================================================================
 $NO_COLOR
 __EOF__
 
-NET_DEV_NAME=$(cat /proc/net/dev | awk '{print $1}' | sed -n '3,$p' | awk -F ":" '{print $1}' | grep -v ^lo$ | grep -v ^macvtap*)
-#                                                                                              except the lo and        macvtap      network name 
+NET_DEV_NAME=$(cat /proc/net/dev | awk '{print $1}' | sed -n '3,$p' | awk -F ":" '{print $1}' | grep -v ^lo$ | grep -v ^macvtap* | grep -v ^tap* | grep -v ^q  )
+#                                                                                              except the lo and   virtual cards:     macvtap      network name 
 for i in $NET_DEV_NAME
 do
 NET_RUN_STATUS=$(ifconfig $i | sed -n '1p' | awk '{print $2}' | awk -F "," '{print $3}')
@@ -34,15 +36,29 @@ fi
 
 done
 }
-
-#CONTROLLER_HOSTS=$(cat ./controller-hosts)
+#Function 
 NET_NAME_IP
+
 echo $MAGENTA Please choose a network card as Management network from above output on ${YELLOW}$(hostname)${NO_COLOR} 
 read MGMT_IP_DEVICE
+
+for CARDS in  $(cat /proc/net/dev | awk '{print $1}' | sed -n '3,$p' | awk -F ":" '{print $1}' | grep -v ^lo$ | grep -v ^macvtap* | grep -v ^tap* | grep -v ^q )
+do
+
+if [[  $MGMT_IP_DEVICE = $CARDS ]];then
 echo $GREEN You choose ${YELLOW}$MGMT_IP_DEVICE${COLOR}${GREEN} as Management network $NO_COLOR
+else
+echo $MAGENTA Your input ${RED}$MGMT_IP_DEVICE${NO_COLOR}${MAGENTA} is unknow ! Please choose a network card as Management \
+network from above output ${RED}again${NO_COLOR}${MAGENTA} on ${NO_COLOR}${YELLOW}$(hostname)${NO_COLOR} 
+read MGMT_IP_DEVICE
+fi 
+done
+
+
+
 
 #--------------------------------------- For controller only -----------------------------------------------------------------------------
-#do 
+#if unkown the ifconfig command you can use : ip addr show <NET_NAMES> | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}' 
 #ntp server ad controller management ip
 NTP_SERVER_IP=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
 
