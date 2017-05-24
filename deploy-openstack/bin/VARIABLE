@@ -13,6 +13,8 @@ $MAGENTA=================================================================
 $NO_COLOR
 __EOF__
 
+which ifconfig || yum install net-tools -y 1>/dev/null
+
 NET_DEV_NAME=$(cat /proc/net/dev | awk '{print $1}' | sed -n '3,$p' | awk -F ":" '{print $1}' | grep -v ^lo$ | grep -v ^macvtap* | grep -v ^tap* | grep -v ^q  )
 #                                                                                              except the lo and   virtual cards:     macvtap      network name 
 for i in $NET_DEV_NAME
@@ -144,4 +146,8 @@ COMPUTE_PROVIDER_INTERFACE_NAME=${COMPUTE_NET1_CARD_NAME}
 COMPUTE_OVERLAY_INTERFACE_IP_ADDRESS=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
 
 #cinder for compute node
+#management network interface on your storage node （storage management ip）
+CINDER_MANAGEMENT_INTERFACE_IP_ADDRESS=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
+
+
 

@@ -45,8 +45,10 @@ yum erase openstack-neutron-linuxbridge ebtables ipset  -y 1>/dev/null
 yum erase openstack-neutron openstack-neutron-ml2 openstack-neutron-linuxbridge ebtables  -y 1>/dev/null 
 rm -rf /etc/neutron
 
-#--------clean cinder for controller --------
-
+#--------clean cinder for controller and compute --------
 yum erase openstack-cinder -y 1>/dev/null 
+yum erase lvm2 openstack-cinder targetcli python-keystone  -y 1>/dev/null
+rm -rf /etc/cinder 
+
 
  

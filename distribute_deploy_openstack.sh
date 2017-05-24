@@ -33,16 +33,16 @@ cat ./controller-hosts | while read line ; do ssh -n $line /bin/bash /root/deplo
 
 function compute(){
 echo $BLUE scp deplory script to target hosts $NO_COLOR 
-cat ./compute-hosts | while read line ; do scp -r deploy-openstack/ $line:/root/; debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
+cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do scp -r deploy-openstack/ $line:/root/; debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
 
-cat ./compute-hosts | while read line ; do ssh -n $line /bin/bash /root/deploy-openstack/install.sh compute ; debug "$?" "bash remote execute on remote host <$line> error "; done
+cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do ssh -tn root@$line /bin/bash /root/deploy-openstack/install.sh compute ; debug "$?" "bash remote execute on remote host <$line> error "; done
 
 }
 case $1 in
-begin)
+compute)
 compute
 ;;
 *)
-debug "1" "$0 just support <begin> parameter, your $1 is not support "
+debug "1" "$0 just support <compute> parameter, your $1 is not support "
 ;;
 esac

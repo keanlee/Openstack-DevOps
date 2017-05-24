@@ -45,9 +45,13 @@ source ./bin/dashboard.sh
  
 ;;
 compute)
+source ./bin/clean.sh 
+sleep 2
 source ./bin/compute.sh compute
+sleep 5
 source ./bin/neutron.sh compute
-#update cinder later 
+sleep 5
+source ./bin/cinder.sh  compute 
 ;;
 *)
 help
