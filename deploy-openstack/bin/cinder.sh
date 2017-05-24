@@ -1,6 +1,5 @@
 #!/bin/bash 
-
-#
+#will add ceph support later 
 
 function cinder_controller(){
 cat 1>&2 <<__EOF__
@@ -46,6 +45,14 @@ __EOF__
 }
 
 function cinder_compute(){
+cat 1>&2 <<__EOF__
+$MAGENTA=====================================================================
+      Begin to deploy Cinder on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} which as compute/block node
+=====================================================================
+$NO_COLOR
+__EOF__
+
+echo $BLUE Install lvm2  $NO_COLOR
 yum install lvm2 -y 1>/dev/null
 echo $BLUE Your partitions is below:      $NO_COLOR 
 lsblk
@@ -57,6 +64,20 @@ debug "$?" "start lvm2-lvmetad failed "
 
 echo $YELLOW Please choose one form above output to create the LVM physical volume $NO_COLOR
 read PARTITION
+
+BLOCKS=$(cat /proc/partitions | awk '{print $4}' | sed -n '3,$p' | grep "[a-z]$" )
+#---------------------------------need add the while or until loop later--------
+for partitions in ${BLOCKS}
+do 
+
+    until [ $PARTITION = $partitions ]
+        do    
+           echo ${RED} Please choose one from above output again ! Because your input $PARTITION is UNKNOW $NO_COLOR
+           read PARTITION
+        done 
+    echo $BLUE Your choose $PARTITION to create the LVM physical volume $NO_COLOR
+done 
+
 echo $BLUE Create the LVM physical volume /dev/$PARTITION: $NO_COLOR 
 pvcreate /dev/$PARTITION
 debug "$?" "pvcreate /dev/$PARTITION failed "
@@ -65,8 +86,36 @@ echo $BLUE Create the LVM volume group cinder-volumes: $NO_COLOR
 vgcreate cinder-volumes /dev/$PARTITION
 debug "$?"  "vgcreate cinder-volumes /dev/$PARTITION failed"
 
+#Each item in the filter array begins with a for accept or r for reject and includes a regular expression for the device name. 
+#The array must end with r/.*/ to reject any remaining devices. You can use the vgs -vvvv command to test filters
+#refer https://docs.openstack.org/newton/install-guide-rdo/cinder-storage-install.html
+sed -i "/\# Configuration option devices\/dir./a\        filter = [ "a/${PARTITION}/", "r/.*/"]"  /etc/lvm/lvm.conf
 
+echo $BLUE Install openstack-cinder targetcli python-keystone ... $NO_COLOR
+yum install openstack-cinder targetcli python-keystone -y 1>/dev/null
+debug "$?" "Install openstack-cinder targetcli python-keystone failed "
 
+echo $BLUE Copy cinder.conf and edit it $NO_COLOR 
+cp -f ./etc/compute/cinder.conf  /etc/cinder
+sed -i "s/controller/$CONTROLLER_VIP/g"   /etc/cinder/cinder.conf
+sed -i "s/RABBIT_PASS/$RABBIT_PASS/g"  /etc/cinder/cinder.conf
+sed -i "s/MANAGEMENT_INTERFACE_IP_ADDRESS/$CINDER_MANAGEMENT_INTERFACE_IP_ADDRESS/g"  /etc/cinder/cinder.conf
+sed -i "s/CINDER_DBPASS/$CINDERDB_PASS/g"  /etc/cinder/cinder.conf
+sed -i "s/CINDER_PASS/$CINDER_PASS/g"   /etc/cinder/cinder.conf
+
+systemctl enable openstack-cinder-volume.service target.service  1>/dev/null 2>&1
+systemctl start openstack-cinder-volume.service target.service
+debug "$?"  "start openstack-cinder-volume.service target.service failed "
+
+cat 1>&2 <<__EOF__
+$GREEN=====================================================================================
+       
+Congratulation you finished to deploy Cinder on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
+  You can go to controller node to Verify by <openstack volume service list> 
+
+=====================================================================================
+$NO_COLOR
+__EOF__
 
 
 }
