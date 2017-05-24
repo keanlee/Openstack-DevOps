@@ -244,3 +244,31 @@ debug "$?" "openstack endpoint create $2 failed "
 fi 
 echo $GREEN openstack $2 endpoint create success $NO_COLOR 
 }
+
+function get_database_size(){
+#$1 as the database name 
+#$2 as the database password 
+#For example get_database_size nova novadb
+if [[ $# != 2 ]];then
+echo $RED This function need to Two parameter $NO_COLOR
+exit 1
+fi
+
+if [[ $1 = nova_api ]];then
+DB_SIZE=$(mysql -unova -p$2 -e "show databases;use information_schema;select concat(round(sum(DATA_LENGTH/1024/1024),2),'MB') as data from TABLES where table_schema='nova_api';" )
+else
+DB_SIZE=$(mysql -u$1 -p$2 -e "show databases;use information_schema;select concat(round(sum(DATA_LENGTH/1024/1024),2),'MB') as data from TABLES where table_schema='$1';" )
+fi
+
+if [[ $1 = nova || $1 = nova_api  ]];then
+local NUMS=6
+else
+local NUMS=5
+fi
+echo $DB_SIZE  | awk  '{print $'$NUMS'}'
+
+}
+
+
+
+

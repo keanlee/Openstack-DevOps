@@ -28,7 +28,7 @@ debug "$?" "Install openstack-glance failed "
 #cp -f  ./configuration-files/glance/ceph/*  /etc/ceph
 #chown glance:glance /etc/ceph/ceph.client.glance.keyring
 
-echo $BLUE cp glance-api.conf and edit it $NO_COLOR
+echo $BLUE copy glance-api.conf and edit it $NO_COLOR
 cp -f  ./etc/glance-api.conf  /etc/glance/
 #change all controller as mgmg ip
 sed -i "s/controller/$MGMT_IP/g"  /etc/glance/glance-api.conf
@@ -38,7 +38,7 @@ sed -i "s/GLANCE_PASS/$GLANCE_PASS/g"  /etc/glance/glance-api.conf
 sed -i "s/RABBIT_HOSTS/$RABBIT_HOSTS/g"  /etc/glance/glance-api.conf
 sed -i "s/RABBIT_PASSWORD/$RABBIT_PASS/g"  /etc/glance/glance-api.conf
 
-echo $BLUE cp glance-registry.conf and edit it $NO_COLOR
+echo $BLUE copy glance-registry.conf and edit it $NO_COLOR
 cp -f ./etc/glance-registry.conf  /etc/glance/
 sed -i "s/GLANCE_DBPASS/$GLANCE_DBPASS/g"  /etc/glance/glance-registry.conf
 sed -i "s/controller/$MGMT_IP/g"  /etc/glance/glance-registry.conf
