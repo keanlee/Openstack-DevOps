@@ -13,9 +13,9 @@ $MAGENTA=================================================================
 $NO_COLOR
 __EOF__
 
-which ifconfig || yum install net-tools -y 1>/dev/null
+which ifconfig 1>/dev/null || yum install net-tools -y 1>/dev/null
 
-NET_DEV_NAME=$(cat /proc/net/dev | awk '{print $1}' | sed -n '3,$p' | awk -F ":" '{print $1}' | grep -v ^lo$ | grep -v ^macvtap* | grep -v ^tap* | grep -v ^q  )
+NET_DEV_NAME=$(cat /proc/net/dev | awk '{print $1}' | sed -n '3,$p' | awk -F ":" '{print $1}' | grep -v ^lo$ | grep -v ^macvtap* | grep -v ^tap* | grep -v ^q | grep -v ^virbr* | grep -v ^vnet )
 #                                                                                              except the lo and   virtual cards:     macvtap      network name 
 for i in $NET_DEV_NAME
 do
@@ -42,18 +42,30 @@ done
 NET_NAME_IP
 
 echo $MAGENTA Please choose a network card as Management network from above output on ${YELLOW}$(hostname)${NO_COLOR} 
-read MGMT_IP_DEVICE
+echo $MAGENTA Then edit the VARLIBLE file $NO_COLOR
+#read MGMT_IP_DEVICE
 
-for CARDS in  $(cat /proc/net/dev | awk '{print $1}' | sed -n '3,$p' | awk -F ":" '{print $1}' | grep -v ^lo$ | grep -v ^macvtap* | grep -v ^tap* | grep -v ^q )
-do
-    until [ $MGMT_IP_DEVICE = $CARDS ]
-        do
-             echo $MAGENTA Your input ${RED}$MGMT_IP_DEVICE${NO_COLOR}${MAGENTA} is unknow ! Please choose a network card as Management \
-network from above output ${RED}again${NO_COLOR}${MAGENTA} on ${NO_COLOR}${YELLOW}$(hostname)${NO_COLOR}
-             read MGMT_IP_DEVICE    
-       done 
-    echo $GREEN You choose ${YELLOW}$MGMT_IP_DEVICE${COLOR}${GREEN} as Management network $NO_COLOR
-done 
+#for CARDS in  $(cat /proc/net/dev | awk '{print $1}' | sed -n '3,$p' | awk -F ":" '{print $1}' | grep -v ^lo$ | grep -v ^macvtap* | grep -v ^tap* | grep -v ^q | grep -v ^virbr* | grep -v ^vnet)
+#do
+#    if [[ $MGMT_IP_DEVICE = $CARDS ]];then 
+#        echo $GREEN You choose ${YELLOW}$MGMT_IP_DEVICE${COLOR}${GREEN} as Management network $NO_COLOR
+#    else 
+#        echo $MAGENTA Your input ${RED}$MGMT_IP_DEVICE${NO_COLOR}${MAGENTA} is unknow ! Please run this $0 ${RED}again${NO_COLOR}${MAGENTA} on ${NO_COLOR}${YELLOW}$(hostname)${NO_COLOR}
+#        exit 1
+#    fi
+
+#done 
+
+
+
+#    until [[ $MGMT_IP_DEVICE = $CARDS ]]
+#        do
+#             echo $MAGENTA Your input ${RED}$MGMT_IP_DEVICE${NO_COLOR}${MAGENTA} is unknow ! Please choose a network card as Management \
+#network from above output ${RED}again${NO_COLOR}${MAGENTA} on ${NO_COLOR}${YELLOW}$(hostname)${NO_COLOR}
+#             read MGMT_IP_DEVICE    
+#       done 
+#    echo $GREEN You choose ${YELLOW}$MGMT_IP_DEVICE${COLOR}${GREEN} as Management network $NO_COLOR
+#done 
 
 
 
@@ -122,17 +134,19 @@ CONTROLLER_VIP=10.245.58.205
 
 COMPUTE_MANAGEMENT_INTERFACE_IP_ADDRESS=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
 Management_ip=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
-Coppute_host=$(cat ./COMPUTE_HOSTS)
+Compute_host=$(cat ./COMPUTE_HOSTS)
 
-for ip in $Coppute_host
-do 
-if [[ $Management_ip = $ip ]];then
-echo $MAGENTA Please choose a network card as External network from above output on ${YELLOW}$(hostname)${NO_COLOR}
+
+#bug will be fix later here 
+#for Compute_ips in $Compute_host
+#do 
+#     if [[ $Management_ip = $Compute_ips ]];then
+#         echo $MAGENTA Please choose a network card as External network from above output on ${YELLOW}$(hostname)${NO_COLOR}
 #nova EXTERNAL NETWORK CARD  here
-read COMPUTE_NET1_CARD_NAME
-echo $GREEN You choose ${YELLOW}$COMPUTE_NET1_CARD_NAME${COLOR}${GREEN} as external network card $NO_COLOR
-fi 
-done 
+#         read COMPUTE_NET1_CARD_NAME
+#         echo $GREEN You choose ${YELLOW}$COMPUTE_NET1_CARD_NAME${COLOR}${GREEN} as external network card $NO_COLOR
+#     fi 
+#done 
 
 #use for linuxbridge_agent.ini this need make sure 
 PROVIDER_INTERFACE_NAME=${COMPUTE_NET1_CARD_NAME}
