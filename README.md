@@ -1,2 +1,2 @@
-# Openstack-test
-This Repository just for openstack depoly 
+# Openstack
+This Repository just for openstack deploy 
