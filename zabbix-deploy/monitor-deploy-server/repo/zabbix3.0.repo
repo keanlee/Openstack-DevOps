@@ -1,0 +1,12 @@
+########################zabbix
+[zabbix]
+name=Zabbix Official Repository - $basearch
+baseurl=http://110.76.187.100/zabbix/3.0/rhel/7/$basearch/
+enabled=1
+gpgcheck=0
+
+[zabbix-non-supported]
+name=Zabbix Official Repository non-supported - $basearch
+baseurl=http://110.76.187.100/non-supported/rhel/7/$basearch/
+enabled=1
+gpgcheck=0

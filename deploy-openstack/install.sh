@@ -8,7 +8,7 @@ README=$(cat ./README.txt)
 echo $GREEN $README $NO_COLOR 
 echo $GREEN This script will be deploy OpenStack on ${NO_COLOR}${YELLOW}$(cat /etc/redhat-release) $NO_COLOR
 
-help(){
+function help(){
 cat 1>&2 <<__EOF__
 $MAGENTA================================================================
             --------Usage as below ---------
@@ -20,8 +20,8 @@ __EOF__
 }
 
 if [[ $# = 0 || $# -gt 1 ]]; then 
-help
-exit 1
+    help
+    exit 1
 fi
 
 
