@@ -14,7 +14,7 @@ WHITE="$ESC[0;37m"
 #PURPLE="$ESC[0;35m"
 CYAN="$ESC[0;36m"
 
-source ./bin/VARIABLE 
+source ./bin/VARIABLE  check  
 
 function debug(){
 if [[ $1 -ne 0 ]]; then 

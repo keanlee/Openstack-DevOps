@@ -15,4 +15,8 @@ ssh-keygen
 
 setenforce 0
 
+yum install snappy leveldb gdisk python-argparse gperftools-libs -y 
+
+
+yum install ceph  -y 
  

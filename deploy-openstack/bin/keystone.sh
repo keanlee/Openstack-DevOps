@@ -130,7 +130,7 @@ echo $GREEN Verify operation of the Identity service success $NO_COLOR  &&
 #execute this function to create openrc file 
 openrc_file_create
 
-echo $BLUE Check the admin-openrc file which location at $OPENRC_DIR whether or not work $NO_COLOR 
+echo $BLUE Check the admin-openrc file which location at ${YELLOW}$OPENRC_DIR${NO_COLOR}${BLUE} whether or not work $NO_COLOR 
 source  $OPENRC_DIR/admin-openrc 
 
 #Request an authentication token

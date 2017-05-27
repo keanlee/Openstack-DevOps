@@ -67,6 +67,7 @@ read PARTITION
 
 BLOCKS=$(cat /proc/partitions | awk '{print $4}' | sed -n '3,$p' | grep "[a-z]$" )
 #---------------------------------need add the while or until loop later--------
+#this will be a bug when you execute shell by remote ,fix later 
 for partitions in ${BLOCKS}
 do 
 

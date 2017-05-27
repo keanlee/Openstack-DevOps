@@ -113,6 +113,7 @@ __EOF__
 
 echo $BLUE Install openstack-neutron-linuxbridge ebtables ipset $NO_COLOR 
 yum install openstack-neutron-linuxbridge ebtables ipset -y 1>/dev/null 
+#install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch
 debug "$?" "Install openstack-neutron-linuxbridge ebtables ipset failed "
 
 echo $BLUE Copy conf file and edit it $NO_COLOR 

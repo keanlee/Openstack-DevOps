@@ -28,7 +28,8 @@ fi
 #---------------compnment choose -----------
 case $1 in
 controller)
-
+source ./bin/clean.sh
+sleep 2
 mysql_configuration
 
 source ./bin/keystone.sh
