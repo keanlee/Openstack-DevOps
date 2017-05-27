@@ -2,25 +2,6 @@
 #author by lihao
 #------------------install zabbix packages----------------------- 
 
-# ansi colors for formatting heredoc
-ESC=$(printf "\e")
-GREEN="$ESC[0;32m"
-NO_COLOR="$ESC[0;0m"
-RED="$ESC[0;31m"
-MAGENTA="$ESC[0;35m"
-YELLOW="$ESC[0;33m"
-BLUE="$ESC[0;34m"
-WHITE="$ESC[0;37m"
-#PURPLE="$ESC[0;35m"
-CYAN="$ESC[0;36m"
-
-function debug(){
-if [[ $1 -ne 0 ]]; then
-echo $RED ERROR:  $2 $NO_COLOR
-exit 1
-fi
-}
-       yum clean all 1>/dev/null 2>&1 
        yum install zabbix-server-mysql -y  1>/dev/null 
            debug "$?"  "Install zabbix-server-mysql failed"
        echo -e "\e[1;36m zabbix-server-mysql installed \e[0m" 

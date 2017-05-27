@@ -13,14 +13,23 @@ WHITE="$ESC[0;37m"
 #PURPLE="$ESC[0;35m"
 CYAN="$ESC[0;36m"
 
+function debug(){
+if [[ $1 -ne 0 ]]; then
+echo $RED ERROR:  $2 $NO_COLOR
+exit 1
+fi
+}
+
+
+
 README=$(cat ./README.txt)
 OS=$(cat /etc/redhat-release | awk '{print $1}')
 if [ $OS = Red ];then
-OSVERSION=$(cat /etc/redhat-release | awk '{print $7}' | awk -F "." '{print $2}')
+    OSVERSION=$(cat /etc/redhat-release | awk '{print $7}' | awk -F "." '{print $2}')
 else
-OSVERSION=$(cat /etc/redhat-release | awk '{print $4}' | awk -F "." '{print $2}')
+    OSVERSION=$(cat /etc/redhat-release | awk '{print $4}' | awk -F "." '{print $2}')
 fi
-echo $BLUE $README $NO_COLOR
+    echo $BLUE $README $NO_COLOR
 
 function install(){
 #echo -e " \033[1m Begin install zabbix server  ..."
@@ -54,7 +63,7 @@ function choice(){
 }
 
 if [ $(rpm -qa | grep zabbix | wc -l) -ge 1 ];then
-source ./modularization/clean.sh
+source ./bin/clean.sh
 choice $OSVERSION
 else
 choice $OSVERSION
