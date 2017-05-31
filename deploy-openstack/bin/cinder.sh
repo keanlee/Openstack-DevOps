@@ -15,10 +15,10 @@ create_service_credentials $CINDER_PASS cinder
 
 echo $BLUE Install openstack-cinder on ${YELLOW}$(hostname)$NO_COLOR 
 yum install openstack-cinder -y  1>/dev/null 
-debug "$?" "Install openstack-cinder on ${YELLOW}$(hostname)$NO_COLOR $RED failed "
+    debug "$?" "Install openstack-cinder on ${YELLOW}$(hostname)$NO_COLOR $RED failed "
 
 echo $BLUE copy the cinder conf file and edit it $NO_COLOR 
-cp -f ./etc/cinder.conf  /etc/cinder 
+cp -f ./etc/controller/cinder.conf  /etc/cinder 
 sed -i "s/controller/$MGMT_IP/g"   /etc/cinder/cinder.conf
 sed -i "s/RABBIT_PASS/$RABBIT_PASS/g"  /etc/cinder/cinder.conf
 sed -i "s/MY_IP/$MY_IP/g"   /etc/cinder/cinder.conf
@@ -27,12 +27,12 @@ sed -i "s/CINDER_PASS/$CINDER_PASS/g"  /etc/cinder/cinder.conf
 
 echo $BLUE Populate the Block Storage database ... $NO_COLOR 
 su -s /bin/sh -c "cinder-manage db sync" cinder  1>/dev/null
-debug "$?"  "Populate the Block Storage database failed "
+    debug "$?"  "Populate the Block Storage database failed "
 echo $GREEN populate the cinder database success ! Ignore any deprecation messages in above output $NO_COLOR 
 
 systemctl enable openstack-cinder-api.service openstack-cinder-scheduler.service  1>/dev/null 2>&1 
 systemctl start openstack-cinder-api.service openstack-cinder-scheduler.service
-debug "$?" "start openstack-cinder-api or cinder-scheduler failed "
+    debug "$?" "start openstack-cinder-api or cinder-scheduler failed "
 
 cat 1>&2 <<__EOF__
 $GREEN=====================================================================================

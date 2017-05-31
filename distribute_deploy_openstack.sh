@@ -35,7 +35,7 @@ function compute(){
 echo $BLUE scp deplory script to target hosts $NO_COLOR 
 cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do scp -r deploy-openstack/ $line:/root/; debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
 
-cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do /usr/bin/ssh -tt -n  root@$line /bin/bash /root/deploy-openstack/install.sh compute ; debug "$?" "bash remote execute on remote host <$line> error "; done
+cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do ssh -tt root@$line /bin/bash /root/deploy-openstack/install.sh compute ; debug "$?" "bash remote execute on remote host <$line> error "; done
 
 }
 case $1 in

@@ -38,23 +38,30 @@ fi
 
 done
 }
-#Function 
-case $1 in 
-check)
+
+
+
 NET_NAME_IP
-echo $YELLOW Please 
-exit 1
-;;
-*)
-NET_NAME_IP
-;;
-esac 
+
+
+
+
+
+
+
 
 #python ./bin/net_card_choose.py 
 
-#echo $MAGENTA Please choose a network card as Management network from above output on ${YELLOW}$(hostname)${NO_COLOR} 
+echo $MAGENTA Please choose a network card as Management network from above output on ${YELLOW}$(hostname)${NO_COLOR} 
+#read MGMT_IP_DEVICE
+#echo $MGMT_IP_DEVICE
+
 #echo $MAGENTA Then edit the VARLIBLE file $NO_COLOR
 MGMT_IP_DEVICE=ens4
+
+#
+#this is neutron for ext ip
+COMPUTE_NET1_CARD_NAME=eth1
 
 #for CARDS in  $(cat /proc/net/dev | awk '{print $1}' | sed -n '3,$p' | awk -F ":" '{print $1}' | grep -v ^lo$ | grep -v ^macvtap* | grep -v ^tap* | grep -v ^q | grep -v ^virbr* | grep -v ^vnet)
 #do

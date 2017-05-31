@@ -33,11 +33,11 @@ openstack-nova-scheduler ... $NO_COLOR
 yum install openstack-nova-api openstack-nova-conductor \
 openstack-nova-console openstack-nova-novncproxy \
 openstack-nova-scheduler  -y 1>/dev/null 
-debug "$?" "Install openstack-nova-api openstack-nova-conductor openstack-nova-console openstack-nova-novncproxy \
+    debug "$?" "Install openstack-nova-api openstack-nova-conductor openstack-nova-console openstack-nova-novncproxy \
 openstack-nova-scheduler failed "
 
 echo $BLUE Copy nova.conf and edit it ... $NO_COLOR 
-cp -f ./etc/nova.conf  /etc/nova/ 
+cp -f ./etc/controller/nova.conf  /etc/nova/ 
 sed -i "s/MY_IP/$MY_IP_CONTROLLER/g" /etc/nova/nova.conf 
 sed -i "s/RABBIT_PASS/$RABBIT_PASS/g" /etc/nova/nova.conf
 sed -i "s/controller/$MGMT_IP/g" /etc/nova/nova.conf
@@ -49,20 +49,20 @@ sed -i "s/METADATA_SECRET/$METADATA_SECRET/g" /etc/nova/nova.conf
 
 echo $BLUE Populate the Nova databases $NO_COLOR
 su -s /bin/sh -c "nova-manage api_db sync" nova
-debug "$?" "nova-manage api_db sync failed "
+    debug "$?" "nova-manage api_db sync failed "
 su -s /bin/sh -c "nova-manage db sync" nova
-debug "$?"  "nova-manage db sync failed "
+    debug "$?"  "nova-manage db sync failed "
 echo $GREEN Populate nova database success , ignore any deprecation messages in  above output $NO_COLOR
 
 systemctl enable openstack-nova-api.service \
 openstack-nova-consoleauth.service openstack-nova-scheduler.service \
 openstack-nova-conductor.service openstack-nova-novncproxy.service 1>/dev/null 2>&1 
-debug "$?" "systemctl enable nova service failed  "
+    debug "$?" "systemctl enable nova service failed  "
 
 systemctl start openstack-nova-api.service \
 openstack-nova-consoleauth.service openstack-nova-scheduler.service \
 openstack-nova-conductor.service openstack-nova-novncproxy.service
-debug "$?" "systemctl start nova service which install controller node failed "
+    debug "$?" "systemctl start nova service which install controller node failed "
 echo $GREEN systemctl start openstack-nova-api.service \
   openstack-nova-consoleauth.service openstack-nova-scheduler.service \
   openstack-nova-conductor.service openstack-nova-novncproxy.service $NO_COLOR 
@@ -88,7 +88,7 @@ __EOF__
 
 echo $BLUE install openstack-nova-compute ... $NO_COLOR
 yum install openstack-nova-compute -y 1>/dev/null
-debug "$?" "Install openstack-nova-compute failed "
+    debug "$?" "Install openstack-nova-compute failed "
 
 echo $BLUE Copy nova.conf and edit it ... $NO_COLOR
 cp -f ./etc/compute/nova.conf  /etc/nova
@@ -99,13 +99,13 @@ sed -i "s/NOVA_PASS/$NOVA_PASS/g" /etc/nova/nova.conf
 
 
 if [[ $(egrep -c '(vmx|svm)' /proc/cpuinfo) = 0 ]];then 
-echo $YELLOW Your compute node does not support hardware acceleration and  configure libvirt to use QEMU instead of KVM $NO_COLOR
-sed -i "/\[libvirt\]/a\virt_type\ =\ qemu" /etc/nova/nova.conf
+    echo $YELLOW Your compute node does not support hardware acceleration and  configure libvirt to use QEMU instead of KVM $NO_COLOR
+    sed -i "/\[libvirt\]/a\virt_type\ =\ qemu" /etc/nova/nova.conf
 fi 
 
 systemctl enable libvirtd.service openstack-nova-compute.service  1>/dev/null 2>&1
 systemctl start libvirtd.service openstack-nova-compute.service  
-debug "$?" "systemctl start libvirtd or openstack-nova-compute failed \
+    debug "$?" "systemctl start libvirtd or openstack-nova-compute failed \
 .If the nova-compute service fails to start, check /var/log/nova/nova-compute.log.
 The error message AMQP server on controller:5672 is unreachable likely indicates
 that the firewall on the controller node is preventing access to port 5672"

@@ -77,9 +77,10 @@ function keystone_main(){
 database_create keystone $KEYSTONE_DBPASS
 echo $BLUE Install openstack-keystone httpd mod_wsgi ... $NO_COLOR
 yum install openstack-keystone httpd mod_wsgi -y  1>/dev/null
+   debug "$?" "Install openstack-keystone httpd mod_wsgi failed "
 
 #Edit keystone configuration file 
-cp -f ./etc/keystone.conf   /etc/keystone/
+cp -f ./etc/controller/keystone.conf   /etc/keystone/
 sed -i "s/controller/$MGMT_IP/g"  /etc/keystone/keystone.conf
 sed -i "s/KEYSTONE_DBPASS/$KEYSTONE_DBPASS/g" /etc/keystone/keystone.conf
 
