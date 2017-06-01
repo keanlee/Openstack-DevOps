@@ -41,7 +41,7 @@ yum erase openstack-nova-compute -y 1>/dev/null
 
 #---------clean neutron for compute and controller 
 yum erase openstack-neutron-linuxbridge ebtables ipset  -y 1>/dev/null 
-
+yum erase openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch  -y 1>/dev/null
 yum erase openstack-neutron openstack-neutron-ml2 openstack-neutron-linuxbridge ebtables  -y 1>/dev/null 
 rm -rf /etc/neutron
 

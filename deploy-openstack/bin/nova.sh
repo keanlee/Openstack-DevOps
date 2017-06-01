@@ -86,6 +86,10 @@ $MAGENTA=======================================================================
 $NO_COLOR
 __EOF__
 
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config #disable selinux in conf file 
+setenforce 0  &&
+echo -e "\e[1;36m ----->The Selinux Status: $( getenforce) \e[0m"
+
 echo $BLUE install openstack-nova-compute ... $NO_COLOR
 yum install openstack-nova-compute -y 1>/dev/null
     debug "$?" "Install openstack-nova-compute failed "

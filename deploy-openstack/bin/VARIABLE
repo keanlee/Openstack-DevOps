@@ -3,87 +3,19 @@
 
 #------------------------Need to choose the network card  first -----------------------
 
-function NET_NAME_IP(){
-#This function can list your network card with it's ip address 
-
-cat 1>&2 <<__EOF__
-$MAGENTA=================================================================
-     Network Cards on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} list below: 
-=================================================================
-$NO_COLOR
-__EOF__
-
-which ifconfig 1>/dev/null || yum install net-tools -y 1>/dev/null
-
-NET_DEV_NAME=$(cat /proc/net/dev | awk '{print $1}' | sed -n '3,$p' | awk -F ":" '{print $1}' | grep -v ^lo$ | grep -v ^macvtap* | grep -v ^tap* | grep -v ^q | grep -v ^virbr* | grep -v ^vnet )
-#                                                                                              except the lo and   virtual cards:     macvtap      network name 
-for i in $NET_DEV_NAME
-do
-NET_RUN_STATUS=$(ifconfig $i | sed -n '1p' | awk '{print $2}' | awk -F "," '{print $3}')
-
-if [[ $NET_RUN_STATUS != RUNNING ]];then
-continue
-else
-echo ${BLUE}The network card Name:${NO_COLOR}$YELLOW $i${NO_COLOR} ${BLUE},the network card status:${NO_COLOR}
-echo $GREEN $NET_RUN_STATUS $NO_COLOR
-fi
-
-echo ${BLUE}The IP address is : $NO_COLOR
-IP_ADDR=$(ifconfig $i | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
-echo $GREEN $IP_ADDR $NO_COLOR
-
-if [[ $IP_ADDR = "" ]];then
-echo $RED No IP Address with $i $NO_COLOR
-fi
-
-done
-}
-
-
-
-NET_NAME_IP
-
-
-
-
-
-
-
-
-#python ./bin/net_card_choose.py 
-
-echo $MAGENTA Please choose a network card as Management network from above output on ${YELLOW}$(hostname)${NO_COLOR} 
-#read MGMT_IP_DEVICE
-#echo $MGMT_IP_DEVICE
-
-#echo $MAGENTA Then edit the VARLIBLE file $NO_COLOR
 MGMT_IP_DEVICE=ens4
 
-#
+
+#openvswitch 
+#which bridge name you want to create 
+br_provider=br-ex
+
+#Replace PROVIDER_INTERFACE with the name of the underlying interface that handles provider networks. For example, eth1
+PROVIDER_INTERFACE=eth1
+
 #this is neutron for ext ip
 COMPUTE_NET1_CARD_NAME=eth1
-
-#for CARDS in  $(cat /proc/net/dev | awk '{print $1}' | sed -n '3,$p' | awk -F ":" '{print $1}' | grep -v ^lo$ | grep -v ^macvtap* | grep -v ^tap* | grep -v ^q | grep -v ^virbr* | grep -v ^vnet)
-#do
-#    if [[ $MGMT_IP_DEVICE = $CARDS ]];then 
-#        echo $GREEN You choose ${YELLOW}$MGMT_IP_DEVICE${COLOR}${GREEN} as Management network $NO_COLOR
-#    else 
-#        echo $MAGENTA Your input ${RED}$MGMT_IP_DEVICE${NO_COLOR}${MAGENTA} is unknow ! Please run this $0 ${RED}again${NO_COLOR}${MAGENTA} on ${NO_COLOR}${YELLOW}$(hostname)${NO_COLOR}
-#        exit 1
-#    fi
-
-#done 
-
-
-
-#    until [[ $MGMT_IP_DEVICE = $CARDS ]]
-#        do
-#             echo $MAGENTA Your input ${RED}$MGMT_IP_DEVICE${NO_COLOR}${MAGENTA} is unknow ! Please choose a network card as Management \
-#network from above output ${RED}again${NO_COLOR}${MAGENTA} on ${NO_COLOR}${YELLOW}$(hostname)${NO_COLOR}
-#             read MGMT_IP_DEVICE    
-#       done 
-#    echo $GREEN You choose ${YELLOW}$MGMT_IP_DEVICE${COLOR}${GREEN} as Management network $NO_COLOR
-#done 
+CONTROLLER_VIP=10.245.58.205
 
 
 
@@ -138,33 +70,18 @@ CINDER_PASS=cinderpass
 
 #---------------Controller HA proxy -----------
 #This need to edit by  manual
-CONTROLLER_VIP=10.245.58.205
 
 
 
 #-------------------------------------nova compute node ------------------------------------------------------
 #list the compute node management networkd card name (for example : eth0 em1)
 
-#read COMPUTE_NET1_CARD_NAME
-
-#nova.conf for compute node ,
-#my_ip = MANAGEMENT_INTERFACE_IP_ADDRESS
 
 COMPUTE_MANAGEMENT_INTERFACE_IP_ADDRESS=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
 Management_ip=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
 Compute_host=$(cat ./COMPUTE_HOSTS)
 
 
-#bug will be fix later here 
-#for Compute_ips in $Compute_host
-#do 
-#     if [[ $Management_ip = $Compute_ips ]];then
-#         echo $MAGENTA Please choose a network card as External network from above output on ${YELLOW}$(hostname)${NO_COLOR}
-#nova EXTERNAL NETWORK CARD  here
-#         read COMPUTE_NET1_CARD_NAME
-#         echo $GREEN You choose ${YELLOW}$COMPUTE_NET1_CARD_NAME${COLOR}${GREEN} as external network card $NO_COLOR
-#     fi 
-#done 
 
 #use for linuxbridge_agent.ini this need make sure 
 PROVIDER_INTERFACE_NAME=${COMPUTE_NET1_CARD_NAME}

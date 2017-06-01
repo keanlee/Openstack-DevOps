@@ -19,7 +19,7 @@ source ./bin/VARIABLE  check
 function debug(){
 if [[ $1 -ne 0 ]]; then 
 echo $RED ERROR:  $2 $NO_COLOR
-exit 1
+#exit 1
 fi
 }
 
@@ -128,8 +128,9 @@ echo $BLUE Install rabbitmq-server ... $NO_COLOR
 yum install rabbitmq-server  -y 1>/dev/null
 debug "$1" "$RED Install rabbitmq-server failed $NO_COLOR"
 systemctl enable rabbitmq-server.service 1>/dev/null 2>&1 && 
+sed -i "3 i $MGMT_IP  $(hostname )" /etc/hosts
 systemctl start rabbitmq-server.service
-debug "$?" "systemctl start rabbitmq-server.service Faild, Did you edit the /etc/hosts ? "
+debug "$?" "systemctl start rabbitmq-server.service Faild, Did you edit the /etc/hosts correct ? "
 
 rabbitmqctl add_user openstack $RABBIT_PASS  1>/dev/null
 echo $BLUE Permit configuration, write, and read access for the openstack user ...$NO_COLOR
@@ -138,6 +139,8 @@ rabbitmqctl set_permissions openstack ".*" ".*" ".*"  1>/dev/null
 #rabbitmq-plugins list
 #enable rabbitmq_management boot after the os boot 
 #Use rabbitmq-web 
+
+
 rabbitmq-plugins enable rabbitmq_management 1>/dev/null 2>&1
 systemctl restart rabbitmq-server.service &&
 debug "$?" "Restart rabbitmq-server.service fail after enable rabbitmq_management "
