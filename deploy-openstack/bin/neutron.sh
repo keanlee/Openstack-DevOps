@@ -33,7 +33,7 @@ create_service_credentials $NEUTRON_PASS neutron
 #Option 2 also supports attaching instances to provider networks
 echo $BLUE Using the option 2 of neutron to deploy ... $NO_COLOR 
 echo $BLUE Install openstack-neutron openstack-neutron-ml2  openstack-neutron-linuxbridge ebtables ... $NO_COLOR 
-yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch -y-y 1>/dev/null
+yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch -y 1>/dev/null
     debug "$?" "Install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch failed "
 
 echo $BLUE Copy and edite configuration file of Neutron $NO_COLOR 
