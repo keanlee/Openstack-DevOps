@@ -40,11 +40,11 @@ __EOF__
 
 function controller(){
 echo $BLUE scp deplory script to target hosts $NO_COLOR 
-cat ./controller-hosts | while read line ; do scp -r deploy-openstack/ $line:/root/; debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
+cat ./deploy-openstack/CONTROLLER_HOSTS | while read line ; do scp -r deploy-openstack/ $line:/root/; debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
 
-cat ./controller-hosts | while read line ; do ssh -n $line /bin/bash /root/deploy-openstack/install.sh controller ; debug "$?" "bash remote execute on remote host <$line> error "; done
-
+cat ./deploy-openstack/CONTROLLER_HOSTS | while read line ; do ssh -n $line /bin/bash /root/deploy-openstack/install.sh controller ; debug "$?" "bash remote execute on remote host <$line> error "; done
 }
+
 
 #---------------------------------main-----------------
 
@@ -52,16 +52,24 @@ function compute(){
 echo $BLUE scp deplory script to target hosts $NO_COLOR 
 cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do scp -r deploy-openstack/ $line:/root/; debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
 
-cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do ssh -tt root@$line /bin/bash /root/deploy-openstack/install.sh compute ; debug "$?" "bash remote execute on remote host <$line> error "; done
+cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do ssh -n root@$line /bin/bash /root/deploy-openstack/install.sh compute ; debug "$?" "bash remote execute on remote host <$line> error "; done
 }
 
 function check_info(){
 #check the target host net and disk info
+#for controller nodes
+cat ./deploy-openstack/CONTROLLER_HOSTS | while read line ; do scp deploy-openstack/bin/net_and_disk_info.sh $line:/root/; debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
+cat ./deploy-openstack/CONTROLLER_HOSTS | while read line ; do ssh -n root@$line /bin/bash /root/net_and_disk_info.sh; debug "$?" "bash remote execute on remote host <$line> error "; done
+
+#for compute nodes
 cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do scp deploy-openstack/bin/net_and_disk_info.sh $line:/root/; debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
-cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do ssh -tt root@$line /bin/bash /root/net_and_disk_info.sh; debug "$?" "bash remote execute on remote host <$line> error "; done
+cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do ssh -n root@$line /bin/bash /root/net_and_disk_info.sh; debug "$?" "bash remote execute on remote host <$line> error "; done
 }
 
 case $1 in
+controller)
+controller
+;;
 compute)
 compute
 ;;
