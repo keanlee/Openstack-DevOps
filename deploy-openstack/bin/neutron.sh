@@ -135,10 +135,10 @@ systemctl enable openvswitch.service  1>/dev/null 2>&1
 systemctl start openvswitch.service
      debug "$?" "start openvswitch failed "    
 
-echo $BLUE Create the OVS provider bridge ${YELLO}${br_provider}${NO_COLOR} 
+echo $BLUE Create the OVS provider bridge ${YELLOW}${br_provider}${NO_COLOR} 
 ovs-vsctl add-br ${br_provider}
 
-echo $BLUE Add the provider network interface as a port on the OVS provider bridge ${YELLO}${br_provider}${NO_COLOR}
+echo $BLUE Add the provider network interface as a port on the OVS provider bridge ${YELLOW}${br_provider}${NO_COLOR}
 #Replace PROVIDER_INTERFACE with the name of the underlying interface that handles provider networks. For example, eth1
 ovs-vsctl add-port ${br_provider} $PROVIDER_INTERFACE
 
@@ -165,6 +165,8 @@ sed -i "s/br-provider/${br_provider}/g"  /etc/neutron/openvswitch_agent.ini
 #sed -i "s/OVERLAY_INTERFACE_IP_ADDRESS/$COMPUTE_OVERLAY_INTERFACE_IP_ADDRESS/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
 
 sed -i "s/NEUTRON_PASS/$NEUTRON_PASS/g"  /etc/nova/nova.conf
+
+chown -R root:neutron /etc/neutron/
 
 echo $BLUE Rstart openstack-nova-compute.service $NO_COLOR
 systemctl restart openstack-nova-compute.service

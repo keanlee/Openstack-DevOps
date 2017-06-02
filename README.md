@@ -1,2 +1,4 @@
 # Openstack
-This Repository just for openstack deploy 
+This Repository for openstack deploy 
+                    Zabbix deploy
+                    ceph deploy 

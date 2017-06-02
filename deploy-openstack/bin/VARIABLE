@@ -3,29 +3,26 @@
 
 #------------------------Need to choose the network card  first -----------------------
 
+#management network card name, both controller and compute use this name for configuration 
 MGMT_IP_DEVICE=ens4
 
 #openvswitch 
 #which bridge name you want to create 
-br_provider=br-ex
+br_provider=br-ext
 
 #Replace PROVIDER_INTERFACE with the name of the underlying interface that handles provider networks. For example, eth1
 PROVIDER_INTERFACE=ens3
 
 #this is neutron for ext ip
 COMPUTE_NET1_CARD_NAME=ens3
+
+#The VIP use for all compute node ,ha_proxy also use this ip 
 CONTROLLER_VIP=10.245.58.206
 
-
-#--------------------------------------- For controller only -----------------------------------------------------------------------------
-#if unkown the ifconfig command you can use : ip addr show <NET_NAMES> | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}' 
-#ntp server ad controller management ip
+#NTP server IP
 NTP_SERVER_IP=10.245.58.206
 
-
-
-
-#MGMT_IP is the controller management ip 
+#MGMT_IP is both controller and compute management ip 
 MGMT_IP=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
 
 #set mariadb password 
@@ -89,7 +86,7 @@ PROVIDER_INTERFACE_NAME=${COMPUTE_NET1_CARD_NAME}
 OVERLAY_INTERFACE_IP_ADDRESS=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
 
 #Edit the /etc/neutron/metadata_agent.ini 
-METADATA_SECRET=secert_here
+METADATA_SECRET=02fwtwkpweglbw
 
 #Neutron for compute node 
 COMPUTE_PROVIDER_INTERFACE_NAME=${COMPUTE_NET1_CARD_NAME}

@@ -4,8 +4,7 @@
 cd $(cd $(dirname $0); pwd)
 source ./bin/common.sh
 
-README=$(cat ./README.txt)
-echo $GREEN $README $NO_COLOR 
+echo -e $CYAN $(cat ./README.txt) $NO_COLOR 
 echo $GREEN This script will be deploy OpenStack on ${NO_COLOR}${YELLOW}$(cat /etc/redhat-release) $NO_COLOR
 
 function help(){
@@ -57,8 +56,8 @@ sleep 5
 source ./bin/cinder.sh controller
 sleep 5
 source ./bin/dashboard.sh 
- 
 ;;
+
 compute)
 source ./bin/clean.sh 
 sleep 2
@@ -69,6 +68,7 @@ source ./bin/neutron.sh compute
 sleep 5
 source ./bin/cinder.sh  compute 
 ;;
+
 check)
 source ./bin/net_and_disk_info.sh
 ;;
@@ -76,7 +76,5 @@ source ./bin/net_and_disk_info.sh
 help
 ;;
 esac
-
-
 
 

@@ -14,6 +14,8 @@ WHITE="$ESC[0;37m"
 #PURPLE="$ESC[0;35m"
 CYAN="$ESC[0;36m"
 
+echo -e $CYAN $(cat ./deploy-openstack/README.txt) $NO_COLOR
+
 debug(){
 if [[ $1 -ne 0 ]]; then
 echo $RED $2 $NO_COLOR
