@@ -23,7 +23,7 @@ $MAGENTA=================================================================
 $NO_COLOR
 __EOF__
 
-which ifconfig 1>/dev/null || yum install net-tools -y 1>/dev/null
+which ifconfig 1>/dev/null 2>&1|| yum install net-tools -y 1>/dev/null
 
 NET_DEV_NAME=$(cat /proc/net/dev | awk '{print $1}' | sed -n '3,$p' | awk -F ":" '{print $1}' | grep -v ^lo$ | grep -v ^macvtap* | grep -v ^tap* | grep -v ^q | grep -v ^virbr* | grep -v ^vnet )
 #                                                                                              except the lo and   virtual cards:     macvtap      network name 

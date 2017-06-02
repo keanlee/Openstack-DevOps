@@ -166,8 +166,11 @@ sed -i "s/br-provider/${br_provider}/g"  /etc/neutron/openvswitch_agent.ini
 
 sed -i "s/NEUTRON_PASS/$NEUTRON_PASS/g"  /etc/nova/nova.conf
 
+echo $BLUE Rstart openstack-nova-compute.service $NO_COLOR
 systemctl restart openstack-nova-compute.service
     debug "$?" "restart openstack-nova-compute failed after install neutron on compute node "
+
+echo $BLUE start neutron-openvswitch-agent.service neutron-l3-agent.service neutron-metadata-agent.service neutron-dhcp-agent.service $NO_COLOR
 systemctl enable neutron-openvswitch-agent.service neutron-l3-agent.service neutron-dhcp-agent.service  neutron-metadata-agent.service neutron-ovs-cleanup.service 1>/dev/null 2>&1
 systemctl start neutron-openvswitch-agent.service neutron-l3-agent.service neutron-metadata-agent.service neutron-dhcp-agent.service
     debug "$?" "start neutron-openvswitch-agent.service neutron-l3-agent.service neutron-metadata-agent.service failed "

@@ -63,21 +63,22 @@ systemctl start lvm2-lvmetad.service
 debug "$?" "start lvm2-lvmetad failed "
 
 echo $YELLOW Please choose one form above output to create the LVM physical volume $NO_COLOR
-read PARTITION
+#read 
+PARTITION=vdb
 
-BLOCKS=$(cat /proc/partitions | awk '{print $4}' | sed -n '3,$p' | grep "[a-z]$" )
+#BLOCKS=$(cat /proc/partitions | awk '{print $4}' | sed -n '3,$p' | grep "[a-z]$" )
 #---------------------------------need add the while or until loop later--------
 #this will be a bug when you execute shell by remote ,fix later 
-for partitions in ${BLOCKS}
-do 
+#for partitions in ${BLOCKS}
+#do 
 
-    until [ $PARTITION = $partitions ]
-        do    
-           echo ${RED} Please choose one from above output again ! Because your input $PARTITION is UNKNOW $NO_COLOR
-           read PARTITION
-        done 
-    echo $BLUE Your choose $PARTITION to create the LVM physical volume $NO_COLOR
-done 
+#    until [ $PARTITION = $partitions ]
+#        do    
+#           echo ${RED} Please choose one from above output again ! Because your input $PARTITION is UNKNOW $NO_COLOR
+#           read PARTITION
+#        done 
+#    echo $BLUE Your choose $PARTITION to create the LVM physical volume $NO_COLOR
+#done 
 
 echo $BLUE Create the LVM physical volume /dev/$PARTITION: $NO_COLOR 
 pvcreate /dev/$PARTITION

@@ -12,8 +12,9 @@ function help(){
 cat 1>&2 <<__EOF__
 $MAGENTA================================================================
             --------Usage as below ---------
-             sh $0 install controller
-             sh $0 install compute
+             sh $0 controller
+             sh $0 compute
+             sh $0 check 
 ================================================================
 $NO_COLOR
 __EOF__
@@ -24,10 +25,23 @@ if [[ $# = 0 || $# -gt 1 ]]; then
     exit 1
 fi
 
+function yum_repos(){
+if [[ ! -d /etc/yum.repos.d/bak ]];then
+    mkdir /etc/yum.repos.d/bak
+else 
+    mv /etc/yum.repos.d/* /etc/yum.repos.d/bak/
+    cp ./repos/* /etc/yum.repos.d/
+    yum clean all
+    echo $GREEN yum repos config done $NO_COLOR
+fi
+}
+
+
 
 #---------------compnment choose -----------
 case $1 in
 controller)
+yum_repos
 source ./bin/clean.sh
 sleep 2
 mysql_configuration
@@ -48,11 +62,15 @@ source ./bin/dashboard.sh
 compute)
 source ./bin/clean.sh 
 sleep 2
-source ./bin/compute.sh compute
+yum_repos
+source ./bin/nova.sh compute
 sleep 5
 source ./bin/neutron.sh compute
 sleep 5
 source ./bin/cinder.sh  compute 
+;;
+check)
+source ./bin/net_and_disk_info.sh
 ;;
 *)
 help

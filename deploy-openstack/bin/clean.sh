@@ -35,7 +35,7 @@ yum erase openstack-nova-api openstack-nova-conductor \
 openstack-nova-console openstack-nova-novncproxy \
 openstack-nova-scheduler -y 
 rm -rf /etc/nova  
-
+rm -rf /var/log/nova
 #-----------clean nova for compute 
 yum erase openstack-nova-compute -y 1>/dev/null 
 
@@ -44,7 +44,7 @@ yum erase openstack-neutron-linuxbridge ebtables ipset  -y 1>/dev/null
 yum erase openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch  -y 1>/dev/null
 yum erase openstack-neutron openstack-neutron-ml2 openstack-neutron-linuxbridge ebtables  -y 1>/dev/null 
 rm -rf /etc/neutron
-
+rm -rf /var/log/neutron
 #--------clean cinder for controller and compute --------
 yum erase openstack-cinder -y 1>/dev/null 
 yum erase lvm2 openstack-cinder targetcli python-keystone  -y 1>/dev/null

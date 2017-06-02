@@ -5,24 +5,25 @@
 
 MGMT_IP_DEVICE=ens4
 
-
 #openvswitch 
 #which bridge name you want to create 
 br_provider=br-ex
 
 #Replace PROVIDER_INTERFACE with the name of the underlying interface that handles provider networks. For example, eth1
-PROVIDER_INTERFACE=eth1
+PROVIDER_INTERFACE=ens3
 
 #this is neutron for ext ip
-COMPUTE_NET1_CARD_NAME=eth1
-CONTROLLER_VIP=10.245.58.205
-
+COMPUTE_NET1_CARD_NAME=ens3
+CONTROLLER_VIP=10.245.58.206
 
 
 #--------------------------------------- For controller only -----------------------------------------------------------------------------
 #if unkown the ifconfig command you can use : ip addr show <NET_NAMES> | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}' 
 #ntp server ad controller management ip
-NTP_SERVER_IP=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
+NTP_SERVER_IP=10.245.58.206
+
+
+
 
 #MGMT_IP is the controller management ip 
 MGMT_IP=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')

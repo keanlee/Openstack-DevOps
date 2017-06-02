@@ -19,7 +19,7 @@ source ./bin/VARIABLE  check
 function debug(){
 if [[ $1 -ne 0 ]]; then 
 echo $RED ERROR:  $2 $NO_COLOR
-#exit 1
+exit 1
 fi
 }
 
@@ -216,8 +216,8 @@ debug "$?" "openstack service $2 create failed "
 if [[ $2 = cinder ]];then 
 openstack service create --name cinderv2 --description "OpenStack ${SERVICE}" volumev2
 debug "$?" "openstack service volumev2 create failed "
-else 
-continue 
+#else 
+#continue 
 fi
 
 echo $BLUE Create the ${YELLOW}$SERVICE${NO_COLOR}${BLUE} service API endpoints $NO_COLOR
