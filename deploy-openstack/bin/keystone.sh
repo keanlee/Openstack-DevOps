@@ -119,7 +119,7 @@ echo $BLUE As the admin user, request an authentication token $NO_COLOR
 openstack --os-auth-url http://${MGMT_IP}:35357/v3 --os-project-domain-name default \
 --os-user-domain-name default --os-project-name admin --os-username admin \
 --os-auth-type password --os-password ${ADMIN_PASS}  token issue   &&
-debug "$?"  "As the admin user, request an authentication token Failed "
+    debug "$?"  "As the admin user, request an authentication token Failed "
 
 
 echo $BLUE As the demo user, request an authentication token  $NO_COLOR
@@ -136,7 +136,7 @@ source  $OPENRC_DIR/admin-openrc
 
 #Request an authentication token
 openstack token issue
-debug "$?" "The admin-openrc file which location at $OPENRC_DIR can not be work "
+    debug "$?" "The admin-openrc file which location at $OPENRC_DIR can not be work "
 echo $GREEN Created openrc file and the admin-openrc can be work normally $NO_COLOR 
 }
 
@@ -144,7 +144,7 @@ echo $GREEN Created openrc file and the admin-openrc can be work normally $NO_CO
 #Execute below function to install keystone 
 echo $BLUE Install openstack-selinux and  python-openstackclient ...$NO_COLOR
 yum install openstack-selinux python-openstackclient -y 1>/dev/null 
-debug "$?" "$RED Install openstack-selinux python-openstackclient failed $NO_COLOR"
+    debug "$?" "$RED Install openstack-selinux python-openstackclient failed $NO_COLOR"
 
 #------Request Functions ------
 ntp

@@ -60,7 +60,7 @@ DEVICE=$(cat /proc/partitions | awk '{print $4}' | sed -n '3,$p' | grep "[a-z]$"
 for DEVICE_ID in $DEVICE
     do 
         DISK_SIZE=$(lsblk /dev/${DEVICE_ID} | sed -n '2p' | awk '{print $4}')
-        echo $BLUE Disk name : ${YELLOW}$DEVICE_ID${NO_COLOR} $BLUE the size is:$GREEN $DISK_SIZE${NO_COLOR}
+        echo $BLUE Disk name : ${YELLOW}$DEVICE_ID${NO_COLOR} $BLUE the size is:$YELLOW $DISK_SIZE${NO_COLOR}
         
 done
 }

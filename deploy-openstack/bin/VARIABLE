@@ -8,6 +8,9 @@ MGMT_IP_DEVICE=ens4
 
 #openvswitch 
 #which bridge name you want to create 
+#For example: br-tun - tunnel bridge (vxlan or gre)
+#             br-int - integration bridge 
+#             br-ex  - external bridge
 br_provider=br-ext
 
 #Replace PROVIDER_INTERFACE with the name of the underlying interface that handles provider networks. For example, eth1

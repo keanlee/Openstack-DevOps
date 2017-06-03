@@ -23,11 +23,11 @@ firewall-cmd --reload  1>/dev/null 2>&1
 }
 
 if [[ $STATUS = active ]];then
-firewalld
-elif [ -f /etc/sysconfig/iptaables ];then
-iptabels
+    firewalld
+    echo $GREEN Use the firewalld for firewall setup $NO_COLOR
 else
-continue
+    iptabels
+    echo $GREEN Use the iptable for firewall $NO_COLOR
 fi
 echo -e "\e[1;32m Congratulation !!! You has been finished zabbix $(rpm -qa | grep zabbix-web-mysql | awk -F "-" '{print $4}') install \e[0m"
 
