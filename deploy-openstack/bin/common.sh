@@ -48,10 +48,11 @@ sed -i "/server 2.centos.pool.ntp.org iburst/d" /etc/ntp.conf
 sed -i "/server 3.centos.pool.ntp.org iburst/d" /etc/ntp.conf
 sed -i "21 i server $NTP_SERVER_IP iburst " /etc/ntp.conf
 
+ntpdate $NTP_SERVER_IP 1>/dev/null
+
 systemctl enable ntpd.service 1>/dev/null 2>&1 && 
 systemctl start ntpd.service
 
-ntpdate $NTP_SERVER_IP 1>/dev/null
 }
 
 function mysql_configuration(){

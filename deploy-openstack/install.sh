@@ -13,6 +13,7 @@ $MAGENTA================================================================
             --------Usage as below ---------
              sh $0 controller
              sh $0 compute
+             sh $0 network
              sh $0 check 
 ================================================================
 $NO_COLOR
@@ -68,7 +69,10 @@ source ./bin/neutron.sh compute
 sleep 5
 source ./bin/cinder.sh  compute 
 ;;
-
+network)
+yum_repos
+source ./bin/neutron.sh network
+;;
 check)
 source ./bin/net_and_disk_info.sh
 ;;
