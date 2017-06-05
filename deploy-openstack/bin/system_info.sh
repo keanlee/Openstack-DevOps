@@ -29,7 +29,7 @@ for i in $NET_DEV_NAME
     do
         NET_RUN_STATUS=$(ip addr show $i | sed -n '1p' | awk '{print $9}')
 
-        if [[ $NET_RUN_STATUS != UP ]];then
+        if [[ $NET_RUN_STATUS = 'DOWN' ]];then
             continue
         else
             echo ${BLUE}The network card Name:${NO_COLOR}$YELLOW $i${NO_COLOR} ${BLUE},the network card status:$GREEN $NET_RUN_STATUS $NO_COLOR
