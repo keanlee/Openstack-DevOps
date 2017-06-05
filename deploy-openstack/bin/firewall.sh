@@ -1,4 +1,5 @@
 #!/bin/bash
+# firwall will be update later 
 
 STATUS=$(systemctl status firewalld | grep Active | awk -F ":" '{print $2}' | awk '{print $1}')
 #need add more for openstack env later 
@@ -20,8 +21,8 @@ firewall-cmd --zone=public --add-port=10051/tcp --permanent 1>/dev/null 2>&1
 firewall-cmd --reload  1>/dev/null 2>&1
 }
 
-if [[ $STATUS = active ]];then
-firewalld
-else
-iptables
-fi
+
+
+#for now on 
+echo $BLUE Disable the firewall $NO_COLOR
+iptables -F

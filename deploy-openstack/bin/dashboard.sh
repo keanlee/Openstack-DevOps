@@ -21,11 +21,12 @@ sed -i "s/127.0.0.1/$MGMT_IP/g"  /etc/openstack-dashboard/local_settings
 sed -i "s/controller/$MGMT_IP/g" /etc/openstack-dashboard/local_settings
 
 systemctl restart httpd.service memcached.service  
-debug "$?" "systemctl restart httpd.service memcached.service Failed "
+    debug "$?" "systemctl restart httpd.service memcached.service Failed "
 
 echo $BLUE Create flavor for openstack user ...$NO_COLOR
+openstack flavor create --id 0 --vcpus 1 --ram 512 --disk 10  m0.nano
 openstack flavor create --id 0 --vcpus 1 --ram 1024 --disk 20  m1.nano
-debug "$?"  "opnstack flavor create failed "
+    debug "$?"  "opnstack flavor create failed "
 
 cat 1>&2 <<__EOF__
 $GREEN=====================================================================================
@@ -35,6 +36,6 @@ $GREEN==========================================================================
 =====================================================================================
 $NO_COLOR
 __EOF__
-
 }
+
 dashboard 

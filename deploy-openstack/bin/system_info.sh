@@ -23,21 +23,19 @@ $MAGENTA=================================================================
 $NO_COLOR
 __EOF__
 
-which ifconfig 1>/dev/null 2>&1|| yum install net-tools -y 1>/dev/null
-
 NET_DEV_NAME=$(cat /proc/net/dev | awk '{print $1}' | sed -n '3,$p' | awk -F ":" '{print $1}' | grep -v ^lo$ | grep -v ^macvtap* | grep -v ^tap* | grep -v ^q | grep -v ^virbr* | grep -v ^vnet )
 #                                                                                              except the lo and   virtual cards:     macvtap      network name 
 for i in $NET_DEV_NAME
     do
-        NET_RUN_STATUS=$(ifconfig $i | sed -n '1p' | awk '{print $2}' | awk -F "," '{print $3}')
+        NET_RUN_STATUS=$(ip addr show $i | sed -n '1p' | awk '{print $9}')
 
-        if [[ $NET_RUN_STATUS != RUNNING ]];then
+        if [[ $NET_RUN_STATUS != UP ]];then
             continue
         else
             echo ${BLUE}The network card Name:${NO_COLOR}$YELLOW $i${NO_COLOR} ${BLUE},the network card status:$GREEN $NET_RUN_STATUS $NO_COLOR
         fi
         echo ${BLUE}The IP address is : $NO_COLOR
-        IP_ADDR=$(ifconfig $i | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
+        IP_ADDR=$(ip addr show $i | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
         echo $GREEN $IP_ADDR $NO_COLOR
 
             if [[ $IP_ADDR = "" ]];then
@@ -65,6 +63,21 @@ for DEVICE_ID in $DEVICE
 done
 }
 
+function CPU_MEM(){
+cat 1>&2 <<__EOF__
+$MAGENTA=================================================================
+     CPUs and MEMs info on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} list below: 
+=================================================================
+$NO_COLOR
+__EOF__
+
+CPUs=$(lscpu | grep ^CPU\(s\) | awk -F ":" '{print $2}')
+echo $BLUE Your OS CPU\(s\) is: $NO_COLOR $GREEN${CPUs}$NO_COLOR
+MEMs=$(free -m | grep -i mem | awk '{print $2 "M"}')
+echo $BLUE Your OS total Mem:$NO_COLOR $GREEN${MEMs}$NO_COLOR
+}
+
+CPU_MEM
 NET_NAME_IP
 DISK_INFO
 

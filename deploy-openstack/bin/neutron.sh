@@ -23,10 +23,6 @@ __EOF__
 database_create neutron  $NEUTRON_DBPASS
 create_service_credentials $NEUTRON_PASS neutron
 
-echo $BLUE Uninstall NetworkManager $NO_COLOR
-yum erase NetworkManager  -y 1>/dev/null 
-systemctl stop NetworkManager
-
 #Option 1 deploys the simplest possible architecture that only supports attaching instances to provider (external) networks. 
 #No self-service (private) networks, routers, or floating IP addresses. Only the admin or other privileged user can manage provider networks.
 
@@ -36,10 +32,10 @@ systemctl stop NetworkManager
 
 #Option 2 also supports attaching instances to provider networks
 echo $BLUE Using the option 2 of neutron to deploy ... $NO_COLOR 
-echo $BLUE Install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch ... $NO_COLOR 
+echo $BLUE Install openstack-neutron openstack-neutron-ml2 ... $NO_COLOR 
 
 yum install openstack-neutron openstack-neutron-ml2 -y 1>/dev/null
-    debug "$?" "Install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch failed "
+    debug "$?" "Install openstack-neutron openstack-neutron-ml2  failed "
 
 echo $BLUE Copy and edite configuration file of Neutron $NO_COLOR 
 cp -f ./etc/controller/neutron/neutron.conf  /etc/neutron
@@ -49,7 +45,7 @@ sed -i "s/NEUTRON_DBPASS/$NEUTRON_DBPASS/g" /etc/neutron/neutron.conf
 sed -i "s/NEUTRON_PASS/$NEUTRON_PASS/g" /etc/neutron/neutron.conf
 sed -i "s/NOVA_PASS/$NOVA_PASS/g"  /etc/neutron/neutron.conf
 
-#Openvswitch 
+#ml2_conf
 cp -f ./etc/controller/neutron/plugin.ini  /etc/neutron/plugins/ml2/ml2_conf.ini
 
 ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini
@@ -60,9 +56,11 @@ su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf \
 --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron  1>/dev/null
     debug "$?" "Populate the database of neutron failed "
 
+echo $BLUE restart openstack-nova-api.service openstack-nova-scheduler.service openstack-nova-conductor.service $NO_COLOR
 systemctl restart openstack-nova-api.service openstack-nova-scheduler.service openstack-nova-conductor.service 
     debug "$?"  "systemctl restart openstack-nova-api openstack-nova-scheduler.service openstack-nova-conductor.service failed "
 
+echo $BLUE start neutron-server.service $NO_COLOR
 systemctl enable neutron-server.service 1>/dev/null 2>&1 
 systemctl start  neutron-server.service
     debug "$?" "start neutron-server failed "
@@ -70,7 +68,7 @@ systemctl start  neutron-server.service
 cat 1>&2 <<__EOF__
 $GREEN=====================================================================================
        
-      Congratulation you finished to deploy Neutron on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
+   Congratulation you finished to deploy Neutron server on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
  
 =====================================================================================
 $NO_COLOR
@@ -85,10 +83,6 @@ $MAGENTA=================================================================
 =================================================================
 $NO_COLOR
 __EOF__
-
-echo $BLUE Uninstall NetworkManager $NO_COLOR
-yum erase NetworkManager  -y 1>/dev/null
-systemctl stop NetworkManager
 
 echo $BLUE Install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch $NO_COLOR 
 yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch -y 1>/dev/null 
@@ -105,9 +99,9 @@ sed -i "s/RABBIT_PASS/$RABBIT_PASS/g" /etc/neutron/neutron.conf
 sed -i "s/controller/$CONTROLLER_VIP/g"  /etc/neutron/neutron.conf
 sed -i "s/NEUTRON_PASS/$NEUTRON_PASS/g" /etc/neutron/neutron.conf
 
-cp -f ./etc/compute/neutron/openvswitch_agent.ini  /etc/neutron
-sed -i "s/LOCAL_IP/$MGMT_IP/g" /etc/neutron/openvswitch_agent.ini
-sed -i "s/br-provider/${br_provider}/g"  /etc/neutron/openvswitch_agent.ini
+cp -f ./etc/compute/neutron/openvswitch_agent.ini  /etc/neutron/plugins/ml2
+sed -i "s/LOCAL_IP/$MGMT_IP/g" /etc/neutron/plugins/ml2/openvswitch_agent.ini
+sed -i "s/br-provider/${br_provider}/g"  /etc/neutron/plugins/ml2/openvswitch_agent.ini
 
 sed -i "s/NEUTRON_PASS/$NEUTRON_PASS/g"  /etc/nova/nova.conf
 
@@ -122,12 +116,11 @@ systemctl enable neutron-openvswitch-agent.service  neutron-ovs-cleanup.service 
 systemctl start neutron-openvswitch-agent.service  
     debug "$?" "start neutron-openvswitch-agent.service failed "
 
-
 cat 1>&2 <<__EOF__
 $GREEN=====================================================================================
        
-      Congratulation you finished to deploy Neutron on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
-Verify it by below command on Controller node: 
+ Congratulation you finished to deploy Neutron on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
+ Verify it by below command on Controller node: 
    execute: <neutron ext-list> 
    option2: <openstack network agent list>
 =====================================================================================
@@ -137,17 +130,21 @@ __EOF__
 }
 
 function neutron_network_node(){
-echo $BLUE Uninstall NetworkManager $NO_COLOR
-yum erase NetworkManager  -y 1>/dev/null
-systemctl stop NetworkManager
+cat 1>&2 <<__EOF__
+$GREEN=====================================================================================
+       
+      Begin to deploy Neutron as network node on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
+ 
+=====================================================================================
+$NO_COLOR
+__EOF__
 
-
+echo $BLUE Install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch $NO_COLOR
 yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch -y 1>/dev/null
     debug "$?" "Install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch failed "
 
 echo $BLUE Copy and edite configuration file of Neutron $NO_COLOR 
 cp -f ./etc/network/neutron.conf  /etc/neutron
-
 sed -i "s/RABBIT_PASS/$RABBIT_PASS/g" /etc/neutron/neutron.conf 
 sed -i "s/controller/$CONTROLLER_VIP/g"  /etc/neutron/neutron.conf
 sed -i "s/NEUTRON_PASS/$NEUTRON_PASS/g" /etc/neutron/neutron.conf
@@ -168,7 +165,7 @@ sed -i "s/br-provider/$br_provider/g" /etc/neutron/plugins/ml2/openvswitch_agent
 
 chown -R root:neutron /etc/neutron/
 
-systemctl enable neutron-dhcp-agent.service neutron-metadata-agent.service  openvswitch.service 1>/dev/null 2>&1 
+systemctl enable neutron-openvswitch-agent.service neutron-dhcp-agent.service neutron-metadata-agent.service  openvswitch.service 1>/dev/null 2>&1 
 
 systemctl start openvswitch.service
     debug "$?" "start openvswitch.service failed"
@@ -184,11 +181,25 @@ systemctl start  neutron-dhcp-agent.service
 systemctl start  neutron-metadata-agent.service
     debug "$?" "start neutron-metadata-agent failed "
 
+systemctl start  neutron-openvswitch-agent.service
+    debug "$?" "start neutron-openvswitch-agent failed "
+
+
 #for option 2
 systemctl enable neutron-l3-agent.service 1>/dev/null 2>&1
-
 systemctl start neutron-l3-agent.service
    debug "$?" "start neutron-l3-agent failed "
+
+cat 1>&2 <<__EOF__
+$GREEN=====================================================================================
+       
+ Congratulation you finished to deploy Neutron as network node on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
+ Verify it by below command on Controller node: 
+   execute: <neutron ext-list> 
+   option2: <openstack network agent list>
+=====================================================================================
+$NO_COLOR
+__EOF__
 }
 
 case $1 in
@@ -202,6 +213,6 @@ network)
 neutron_network_node
 ;;
 *)
-debug "1" "neutron.sh just support controller and compute parameter, your $1 is not support "
+debug "1" "neutron.sh just support controller ,network and compute parameter, your $1 is not support "
 ;;
 esac

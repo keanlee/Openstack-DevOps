@@ -6,4 +6,3 @@
 #Collects event and metering data by monitoring notifications sent from services.
 #Publishes collected data to various targets including data stores and message queues
 
-function cell

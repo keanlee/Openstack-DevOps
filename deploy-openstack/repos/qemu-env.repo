@@ -1,0 +1,4 @@
+[qemu]
+name=qemu
+baseurl=http://10.245.58.108/repos/qemu/
+gpgcheck=0

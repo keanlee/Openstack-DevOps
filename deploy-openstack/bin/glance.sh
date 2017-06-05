@@ -48,14 +48,14 @@ sed -i "s/GLANCE_PASS/$GLANCE_PASS/g"   /etc/glance/glance-registry.conf
 
 echo $BLUE Populate the Image service database $NO_COLOR
 su -s /bin/sh -c "glance-manage db_sync" glance  1>/dev/null 2>&1
-debug "$?" "Populate the Image service database Failed,\
+    debug "$?" "Populate the Image service database Failed,\
 execute su -s /bin/sh -c \"glance-manage db_sync\" glance or check glance.api log "
 echo $GREEN Ignore the above  any deprecation messages in this output $NO_COLOR 
 
 #Start the Image services and configure them to start when the system boots
 systemctl enable openstack-glance-api.service openstack-glance-registry.service  1>/dev/null 2>&1
 systemctl start openstack-glance-api.service openstack-glance-registry.service
-debug "$?"  "Start daemon openstack-glance-api openstack-glance-registry failed,Maybe you should check the conf file "
+    debug "$?"  "Start daemon openstack-glance-api openstack-glance-registry failed,Maybe you should check the conf file "
 }
 
 function verify_glance(){
@@ -77,13 +77,25 @@ openstack image create "cirros" \
 --file ./lib/cirros-0.3.4-x86_64-disk.img \
 --disk-format qcow2 --container-format bare \
 --public
-debug "$?" "Upload image to glance failed"
+    debug "$?" "Upload image to glance failed"
 
 if [[  $(openstack image list | grep cirros | wc -l) = 1 ]];then
-echo $GREEN Upload image cirros Success $NO_COLOR
+    echo $GREEN Upload image cirros Success $NO_COLOR
 else
-debug "1" " Upload image cirros to glance Failed"
+    debug "1" " Upload image cirros to glance Failed"
 fi
+
+}
+
+cat 1>&2 <<__EOF__
+$MAGENTA=================================================================
+     Begin to deploy glance on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} 
+=================================================================
+$NO_COLOR
+__EOF__
+
+glance_main
+verify_glance
 
 cat 1>&2 <<__EOF__
 $GREEN===================================================================================
@@ -93,16 +105,4 @@ $GREEN==========================================================================
 ===================================================================================
 $NO_COLOR
 __EOF__
-
-}
-
-cat 1>&2 <<__EOF__
-$MAGENTA=================================================================
-            Begin to deploy glance 
-=================================================================
-$NO_COLOR
-__EOF__
-
-glance_main
-verify_glance
 

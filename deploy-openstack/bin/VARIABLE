@@ -4,14 +4,14 @@
 #------------------------Need to choose the network card  first -----------------------
 
 #management network card name, both controller and compute use this name for configuration 
-MGMT_IP_DEVICE=ens4
+MGMT_IP_DEVICE=ens3
 
 #openvswitch 
 #which bridge name you want to create 
 #For example: br-tun - tunnel bridge (vxlan or gre)
 #             br-int - integration bridge 
 #             br-ex  - external bridge
-br_provider=br-ext
+br_provider=br-ex
 
 #Replace PROVIDER_INTERFACE with the name of the underlying interface that handles provider networks. For example, eth1
 PROVIDER_INTERFACE=ens3
@@ -20,19 +20,20 @@ PROVIDER_INTERFACE=ens3
 COMPUTE_NET1_CARD_NAME=ens3
 
 #The VIP use for all compute node ,ha_proxy also use this ip 
-CONTROLLER_VIP=10.245.58.206
+CONTROLLER_VIP=10.245.32.73
 
 #NTP server IP
-NTP_SERVER_IP=10.245.58.206
+NTP_SERVER_IP=10.245.58.205
 
 #MGMT_IP is both controller and compute management ip 
-MGMT_IP=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
+MGMT_IP=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
+
 
 #set mariadb password 
 MARIADB_PASSWORD=admin
 
-#set the rabbitmq host and password as below 
-RABBIT_HOSTS=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
+#set the rabbitmq host IP and password as below 
+RABBIT_HOSTS=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
 RABBIT_PASS=rabbitmq
 
 #--------------------Keystone ------------------
@@ -59,7 +60,7 @@ NOVA_PASS=novapass
 #nova.conf need my_ip 
 #In the [DEFAULT] section, configure the my_ip option to use the management interface IP address of the controller node
 #my_ip here:
-MY_IP_CONTROLLER=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
+MY_IP_CONTROLLER=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
 
 #--------------------Neutron for controller -----------
 NEUTRON_DBPASS=neutrondb
@@ -78,26 +79,22 @@ CINDER_PASS=cinderpass
 #list the compute node management networkd card name (for example : eth0 em1)
 
 
-COMPUTE_MANAGEMENT_INTERFACE_IP_ADDRESS=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
-Management_ip=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
-Compute_host=$(cat ./COMPUTE_HOSTS)
-
-
+COMPUTE_MANAGEMENT_INTERFACE_IP_ADDRESS=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
 
 #use for linuxbridge_agent.ini this need make sure 
 PROVIDER_INTERFACE_NAME=${COMPUTE_NET1_CARD_NAME}
-OVERLAY_INTERFACE_IP_ADDRESS=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
+OVERLAY_INTERFACE_IP_ADDRESS=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
 
 #Edit the /etc/neutron/metadata_agent.ini 
 METADATA_SECRET=02fwtwkpweglbw
 
 #Neutron for compute node 
 COMPUTE_PROVIDER_INTERFACE_NAME=${COMPUTE_NET1_CARD_NAME}
-COMPUTE_OVERLAY_INTERFACE_IP_ADDRESS=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
+COMPUTE_OVERLAY_INTERFACE_IP_ADDRESS=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
 
 #cinder for compute node
 #management network interface on your storage node （storage management ip）
-CINDER_MANAGEMENT_INTERFACE_IP_ADDRESS=$(ifconfig $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
+CINDER_MANAGEMENT_INTERFACE_IP_ADDRESS=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
 
 
 

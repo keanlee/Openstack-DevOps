@@ -14,21 +14,60 @@ WHITE="$ESC[0;37m"
 #PURPLE="$ESC[0;35m"
 CYAN="$ESC[0;36m"
 
-source ./bin/VARIABLE  check  
+source ./bin/VARIABLE  
 
 function debug(){
 if [[ $1 -ne 0 ]]; then 
-echo $RED ERROR:  $2 $NO_COLOR
-exit 1
+    echo $RED ERROR:  $2 $NO_COLOR
+    exit 1
 fi
 }
 
 
-#----------------disable selinux-------------------------
-sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config #disable selinux in conf file 
-setenforce 0  &&
-echo $GREEN Disable the selinux by config file. The current selinux Status:$NO_COLOR $YELLOW $(getenforce) $NO_COLOR
+#-----------------------------yum repos configuration ---------------------------
+function yum_repos(){
+if [[ ! -d /etc/yum.repos.d/bak/ ]];then
+    mkdir /etc/yum.repos.d/bak/
+fi
+mv /etc/yum.repos.d/* /etc/yum.repos.d/bak/  1>/dev/null 2>1&
+cp ./repos/* /etc/yum.repos.d/
+yum clean all 1>/dev/null 2>1&
+echo $GREEN yum repos config done $NO_COLOR
+}
 
+
+#---------------------------initialize env ------------------------------------
+function initialize_env(){
+#----------------disable selinux-------------------------
+cat 1>&2 <<__EOF__
+$MAGENTA==========================================================
+            Begin to initialize env ...
+==========================================================
+$NO_COLOR
+__EOF__
+
+echo $BLUE Disable selinux $NO_COLOR
+if [[ $(getenforce) = Enforcing ]];then
+    sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config #disable selinux in conf file 
+    setenforce 0  &&
+    echo $GREEN Disable the selinux by config file. The current selinux Status:$NO_COLOR $YELLOW $(getenforce) $NO_COLOR
+elif [[ $(getenforce) =  Permissive ]];then 
+    sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+fi
+
+echo $BLUE Uninstall NetworkManager $NO_COLOR
+systemctl status NetworkManager 1>/dev/null 2>&1
+if [[ $? = 0 ]];then
+    yum erase NetworkManager  -y 1>/dev/null 2>&1
+    systemctl stop NetworkManager 1>/dev/null 2>&1
+fi
+
+echo $BLUE Uninstall firewalld $NO_COLOR
+which firewall-cmd  1>/dev/null 2>&1 &&
+yum erase firewalld* -y 1>/dev/null 2>&1
+}
+
+#--------------------------------------ntp server --------------------------------
 function ntp(){
 cat 1>&2 <<__EOF__
 $MAGENTA==========================================================
@@ -55,6 +94,7 @@ systemctl start ntpd.service
 
 }
 
+#----------------------------------------mariadb install ------------------------------------------------
 function mysql_configuration(){
 cat 1>&2 <<__EOF__
 $MAGENTA==========================================================
@@ -85,7 +125,8 @@ systemctl start mariadb.service
 #systemctl daemon-reload
 systemctl restart mariadb.service
 
-mysql_secure_installation <<EOF
+echo $BLUE Set admin password of mariadb $NO_COLOR
+mysql_secure_installation 1>/dev/null <<EOF
 
 y
 $MARIADB_PASSWORD
@@ -95,10 +136,13 @@ y
 y
 y
 EOF
+
 debug "$?" "$RED Mysql configuration failed $NO_COLOR"
 echo $GREEN Finished the Mariadb install and configuration on $YELLOW $(hostname) $NO_COLOR 
 }
 
+
+#-------------------------------------database create function --------------------------
 function database_create(){
 #create database and user in mariadb for openstack component
 #$1 is the database name (comonent name and usename) 
@@ -115,6 +159,8 @@ IDENTIFIED BY '$2';GRANT ALL PRIVILEGES ON $1.* TO '$USER'@'%'  IDENTIFIED BY '$
 debug "$?" "Create database $1 Failed "
 }
 
+
+#-------------------------------rabbitmq install ----------------------------------------------
 function rabbitmq_configuration(){
 cat 1>&2 <<__EOF__
 $MAGENTA==========================================================
@@ -129,7 +175,9 @@ echo $BLUE Install rabbitmq-server ... $NO_COLOR
 yum install rabbitmq-server  -y 1>/dev/null
 debug "$1" "$RED Install rabbitmq-server failed $NO_COLOR"
 systemctl enable rabbitmq-server.service 1>/dev/null 2>&1 && 
-sed -i "3 i $MGMT_IP  $(hostname )" /etc/hosts
+
+sed -i "2a ${MGMT_IP}   $(hostname)" /etc/hosts
+
 systemctl start rabbitmq-server.service
 debug "$?" "systemctl start rabbitmq-server.service Faild, Did you edit the /etc/hosts correct ? "
 
@@ -148,6 +196,8 @@ debug "$?" "Restart rabbitmq-server.service fail after enable rabbitmq_managemen
 echo $GREEN You can browse rabbitmq web via 15672 port $NO_COLOR
 }
 
+
+#-------------------------------memcache install ----------------------------------------------
 function memcache(){
 #install and configuration memecache 
 #Need variable MGMT_IP
@@ -162,6 +212,7 @@ systemctl start memcached.service
 }
 
 
+#----------------------------create_service_credentials----------------------
 function create_service_credentials(){
 #This function need parameter :
 #$1 is the service password 
@@ -272,7 +323,5 @@ fi
 echo $DB_SIZE  | awk  '{print $'$NUMS'}'
 
 }
-
-
 
 

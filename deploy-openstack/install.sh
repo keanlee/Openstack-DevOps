@@ -25,52 +25,52 @@ if [[ $# = 0 || $# -gt 1 ]]; then
     exit 1
 fi
 
-function yum_repos(){
-if [[ ! -d /etc/yum.repos.d/bak ]];then
-    mkdir /etc/yum.repos.d/bak
-else 
-    mv /etc/yum.repos.d/* /etc/yum.repos.d/bak/
-    cp ./repos/* /etc/yum.repos.d/
-    yum clean all
-    echo $GREEN yum repos config done $NO_COLOR
-fi
-}
-
 
 
 #---------------compnment choose -----------
 case $1 in
 controller)
-yum_repos
-source ./bin/clean.sh
-sleep 2
-mysql_configuration
+source ./bin/clean.sh &&
 
+yum_repos
+initialize_env
+ntp
+source ./bin/firewall.sh
+rabbitmq_configuration
+memcache
+mysql_configuration
 source ./bin/keystone.sh
-sleep 5
+sleep 2
 source ./bin/glance.sh
-sleep 5
+sleep 2
 source ./bin/nova.sh controller  
-sleep 5
+sleep 2
 source ./bin/neutron.sh controller 
-sleep 5
+sleep 2
 source ./bin/cinder.sh controller
-sleep 5
+sleep 2
 source ./bin/dashboard.sh 
 ;;
 
 compute)
 source ./bin/clean.sh 
+yum_repos
+initialize_env
+ntp
+source ./bin/firewall.sh
 sleep 2
-yum_repos
 source ./bin/nova.sh compute
-sleep 5
+sleep 2
 source ./bin/neutron.sh compute
-sleep 5
-source ./bin/cinder.sh  compute 
+#source ./bin/cinder.sh  compute 
 ;;
+
 network)
+source ./bin/clean.sh 
 yum_repos
+initialize_env
+ntp
+source ./bin/firewall.sh
 source ./bin/neutron.sh network
 ;;
 check)

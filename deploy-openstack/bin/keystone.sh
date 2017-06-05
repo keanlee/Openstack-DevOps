@@ -1,6 +1,5 @@
 #!/bin/bash
 #author by keanlee 
-#This script request  common.sh
 
 function openrc_file_create(){
 echo $BLUE create admin-openrc and demo-openrc file $NO_COLOR
@@ -104,7 +103,9 @@ keystone-manage bootstrap --bootstrap-password ${ADMIN_PASS} \
 echo $BLUE Configure the Apache HTTP server ... $NO_COLOR
 sed -i "/ServerName www.example.com:80/a\ServerName $MGMT_IP" /etc/httpd/conf/httpd.conf  1>/dev/null
 echo $BLUE Create a link to the /usr/share/keystone/wsgi-keystone.conf file: $NO_COLOR
+
 ln -s /usr/share/keystone/wsgi-keystone.conf /etc/httpd/conf.d/     1>/dev/null
+
 systemctl enable httpd.service     1>/dev/null 2>&1
 systemctl start httpd.service
 
@@ -142,14 +143,6 @@ echo $GREEN Created openrc file and the admin-openrc can be work normally $NO_CO
 
 #----------------------------Keystone ------------------
 #Execute below function to install keystone 
-echo $BLUE Install openstack-selinux and  python-openstackclient ...$NO_COLOR
-yum install openstack-selinux python-openstackclient -y 1>/dev/null 
-    debug "$?" "$RED Install openstack-selinux python-openstackclient failed $NO_COLOR"
-
-#------Request Functions ------
-ntp
-rabbitmq_configuration
-memcache
 
 cat 1>&2 <<__EOF__
 $MAGENTA================================================================
@@ -157,6 +150,11 @@ $MAGENTA================================================================
 ================================================================
 $NO_COLOR
 __EOF__
+
+echo $BLUE Install openstack-selinux and  python-openstackclient ...$NO_COLOR
+yum install openstack-selinux python-openstackclient -y 1>/dev/null 
+    debug "$?" "$RED Install openstack-selinux python-openstackclient failed $NO_COLOR"
+
 keystone_main
 
 cat 1>&2 <<__EOF__
@@ -166,3 +164,5 @@ install.For more info about keystone you can refer /usr/share/doc/openstack-keys
 ================================================================================================================
 $NO_COLOR
 __EOF__
+
+
