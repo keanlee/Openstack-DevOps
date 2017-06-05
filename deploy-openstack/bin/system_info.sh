@@ -34,9 +34,8 @@ for i in $NET_DEV_NAME
         else
             echo ${BLUE}The network card Name:${NO_COLOR}$YELLOW $i${NO_COLOR} ${BLUE},the network card status:$GREEN $NET_RUN_STATUS $NO_COLOR
         fi
-        echo ${BLUE}The IP address is : $NO_COLOR
         IP_ADDR=$(ip addr show $i | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
-        echo $GREEN $IP_ADDR $NO_COLOR
+        echo ${BLUE}The IP address is :$NO_COLOR$GREEN $IP_ADDR $NO_COLOR
 
             if [[ $IP_ADDR = "" ]];then
               echo $RED No IP Address with $i $NO_COLOR
@@ -58,7 +57,7 @@ DEVICE=$(cat /proc/partitions | awk '{print $4}' | sed -n '3,$p' | grep "[a-z]$"
 for DEVICE_ID in $DEVICE
     do 
         DISK_SIZE=$(lsblk /dev/${DEVICE_ID} | sed -n '2p' | awk '{print $4}')
-        echo $BLUE Disk name : ${YELLOW}$DEVICE_ID${NO_COLOR} $BLUE the size is:$YELLOW $DISK_SIZE${NO_COLOR}
+        echo $BLUE Disk name : ${YELLOW}$DEVICE_ID${NO_COLOR} $BLUE the size is:$GREEN $DISK_SIZE${NO_COLOR}
         
 done
 }
@@ -70,9 +69,12 @@ $MAGENTA=================================================================
 =================================================================
 $NO_COLOR
 __EOF__
+#HARDCPUs=$(cat /proc/cpuinfo | grep processor | wc -l)
+#echo $BLUE Your physics CPUs:$NO_COLOR $GREEN${HARDCPUs}$NO_COLOR
 
 CPUs=$(lscpu | grep ^CPU\(s\) | awk -F ":" '{print $2}')
 echo $BLUE Your OS CPU\(s\) is: $NO_COLOR $GREEN${CPUs}$NO_COLOR
+
 MEMs=$(free -m | grep -i mem | awk '{print $2 "M"}')
 echo $BLUE Your OS total Mem:$NO_COLOR $GREEN${MEMs}$NO_COLOR
 }
