@@ -55,6 +55,7 @@ GLANCE_PASS=glance
 #-----------------Nova for controller node --------
 #both nova and nova_api database use this
 NOVA_DBPASS=novadb
+
 #nova pass for keystone 
 NOVA_PASS=novapass
 #nova.conf need my_ip 

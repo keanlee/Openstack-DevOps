@@ -1,7 +1,7 @@
 #!/bin/bash
 # firwall will be update later 
 
-STATUS=$(systemctl status firewalld | grep Active | awk -F ":" '{print $2}' | awk '{print $1}')
+#STATUS=$(systemctl status firewalld | grep Active | awk -F ":" '{print $2}' | awk '{print $1}')
 #need add more for openstack env later 
 function iptabels(){
 iptables -I  INPUT -p tcp --dport 22    -j ACCEPT

@@ -47,11 +47,15 @@ sed -i "s/NOVA_PASS/$NOVA_PASS/g" /etc/nova/nova.conf
 sed -i "s/NEUTRON_PASS/$NEUTRON_PASS/g"  /etc/nova/nova.conf
 sed -i "s/METADATA_SECRET/$METADATA_SECRET/g" /etc/nova/nova.conf
 
-echo $BLUE Populate the Nova databases $NO_COLOR
+echo $BLUE Populate the nova_api databases $NO_COLOR
 su -s /bin/sh -c "nova-manage api_db sync" nova
     debug "$?" "nova-manage api_db sync failed "
+get_database_size nova_api $NOVA_DBPASS
+
+echo $BLUE Populate the Nova databases $NO_COLOR
 su -s /bin/sh -c "nova-manage db sync" nova
     debug "$?"  "nova-manage db sync failed "
+get_database_size nova $NOVA_DBPASS
 echo $GREEN Populate nova database success , ignore any deprecation messages in  above output $NO_COLOR
 
 systemctl enable openstack-nova-api.service \

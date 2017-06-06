@@ -48,6 +48,7 @@ sed -i "s/GLANCE_PASS/$GLANCE_PASS/g"   /etc/glance/glance-registry.conf
 
 echo $BLUE Populate the Image service database $NO_COLOR
 su -s /bin/sh -c "glance-manage db_sync" glance  1>/dev/null 2>&1
+    get_database_size glance $GLANCE_DBPASS
     debug "$?" "Populate the Image service database Failed,\
 execute su -s /bin/sh -c \"glance-manage db_sync\" glance or check glance.api log "
 echo $GREEN Ignore the above  any deprecation messages in this output $NO_COLOR 

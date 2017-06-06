@@ -54,6 +54,7 @@ ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini
 echo $BLUE Populate the database ...  $NO_COLOR
 su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf \
 --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron  1>/dev/null
+    get_database_size neutron $NEUTRON_DBPASS
     debug "$?" "Populate the database of neutron failed "
 
 echo $BLUE restart openstack-nova-api.service openstack-nova-scheduler.service openstack-nova-conductor.service $NO_COLOR

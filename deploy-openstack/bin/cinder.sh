@@ -27,6 +27,7 @@ sed -i "s/CINDER_PASS/$CINDER_PASS/g"  /etc/cinder/cinder.conf
 
 echo $BLUE Populate the Block Storage database ... $NO_COLOR 
 su -s /bin/sh -c "cinder-manage db sync" cinder  1>/dev/null
+    get_database_size cinder $CINDERDB_PASS
     debug "$?"  "Populate the Block Storage database failed "
 echo $GREEN populate the cinder database success ! Ignore any deprecation messages in above output $NO_COLOR 
 

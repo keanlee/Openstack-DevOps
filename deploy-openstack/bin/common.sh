@@ -16,12 +16,14 @@ CYAN="$ESC[0;36m"
 
 source ./bin/VARIABLE  
 
+
 function debug(){
 if [[ $1 -ne 0 ]]; then 
     echo $RED ERROR:  $2 $NO_COLOR
     exit 1
 fi
 }
+
 
 
 #-----------------------------yum repos configuration ---------------------------
@@ -36,6 +38,7 @@ echo $GREEN yum repos config done $NO_COLOR
 }
 
 
+
 #---------------------------initialize env ------------------------------------
 function initialize_env(){
 #----------------disable selinux-------------------------
@@ -46,26 +49,31 @@ $MAGENTA==========================================================
 $NO_COLOR
 __EOF__
 
-echo $BLUE Disable selinux $NO_COLOR
 if [[ $(getenforce) = Enforcing ]];then
-    sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config #disable selinux in conf file 
+    echo $BLUE Disable selinux $NO_COLOR
+    sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config 
     setenforce 0  &&
     echo $GREEN Disable the selinux by config file. The current selinux Status:$NO_COLOR $YELLOW $(getenforce) $NO_COLOR
+
 elif [[ $(getenforce) =  Permissive ]];then 
+    echo $BLUE Disable selinux $NO_COLOR
     sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+    echo $GREEN Disable the selinux by config file. The current selinux Status:$NO_COLOR $YELLOW $(getenforce) $NO_COLOR
 fi
 
-echo $BLUE Uninstall NetworkManager $NO_COLOR
 systemctl status NetworkManager 1>/dev/null 2>&1
 if [[ $? = 0 ]];then
+    echo $BLUE Uninstall NetworkManager $NO_COLOR
     yum erase NetworkManager  -y 1>/dev/null 2>&1
     systemctl stop NetworkManager 1>/dev/null 2>&1
 fi
 
-echo $BLUE Uninstall firewalld $NO_COLOR
 which firewall-cmd  1>/dev/null 2>&1 &&
+echo $BLUE Uninstall firewalld $NO_COLOR
 yum erase firewalld* -y 1>/dev/null 2>&1
 }
+
+
 
 #--------------------------------------ntp server --------------------------------
 function ntp(){
@@ -91,8 +99,9 @@ ntpdate $NTP_SERVER_IP 1>/dev/null
 
 systemctl enable ntpd.service 1>/dev/null 2>&1 && 
 systemctl start ntpd.service
-
 }
+
+
 
 #----------------------------------------mariadb install ------------------------------------------------
 function mysql_configuration(){
@@ -125,7 +134,7 @@ systemctl start mariadb.service
 #systemctl daemon-reload
 systemctl restart mariadb.service
 
-echo $BLUE Set admin password of mariadb $NO_COLOR
+echo $BLUE Set admin password for mariadb... $NO_COLOR
 mysql_secure_installation 1>/dev/null <<EOF
 
 y
@@ -142,6 +151,34 @@ echo $GREEN Finished the Mariadb install and configuration on $YELLOW $(hostname
 }
 
 
+#------------------------------------------Database size -----------------------------
+function get_database_size(){
+#$1 as the database name 
+#$2 as the database password 
+#For example get_database_size nova novadb
+if [[ $# != 2 ]];then
+echo $RED This function need to Two parameter $NO_COLOR
+exit 1
+fi
+
+if [[ $1 = nova_api ]];then
+DB_SIZE=$(mysql -unova -p$2 -e "show databases;use information_schema;select concat(round(sum(DATA_LENGTH/1024/1024),2),'MB') as data from TABLES where table_schema='nova_api';" )
+else
+DB_SIZE=$(mysql -u$1 -p$2 -e "show databases;use information_schema;select concat(round(sum(DATA_LENGTH/1024/1024),2),'MB') as data from TABLES where table_schema='$1';" )
+fi
+
+if [[ $1 = nova || $1 = nova_api  ]];then
+local NUMS=6
+else
+local NUMS=5
+fi
+
+echo $BLUE Database $YELLOW${1}${BLUE} has already create and the size is:$NO_COLOR 
+echo $DB_SIZE  | awk  '{print $'$NUMS'}' 
+}
+
+
+
 #-------------------------------------database create function --------------------------
 function database_create(){
 #create database and user in mariadb for openstack component
@@ -156,8 +193,9 @@ fi
 
 mysql -uroot -p$MARIADB_PASSWORD -e "CREATE DATABASE $1;GRANT ALL PRIVILEGES ON $1.* TO '$USER'@'localhost' \
 IDENTIFIED BY '$2';GRANT ALL PRIVILEGES ON $1.* TO '$USER'@'%'  IDENTIFIED BY '$2';flush privileges;"  
-debug "$?" "Create database $1 Failed "
+    debug "$?" "Create database $1 Failed "
 }
+
 
 
 #-------------------------------rabbitmq install ----------------------------------------------
@@ -197,6 +235,7 @@ echo $GREEN You can browse rabbitmq web via 15672 port $NO_COLOR
 }
 
 
+
 #-------------------------------memcache install ----------------------------------------------
 function memcache(){
 #install and configuration memecache 
@@ -210,6 +249,7 @@ sed -i "s/127.0.0.1/$MGMT_IP/g" /etc/sysconfig/memcached
 systemctl enable memcached.service   1>/dev/null 2>&1 &&
 systemctl start memcached.service
 }
+
 
 
 #----------------------------create_service_credentials----------------------
@@ -297,31 +337,9 @@ openstack endpoint create --region RegionOne ${SERVICE1} internal http://$MGMT_I
 openstack endpoint create --region RegionOne ${SERVICE1} admin http://$MGMT_IP:${PORTS}
 debug "$?" "openstack endpoint create $2 failed "
 fi 
-echo $GREEN openstack $2 endpoint create success $NO_COLOR 
+echo $GREEN openstack ${YELLOW}$2${GREEN} endpoint create success $NO_COLOR 
 }
 
-function get_database_size(){
-#$1 as the database name 
-#$2 as the database password 
-#For example get_database_size nova novadb
-if [[ $# != 2 ]];then
-echo $RED This function need to Two parameter $NO_COLOR
-exit 1
-fi
 
-if [[ $1 = nova_api ]];then
-DB_SIZE=$(mysql -unova -p$2 -e "show databases;use information_schema;select concat(round(sum(DATA_LENGTH/1024/1024),2),'MB') as data from TABLES where table_schema='nova_api';" )
-else
-DB_SIZE=$(mysql -u$1 -p$2 -e "show databases;use information_schema;select concat(round(sum(DATA_LENGTH/1024/1024),2),'MB') as data from TABLES where table_schema='$1';" )
-fi
-
-if [[ $1 = nova || $1 = nova_api  ]];then
-local NUMS=6
-else
-local NUMS=5
-fi
-echo $DB_SIZE  | awk  '{print $'$NUMS'}'
-
-}
 
 
