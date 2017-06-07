@@ -4,7 +4,7 @@
 #------------------------Need to choose the network card  first -----------------------
 
 #management network card name, both controller and compute use this name for configuration 
-MGMT_IP_DEVICE=ens3
+MGMT_IP_DEVICE=eno1
 
 #openvswitch 
 #which bridge name you want to create 
@@ -14,16 +14,16 @@ MGMT_IP_DEVICE=ens3
 br_provider=br-ex
 
 #Replace PROVIDER_INTERFACE with the name of the underlying interface that handles provider networks. For example, eth1
-PROVIDER_INTERFACE=ens3
+PROVIDER_INTERFACE=eno2
 
 #this is neutron for ext ip
-COMPUTE_NET1_CARD_NAME=ens3
+COMPUTE_NET1_CARD_NAME=eno2
 
 #The VIP use for all compute node ,ha_proxy also use this ip 
-CONTROLLER_VIP=10.245.32.73
+CONTROLLER_VIP=10.245.58.247
 
 #NTP server IP
-NTP_SERVER_IP=10.245.58.205
+NTP_SERVER_IP=10.245.58.247
 
 #MGMT_IP is both controller and compute management ip 
 MGMT_IP=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')

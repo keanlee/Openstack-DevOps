@@ -4,7 +4,7 @@
 
 cd $(cd `dirname $0`; pwd)
 
-ZABBIXSERVER=$1                                #zabbix server ip 
+ZABBIXSERVER=$1                    #zabbix server ip 
 HOSTNAME=$(hostname)                         #hostname will be display on zabbix server web page 
 METADATA=$2                                   #For Openstack option is controller/compute/ceph/other roles,this will be used for auto Auto registration
 

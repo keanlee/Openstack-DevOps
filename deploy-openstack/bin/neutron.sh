@@ -140,7 +140,7 @@ $GREEN==========================================================================
 $NO_COLOR
 __EOF__
 
-echo $BLUE Install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch $NO_COLOR
+echo $BLUE Install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch ... $NO_COLOR
 yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch -y 1>/dev/null
     debug "$?" "Install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch failed "
 
@@ -173,20 +173,24 @@ systemctl start openvswitch.service
 echo $BLUE Create the OVS provider bridge ${YELLOW}${br_provider}${NO_COLOR} 
 ovs-vsctl add-br ${br_provider}
 
-echo $BLUE Add the provider network interface as a port on the OVS provider bridge ${YELLOW}${br_provider}${NO_COLOR}
+echo $BLUE Add the provider network interface:$YELLOW$PROVIDER_INTERFACE$BLUE as a port on the OVS provider bridge ${YELLOW}${br_provider}${NO_COLOR}
 #Replace PROVIDER_INTERFACE with the name of the underlying interface that handles provider networks. For example, eth1
 ovs-vsctl add-port ${br_provider} $PROVIDER_INTERFACE
+echo $BLUE Add port $YELLOW$PROVIDER_INTERFACE$BLUE to $br_provider $NO_COLOR 
 
+echo $BLUE start neutron-dhcp-agent.service and neutron-metadata-agent.service $NO_COLOR
 systemctl start  neutron-dhcp-agent.service 
     debug "$?" "start neutron-dhcp-agent failed "
 systemctl start  neutron-metadata-agent.service
     debug "$?" "start neutron-metadata-agent failed "
 
+echo $BLUE start neutron-openvswitch-agent.service $NO_COLOR
 systemctl start  neutron-openvswitch-agent.service
     debug "$?" "start neutron-openvswitch-agent failed "
 
 
 #for option 2
+echo $BLUE start neutron-l3-agent $NO_COLOR
 systemctl enable neutron-l3-agent.service 1>/dev/null 2>&1
 systemctl start neutron-l3-agent.service
    debug "$?" "start neutron-l3-agent failed "

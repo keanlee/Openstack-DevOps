@@ -49,8 +49,7 @@ cat ./$METADATA | while read line ; do ssh -n $line /bin/bash /root/install-zabb
 debug $?
 echo $GREEN Finished install zabbix agent on host: $YELLOW  $(cat ./$METADATA) $NO_COLOR
 }
-
-controller
+#controller
 compute
 echo $BLUE Thank for you  use this script to install zabbix agent $NO_COLOR
 

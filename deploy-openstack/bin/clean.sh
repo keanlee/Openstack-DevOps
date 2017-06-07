@@ -20,6 +20,7 @@ rm -rf /etc/ntp.conf.rpmsave
 rabbitmqctl  delete_user openstack 1>/dev/null   2>1&
 rabbitmqctl  list_users  1>/dev/null   2>1&
 systemctl stop rabbitmq-server
+rm -rf /var/log/rabbitmq/
 yum erase rabbitmq-server -y 1>/dev/null  2>1&
 
 systemctl stop memcached 1>/dev/null   2>1&

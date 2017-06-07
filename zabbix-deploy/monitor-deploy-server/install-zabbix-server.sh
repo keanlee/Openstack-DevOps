@@ -41,6 +41,7 @@ rm -rf /etc/yum.repos.d/*
 #--------------------this functin is setup the yum repo, you can change the repo on ./repo dir
 cp ./repo/* /etc/yum.repos.d/
 #cp ./repo/zabbix3.0.repo   /etc/yum.repos.d/
+yum clean all 1>/dev/null 2>&1
 echo -e "\e[1;36m setup zabbix repos successfull \e[0m"
 
 #------------------execute the install script --------
@@ -53,7 +54,7 @@ echo -e "\e[1;32m ----->PLEASE Login as Admin/zabbix in IP/zabbix by your Browse
 function choice(){
             if [ $1 -eq 1 ];then
 #--------------Downgrade the pacakge of systemc, since the higher version cause can't start zabbix-server daemon
-            rpm -Uvh --force ./pacakges/gnutls-3.1.18-8.el7.x86_64.rpm   1>/dev/null 2>&1  &&
+            rpm -Uvh --force ./packages/gnutls-3.1.18-8.el7.x86_64.rpm 1>/dev/null &&
             echo "This script will be deploy zabbix-server on $GREEN $(cat /etc/redhat-release) $NO_CLOLOR"
             install
             else

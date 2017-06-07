@@ -32,7 +32,7 @@ if [[ ! -d /etc/yum.repos.d/bak/ ]];then
     mkdir /etc/yum.repos.d/bak/
 fi
 mv /etc/yum.repos.d/* /etc/yum.repos.d/bak/  1>/dev/null 2>1&
-cp ./repos/* /etc/yum.repos.d/
+cp -f ./repos/* /etc/yum.repos.d/ &&
 yum clean all 1>/dev/null 2>1&
 echo $GREEN yum repos config done $NO_COLOR
 }
@@ -85,7 +85,7 @@ $NO_COLOR
 __EOF__
 echo $BLUE Install ntp ... $NO_COLOR
 yum install ntp -y  1>/dev/null
-
+    debug "$?" "Install ntp failed, please check your yum repos"
 cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 hwclock --systohc
 

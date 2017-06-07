@@ -79,6 +79,7 @@ MEMs=$(free -m | grep -i mem | awk '{print $2 "M"}')
 echo $BLUE Your OS total Mem:$NO_COLOR $GREEN${MEMs}$NO_COLOR
 }
 
+echo $GREEN Your linux distribution: ${NO_COLOR}${YELLOW}$(cat /etc/redhat-release) $NO_COLOR
 CPU_MEM
 NET_NAME_IP
 DISK_INFO

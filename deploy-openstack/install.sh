@@ -53,7 +53,7 @@ source ./bin/dashboard.sh
 ;;
 
 compute)
-source ./bin/clean.sh 
+#source ./bin/clean.sh 
 yum_repos
 initialize_env
 ntp
@@ -65,8 +65,7 @@ source ./bin/neutron.sh compute
 #source ./bin/cinder.sh  compute 
 ;;
 
-network)
-source ./bin/clean.sh 
+network) 
 yum_repos
 initialize_env
 ntp
