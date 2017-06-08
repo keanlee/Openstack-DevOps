@@ -11,7 +11,10 @@
 #Messaging queue
 
 #Refer https://docs.openstack.org/newton/install-guide-rdo/common/get-started-networking.html to get more info 
+#refer https://wenku.baidu.com/view/46ced95180eb6294dc886c5b.html?pn=88 for openvswitch guide 
 
+
+#----------------------------------------------------neutron for controller node ----------------------
 function neutron_controller(){
 cat 1>&2 <<__EOF__
 $MAGENTA=================================================================
@@ -32,12 +35,12 @@ create_service_credentials $NEUTRON_PASS neutron
 
 #Option 2 also supports attaching instances to provider networks
 echo $BLUE Using the option 2 of neutron to deploy ... $NO_COLOR 
-echo $BLUE Install openstack-neutron openstack-neutron-ml2 ... $NO_COLOR 
 
+echo $BLUE Install openstack-neutron openstack-neutron-ml2 ... $NO_COLOR 
 yum install openstack-neutron openstack-neutron-ml2 -y 1>/dev/null
     debug "$?" "Install openstack-neutron openstack-neutron-ml2  failed "
 
-echo $BLUE Copy and edite configuration file of Neutron $NO_COLOR 
+echo $BLUE Copy and edit neutron.conf $NO_COLOR 
 cp -f ./etc/controller/neutron/neutron.conf  /etc/neutron
 sed -i "s/controller/$MGMT_IP/g"  /etc/neutron/neutron.conf 
 sed -i "s/RABBIT_PASS/$RABBIT_PASS/g" /etc/neutron/neutron.conf 
@@ -45,9 +48,11 @@ sed -i "s/NEUTRON_DBPASS/$NEUTRON_DBPASS/g" /etc/neutron/neutron.conf
 sed -i "s/NEUTRON_PASS/$NEUTRON_PASS/g" /etc/neutron/neutron.conf
 sed -i "s/NOVA_PASS/$NOVA_PASS/g"  /etc/neutron/neutron.conf
 
-#ml2_conf
+echo $BLUE Copy plugin.ini file $NO_COLOR
 cp -f ./etc/controller/neutron/plugin.ini  /etc/neutron/plugins/ml2/ml2_conf.ini
 
+#The Networking service initialization scripts expect a symbolic link /etc/neutron/plugin.ini 
+#pointing to the ML2 plug-in configuration file, /etc/neutron/plugins/ml2/ml2_conf.ini
 ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini
     debug "$?" "ln -s failed for /etc/neutron/plugin.ini "
 
@@ -56,6 +61,7 @@ su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf \
 --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron  1>/dev/null
     get_database_size neutron $NEUTRON_DBPASS
     debug "$?" "Populate the database of neutron failed "
+
 
 echo $BLUE restart openstack-nova-api.service openstack-nova-scheduler.service openstack-nova-conductor.service $NO_COLOR
 systemctl restart openstack-nova-api.service openstack-nova-scheduler.service openstack-nova-conductor.service 
@@ -70,6 +76,8 @@ cat 1>&2 <<__EOF__
 $GREEN=====================================================================================
        
    Congratulation you finished to deploy Neutron server on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
+     Want to list loaded extensions to verify successful ?
+                run <neutron ext-list> command 
  
 =====================================================================================
 $NO_COLOR
@@ -77,6 +85,8 @@ __EOF__
 
 }
 
+
+#--------------------------------------------------neutron for compute node -----------------------------
 function neutron_compute(){
 cat 1>&2 <<__EOF__
 $MAGENTA=================================================================
@@ -84,6 +94,16 @@ $MAGENTA=================================================================
 =================================================================
 $NO_COLOR
 __EOF__
+
+#The compute node handles connectivity and security groups for instances
+
+echo $BLUE To configure prerequisites $NO_COLOR
+cat >> /etc/sysctl.conf << __EOF__
+net.ipv4.ip_forward = 1
+net.ipv4.conf.all.rp_filter = 0
+net.ipv4.conf.default.rp_filter = 0
+__EOF__
+sysctl -p
 
 echo $BLUE Install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch $NO_COLOR 
 yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch -y 1>/dev/null 
@@ -130,6 +150,8 @@ __EOF__
 
 }
 
+
+#------------------------------------------neutron for network node -----------------------
 function neutron_network_node(){
 cat 1>&2 <<__EOF__
 $GREEN=====================================================================================
@@ -139,6 +161,15 @@ $GREEN==========================================================================
 =====================================================================================
 $NO_COLOR
 __EOF__
+
+#The network node primarily handles internal and external routing and DHCP services for vir-tual networks
+echo $BLUE To configure prerequisites $NO_COLOR
+cat >> /etc/sysctl.conf << __EOF__
+net.ipv4.ip_forward = 1
+net.ipv4.conf.all.rp_filter = 0
+net.ipv4.conf.default.rp_filter = 0
+__EOF__
+sysctl -p
 
 echo $BLUE Install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch ... $NO_COLOR
 yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch -y 1>/dev/null
@@ -178,6 +209,11 @@ echo $BLUE Add the provider network interface:$YELLOW$PROVIDER_INTERFACE$BLUE as
 ovs-vsctl add-port ${br_provider} $PROVIDER_INTERFACE
 echo $BLUE Add port $YELLOW$PROVIDER_INTERFACE$BLUE to $br_provider $NO_COLOR 
 
+#Depending on your network interface driver, you may need to disable generic receive offload (GRO) to achieve 
+#suitable throughput between yourinstances and the external network
+ethtool -K $PROVIDER_INTERFACE gro off
+
+
 echo $BLUE start neutron-dhcp-agent.service and neutron-metadata-agent.service $NO_COLOR
 systemctl start  neutron-dhcp-agent.service 
     debug "$?" "start neutron-dhcp-agent failed "
@@ -187,7 +223,6 @@ systemctl start  neutron-metadata-agent.service
 echo $BLUE start neutron-openvswitch-agent.service $NO_COLOR
 systemctl start  neutron-openvswitch-agent.service
     debug "$?" "start neutron-openvswitch-agent failed "
-
 
 #for option 2
 echo $BLUE start neutron-l3-agent $NO_COLOR
@@ -201,12 +236,15 @@ $GREEN==========================================================================
  Congratulation you finished to deploy Neutron as network node on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
  Verify it by below command on Controller node: 
    execute: <neutron ext-list> 
-   option2: <openstack network agent list>
+            <neutron agent-list>
 =====================================================================================
 $NO_COLOR
 __EOF__
 }
 
+
+
+#--------------------------------------------Main--------------------------------------------
 case $1 in
 controller)
 neutron_controller

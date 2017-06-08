@@ -2,7 +2,7 @@
 #yum erase openstack-selinux python-openstackclient 1>/dev/null
 echo $BLUE Begin clean the env ... $NO_COLOR
 
-rm -rf /etc/yum.repos.d/*
+#rm -rf /etc/yum.repos.d/*
 systemctl stop mariadb  1>/dev/null   2>1&
 yum erase -y mariadb-* mariadb-libs 1>/dev/null   2>1&
 yum erase -y python2-PyMySQL 1>/dev/null  2>1&

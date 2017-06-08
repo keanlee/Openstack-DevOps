@@ -30,7 +30,7 @@ fi
 #---------------compnment choose -----------
 case $1 in
 controller)
-source ./bin/clean.sh 
+#source ./bin/clean.sh 
 sleep 2
 yum_repos
 initialize_env

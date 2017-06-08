@@ -1,24 +1,24 @@
 [base]
 name=CentOS-$releasever - Base
-baseurl=http://10.245.58.108/repos/base/
+baseurl=http://10.245.58.107/repos/base/
 gpgcheck=0
 
 #released updates
 [updates]
 name=CentOS-$releasever - Updates
-baseurl=http://10.245.58.108/repos/extras/
+baseurl=http://10.245.58.107/repos/extras/
 gpgcheck=0
 
 #additional packages that may be useful
 [extras]
 name=CentOS-$releasever - Extras
-baseurl=http://10.245.58.108/repos/updates/
+baseurl=http://10.245.58.107/repos/updates/
 gpgcheck=0
 
 ###############################epel
 [epel]
 name=Extra Packages for Enterprise Linux 7 - $basearch
-baseurl=http://10.245.58.108/repos/epel/
+baseurl=http://10.245.58.107/repos/epel/
 failovermethod=priority
 enabled=1
 gpgcheck=0
