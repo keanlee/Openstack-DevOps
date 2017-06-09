@@ -36,8 +36,13 @@ $MAGENTA================================================================
            ${MAGENTA}sh $0 network
               $BLUE#to deploy network node$NO_COLOR
 
-           ${MAGENTA}sh $0 check  
-              $BLUE#to check the target host net and disk info$NO_COLOR${MAGENTA}
+           ${MAGENTA}sh $0 check-controller 
+              $BLUE#to check the controller host net and disk info$NO_COLOR${MAGENTA}
+
+           ${MAGENTA}sh $0 check-compute
+              $BLUE#to check the compute host net and disk info$NO_COLOR${MAGENTA}
+
+
 ================================================================
 $NO_COLOR
 __EOF__
@@ -63,12 +68,15 @@ cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do ssh -n root@$line /b
 function check_info(){
 #check the target host net and disk info
 #for controller nodes
-cat ./deploy-openstack/CONTROLLER_HOSTS | while read line ; do scp deploy-openstack/bin/system_info.sh $line:/root/; debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
-cat ./deploy-openstack/CONTROLLER_HOSTS | while read line ; do ssh -n root@$line /bin/bash /root/system_info.sh; debug "$?" "bash remote execute on remote host <$line> error "; done
+if [[ $1 = "controller" ]];then 
+    cat ./deploy-openstack/CONTROLLER_HOSTS | while read line ; do scp deploy-openstack/bin/system_info.sh $line:/root/; debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
+    cat ./deploy-openstack/CONTROLLER_HOSTS | while read line ; do ssh -n root@$line /bin/bash /root/system_info.sh; debug "$?" "bash remote execute on remote host <$line> error "; done
 
-#for compute nodes
-cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do scp deploy-openstack/bin/system_info.sh $line:/root/; debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
-cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do ssh -n root@$line /bin/bash /root/system_info.sh; debug "$?" "bash remote execute on remote host <$line> error "; done
+elif [[ $1 = "compute" ]];then 
+    #for compute nodes
+    cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do scp deploy-openstack/bin/system_info.sh $line:/root/; debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
+    cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do ssh -n root@$line /bin/bash /root/system_info.sh; debug "$?" "bash remote execute on remote host <$line> error "; done
+fi
 }
 
 function network_node(){
@@ -89,8 +97,11 @@ compute
 network)
 network_node
 ;;
-check)
-check_info
+check-controller)
+check_info controller 
+;;
+check-compute)
+check_info compute
 ;;
 *)
 help
