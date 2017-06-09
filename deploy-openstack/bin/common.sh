@@ -130,8 +130,8 @@ init-connect = 'SET NAMES utf8'
 EOF
 systemctl enable mariadb.service 1>/dev/null 2>&1 && 
 systemctl start mariadb.service
-#sed -i '/Group=mysql/a\LimitNOFILE=65535' /usr/lib/systemd/system/mariadb.service
-#systemctl daemon-reload
+sed -i '/Group=mysql/a\LimitNOFILE=65535' /usr/lib/systemd/system/mariadb.service
+systemctl daemon-reload
 systemctl restart mariadb.service
 
 echo $BLUE Set admin password for mariadb... $NO_COLOR
