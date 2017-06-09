@@ -1,32 +1,43 @@
 #!/bin/bash 
-#Edit the below variable to adapt your Env..
+#variable for all script 
+#modify by keanlee on June 4th of 2017
 
-#------------------------Need to choose the network card  first -----------------------
+#----------------Edit the below variable to adapt your Env---------------
+#------------------------Need to edit below  first -----------------------
 
-#management network card name, both controller and compute use this name for configuration 
+#management network card name, both controller and all slave node (compute ,block ,network nodes) use this name for configuration 
 MGMT_IP_DEVICE=ens4
 
-#openvswitch 
-#which bridge name you want to create 
-#For example: br-tun - tunnel bridge (vxlan or gre)
-#             br-int - integration bridge 
-#             br-ex  - external bridge
-br_provider=br-ex
-
+#Add a port to the external bridge that connects to the physical external network inter-face
 #Replace PROVIDER_INTERFACE with the name of the underlying interface that handles provider networks. For example, eth1
 PROVIDER_INTERFACE=eno2
 
-#this is neutron for ext ip
-COMPUTE_NET1_CARD_NAME=eno2
-
-#The VIP use for all compute node ,ha_proxy also use this ip 
+#The VIP use for all slave node , ha_proxy also use this ip 
 CONTROLLER_VIP=10.245.58.247
 
 #NTP server IP
 NTP_SERVER_IP=10.245.58.247
 
-#MGMT_IP is both controller and compute management ip 
+#----------------------------------------------------------------------------
+
+
+
+#------------------------------optional for edit -----------------------
+#openvswitch 
+#which bridge name you want to create 
+#For example: br-tun - tunnel bridge (vxlan or gre)
+#             br-int - integration bridge 
+#             br-ex  - external bridge
+
+#no need to change this 
+br_provider=br-ex
+
+
+#MGMT_IP is both controller and all slave node management ip 
 MGMT_IP=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
+
+#-----------------------------------notice------------------------------------
+#Recommend you generate them using <openssl rand -hex 10>  command 
 
 
 #set mariadb password 
@@ -39,8 +50,10 @@ RABBIT_PASS=rabbitmq
 #--------------------Keystone ------------------
 #set keystone database password 
 KEYSTONE_DBPASS=keystone_dbpassword
+
 ADMIN_PASS=admin
 DEMO_PASS=demo
+
 #Which directory you want to store the admin-openrc file ?
 OPENRC_DIR=/home
 
@@ -48,9 +61,9 @@ OPENRC_DIR=/home
 #-----------------Glance-------------
 #glance database password
 GLANCE_DBPASS=glancedb
+
 #glance password use for keystone
 GLANCE_PASS=glance
-
 
 #-----------------Nova for controller node --------
 #both nova and nova_api database use this
@@ -58,44 +71,47 @@ NOVA_DBPASS=novadb
 
 #nova pass for keystone 
 NOVA_PASS=novapass
+
 #nova.conf need my_ip 
 #In the [DEFAULT] section, configure the my_ip option to use the management interface IP address of the controller node
 #my_ip here:
 MY_IP_CONTROLLER=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
 
-#--------------------Neutron for controller -----------
+#--------------------Neutron --------------------------- -----------
 NEUTRON_DBPASS=neutrondb
 NEUTRON_PASS=neutron
+
+#Edit the /etc/neutron/metadata_agent.ini 
+METADATA_SECRET=02fwtwkpweglbw
+
 
 #--------------------Cinder for controller 
 CINDERDB_PASS=cinderdb
 CINDER_PASS=cinderpass
 
 #---------------Controller HA proxy -----------
-#This need to edit by  manual
+#This section will be update later 
 
 
 
 #-------------------------------------nova compute node ------------------------------------------------------
-#list the compute node management networkd card name (for example : eth0 em1)
-
-
 COMPUTE_MANAGEMENT_INTERFACE_IP_ADDRESS=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
 
+
+
+
+
+
+#--------------------------------below is not userfull for this architecture--------------------
 #use for linuxbridge_agent.ini this need make sure 
-PROVIDER_INTERFACE_NAME=${COMPUTE_NET1_CARD_NAME}
-OVERLAY_INTERFACE_IP_ADDRESS=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
-
-#Edit the /etc/neutron/metadata_agent.ini 
-METADATA_SECRET=02fwtwkpweglbw
-
+#PROVIDER_INTERFACE_NAME=${COMPUTE_NET1_CARD_NAME}
+#OVERLAY_INTERFACE_IP_ADDRESS=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
 #Neutron for compute node 
-COMPUTE_PROVIDER_INTERFACE_NAME=${COMPUTE_NET1_CARD_NAME}
-COMPUTE_OVERLAY_INTERFACE_IP_ADDRESS=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
-
+#COMPUTE_PROVIDER_INTERFACE_NAME=${COMPUTE_NET1_CARD_NAME}
+#COMPUTE_OVERLAY_INTERFACE_IP_ADDRESS=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
 #cinder for compute node
 #management network interface on your storage node （storage management ip）
-CINDER_MANAGEMENT_INTERFACE_IP_ADDRESS=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
+#CINDER_MANAGEMENT_INTERFACE_IP_ADDRESS=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
 
 
 

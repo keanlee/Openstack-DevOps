@@ -102,7 +102,7 @@ cat >> /etc/sysctl.conf << __EOF__
 net.ipv4.conf.all.rp_filter = 0
 net.ipv4.conf.default.rp_filter = 0
 __EOF__
-sysctl -p
+sysctl -p 1>/dev/null 
 
 echo $BLUE Install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch $NO_COLOR 
 yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch -y 1>/dev/null 
@@ -170,7 +170,7 @@ net.ipv4.ip_forward = 1
 net.ipv4.conf.all.rp_filter = 0
 net.ipv4.conf.default.rp_filter = 0
 __EOF__
-sysctl -p
+sysctl -p 1>/dev/null
 
 echo $BLUE Install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch ... $NO_COLOR
 yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch -y 1>/dev/null
