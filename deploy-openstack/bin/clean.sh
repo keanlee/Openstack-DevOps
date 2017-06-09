@@ -69,5 +69,10 @@ yum erase openstack-cinder -y 1>/dev/null   2>1&
 yum erase lvm2 openstack-cinder targetcli python-keystone  -y 1>/dev/null  2>1&
 rm -rf /etc/cinder 
 
+rm -rf /var/log/glance/
+rm -rf /var/log/httpd/
+rm -rf /var/log/cinder/
+rm -rf /var/log/openvswitch/
+
 
  

@@ -4,7 +4,7 @@
 #------------------------Need to choose the network card  first -----------------------
 
 #management network card name, both controller and compute use this name for configuration 
-MGMT_IP_DEVICE=eno1
+MGMT_IP_DEVICE=ens4
 
 #openvswitch 
 #which bridge name you want to create 
