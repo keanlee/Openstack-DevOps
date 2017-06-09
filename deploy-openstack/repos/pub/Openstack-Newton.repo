@@ -1,0 +1,4 @@
+[openstack-newton]
+name=CentOS-openstack-newton
+baseurl=http://110.76.187.100/centos/7/cloud/x86_64/openstack-newton/
+gpgcheck=0

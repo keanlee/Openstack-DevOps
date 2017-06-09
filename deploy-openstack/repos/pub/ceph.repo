@@ -1,0 +1,5 @@
+[ceph]
+name=ceph
+baseurl=http://110.76.187.100/centos/7/storage/x86_64/ceph-jewel/
+gpgcheck=0
+

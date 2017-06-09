@@ -142,7 +142,7 @@ $GREEN==========================================================================
  Congratulation you finished to deploy Neutron on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
  Verify it by below command on Controller node: 
    execute: <neutron ext-list> 
-   option2: <openstack network agent list>
+          : <neutron agent-list>
 =====================================================================================
 $NO_COLOR
 __EOF__
@@ -262,7 +262,7 @@ network)
 neutron_network_node
 ;;
 controller-as-network-node)
-echo $BLUE You will deploy network node on controller $NO_COLOR
+echo $YELLOW You will deploy network node on controller ... $NO_COLOR
 neutron_controller
 neutron_network_node controller 
 ;;

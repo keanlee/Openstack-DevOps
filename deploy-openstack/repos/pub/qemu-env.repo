@@ -1,0 +1,4 @@
+[qemu]
+name=qemu
+baseurl=http://110.76.187.100/centos/7/virt/x86_64/kvm-common/
+gpgcheck=0
