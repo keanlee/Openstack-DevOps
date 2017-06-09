@@ -31,8 +31,8 @@ su -s /bin/sh -c "cinder-manage db sync" cinder  1>/dev/null
     debug "$?"  "Populate the Block Storage database failed "
 echo $GREEN populate the cinder database success ! Ignore any deprecation messages in above output $NO_COLOR 
 
-systemctl enable openstack-cinder-api.service openstack-cinder-scheduler.service  1>/dev/null 2>&1 
-systemctl start openstack-cinder-api.service openstack-cinder-scheduler.service
+systemctl enable openstack-cinder-api.service openstack-cinder-scheduler.service  openstack-cinder-backup.service 1>/dev/null 2>&1 
+systemctl start openstack-cinder-api.service openstack-cinder-scheduler.service  openstack-cinder-backup.service
     debug "$?" "start openstack-cinder-api or cinder-scheduler failed "
 
 cat 1>&2 <<__EOF__
