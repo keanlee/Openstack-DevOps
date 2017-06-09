@@ -97,7 +97,7 @@ __EOF__
 
 #The compute node handles connectivity and security groups for instances
 
-echo $BLUE To configure prerequisites $NO_COLOR
+echo $BLUE To configure prerequisites: configure certain kernel networking parameters $NO_COLOR
 cat >> /etc/sysctl.conf << __EOF__
 net.ipv4.conf.all.rp_filter = 0
 net.ipv4.conf.default.rp_filter = 0
@@ -164,7 +164,8 @@ __EOF__
 #The network node primarily handles internal and external routing and DHCP services for vir-tual networks
 #floating ip mapping 
 
-echo $BLUE To configure prerequisites $NO_COLOR
+
+echo $BLUE To configure prerequisites:configure certain kernel networking parameters $NO_COLOR
 cat >> /etc/sysctl.conf << __EOF__
 net.ipv4.ip_forward = 1
 net.ipv4.conf.all.rp_filter = 0

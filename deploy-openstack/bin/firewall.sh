@@ -6,10 +6,30 @@
 function iptabels(){
 iptables -I  INPUT -p tcp --dport 22    -j ACCEPT
 iptables -A  INPUT -p tcp --dport 80    -j ACCEPT
+
 #add rabbitmq port 
 iptables -A  INPUT -p tcp --dport 5672 -j ACCEPT
 #add rabbitmq web plugin port 
 iptables -A  INPUT -p tcp --dport 15672 -j ACCEPT
+
+#----------neutron-----------------------
+iptables -A  INPUT -p tcp --dport 9696 -j ACCEPT
+
+#----------keystone--------------------
+iptables -A  INPUT -p tcp --dport 35357 -j ACCEPT
+iptables -A  INPUT -p tcp --dport 5000 -j ACCEPT
+
+#----------cinder---------------------
+#cinderv2
+iptables -A  INPUT -p tcp --dport 8776 -j ACCEPT
+
+#------------glance---------------------
+iptables -A  INPUT -p tcp --dport 9292 -j ACCEPT
+
+
+#--------------nova--------------------
+iptables -A  INPUT -p tcp --dport 8774 -j ACCEPT
+
 iptables-save > /etc/sysconfig/iptables
 }
 
