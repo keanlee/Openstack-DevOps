@@ -69,8 +69,12 @@ $MAGENTA=================================================================
 =================================================================
 $NO_COLOR
 __EOF__
-#HARDCPUs=$(cat /proc/cpuinfo | grep processor | wc -l)
-#echo $BLUE Your physics CPUs:$NO_COLOR $GREEN${HARDCPUs}$NO_COLOR
+
+if [[ $(egrep -c '(vmx|svm)' /proc/cpuinfo) = 0 ]];then
+    echo $YELLOW Your host does not support hardware acceleration $NO_COLOR
+else 
+    echo $GREEN Your host support hardware acceleration $NO_COLOR
+fi
 
 CPUs=$(lscpu | grep ^CPU\(s\) | awk -F ":" '{print $2}')
 echo $BLUE Your OS CPU\(s\) is: $NO_COLOR $GREEN${CPUs}$NO_COLOR
@@ -80,6 +84,8 @@ echo $BLUE Your OS total Mem:$NO_COLOR $GREEN${MEMs}$NO_COLOR
 }
 
 echo $GREEN Your linux distribution: ${NO_COLOR}${YELLOW}$(cat /etc/redhat-release) $NO_COLOR
+
+
 CPU_MEM
 NET_NAME_IP
 DISK_INFO
