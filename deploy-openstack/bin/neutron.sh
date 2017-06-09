@@ -163,6 +163,8 @@ $NO_COLOR
 __EOF__
 
 #The network node primarily handles internal and external routing and DHCP services for vir-tual networks
+#floating ip mapping 
+
 echo $BLUE To configure prerequisites $NO_COLOR
 cat >> /etc/sysctl.conf << __EOF__
 net.ipv4.ip_forward = 1
@@ -175,11 +177,16 @@ echo $BLUE Install openstack-neutron openstack-neutron-ml2 openstack-neutron-ope
 yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch -y 1>/dev/null
     debug "$?" "Install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch failed "
 
-echo $BLUE Copy and edite configuration file of Neutron $NO_COLOR 
-cp -f ./etc/network/neutron.conf  /etc/neutron
-sed -i "s/RABBIT_PASS/$RABBIT_PASS/g" /etc/neutron/neutron.conf 
-sed -i "s/controller/$CONTROLLER_VIP/g"  /etc/neutron/neutron.conf
-sed -i "s/NEUTRON_PASS/$NEUTRON_PASS/g" /etc/neutron/neutron.conf
+#add network node on controller 
+if [[ $1 = "controller" ]];then 
+    break
+else 
+    echo $BLUE Copy and edite configuration file of Neutron $NO_COLOR 
+    cp -f ./etc/network/neutron.conf  /etc/neutron
+    sed -i "s/RABBIT_PASS/$RABBIT_PASS/g" /etc/neutron/neutron.conf 
+    sed -i "s/controller/$CONTROLLER_VIP/g"  /etc/neutron/neutron.conf
+    sed -i "s/NEUTRON_PASS/$NEUTRON_PASS/g" /etc/neutron/neutron.conf
+fi
 
 cp -f  ./etc/network/dhcp_agent.ini  /etc/neutron
 cp -f ./etc/network/dnsmasq-neutron.conf /etc/neutron
@@ -255,7 +262,12 @@ neutron_compute
 network)
 neutron_network_node
 ;;
+controller-as-network-node)
+echo $BLUE You will deploy network node on controller $NO_COLOR
+neutron_controller
+neutron_network_node controller 
+;;
 *)
-debug "1" "neutron.sh just support controller ,network and compute parameter, your $1 is not support "
+debug "1" "neutron.sh just support controller ,network , compute and controller-as-network-node parameter, your $1 is not support "
 ;;
 esac

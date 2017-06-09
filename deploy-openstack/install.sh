@@ -14,7 +14,8 @@ $MAGENTA================================================================
              sh $0 controller
              sh $0 compute
              sh $0 network
-             sh $0 check 
+             sh $0 check
+             sh $0 controller-as-network-node 
 ================================================================
 $NO_COLOR
 __EOF__
@@ -64,7 +65,6 @@ sleep 2
 source ./bin/neutron.sh compute
 #source ./bin/cinder.sh  compute 
 ;;
-
 network) 
 yum_repos
 initialize_env
@@ -72,8 +72,30 @@ ntp
 source ./bin/firewall.sh
 source ./bin/neutron.sh network
 ;;
+controller-as-network-node)
+#source ./bin/clean.sh 
+sleep 2
+yum_repos
+initialize_env
+ntp
+source ./bin/firewall.sh
+rabbitmq_configuration
+memcache
+mysql_configuration
+source ./bin/keystone.sh
+sleep 2
+source ./bin/glance.sh
+sleep 2
+source ./bin/nova.sh controller  
+sleep 2
+source ./bin/neutron.sh controller-as-network-node
+sleep 2
+source ./bin/cinder.sh controller
+sleep 2
+source ./bin/dashboard.sh 
+;;
 check)
-source ./bin/net_and_disk_info.sh
+source ./bin/system_info.sh
 ;;
 *)
 help
