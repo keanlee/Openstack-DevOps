@@ -34,10 +34,11 @@ for i in $NET_DEV_NAME
         else
             echo ${BLUE}The network card Name:${NO_COLOR}$YELLOW $i${NO_COLOR} ${BLUE},the network card status:$GREEN $NET_RUN_STATUS $NO_COLOR
         fi
+        
         IP_ADDR=$(ip addr show $i | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
         echo ${BLUE}The IP address is :$NO_COLOR$GREEN $IP_ADDR $NO_COLOR
 
-            if [[ $IP_ADDR = "" ]];then
+           if [[ $IP_ADDR = "" ]];then
               echo $RED No IP Address with $i $NO_COLOR
            fi
 
