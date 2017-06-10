@@ -46,23 +46,23 @@ echo $BLUE Beginning create a domain, projects, users, and roles On $YELLOW $(ho
 #This guide uses a service project that contains a unique user for each service 
 #that you add to your environment. Create the service project
 openstack project create --domain default --description "Service Project" service &&
-debug "$?" "openstack project create --domain default --description \"Service Project\" service failed "
+    debug "$?" "openstack project create --domain default --description \"Service Project\" service failed "
 
 #Regular (non-admin) tasks should use an unprivileged project and user. As an example, this guide creates the demo project and user
 openstack project create --domain default --description "Demo Project" demo  &&
-debug "$?" "openstack project create --domain default --description \"Demo Project\" demo failed "
+    debug "$?" "openstack project create --domain default --description \"Demo Project\" demo failed "
 
 echo $BLUE Create the demo user ... $NO_COLOR
 openstack user create --domain default --password ${DEMO_PASS} demo   &&
-debug "$?"  "openstack user create --domain default --password ${DEMO_PASS} demo failed "
+    debug "$?"  "openstack user create --domain default --password ${DEMO_PASS} demo failed "
 
 echo $BLUE Create the user role  $NO_COLOR
 openstack role create user  &&
-debug "$?" "openstack role create user failed "
+    debug "$?" "openstack role create user failed "
 
 echo $BLUE Add the user role to the demo project and user $NO_COLOR
 openstack role add --project demo --user demo user  &&
-debug "$?" "Create a domain, projects, users, and roles failed "
+    debug "$?" "Create a domain, projects, users, and roles failed "
 
 echo $GREEN Finished create domain, project, users and roles on $YELLOW $(hostname) $NO_COLOR 
 }
