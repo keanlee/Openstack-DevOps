@@ -16,7 +16,6 @@ CYAN="$ESC[0;36m"
 
 source ./bin/VARIABLE  
 
-
 function debug(){
 if [[ $1 -ne 0 ]]; then 
     echo $RED ERROR:  $2 $NO_COLOR
@@ -116,8 +115,8 @@ echo $BLUE Beginning configuration mysql for controller node on $YELLOW $(hostna
 # set the bind-address key to the management IP address of the controller node to enable access by other nodes via the management network
 # refer https://docs.openstack.org/newton/install-guide-rdo/environment-sql-database.html
 yum install mariadb mariadb-server python2-PyMySQL -y 1>/dev/null 
-debug "$1" "$RED Install mariadb mariadb-server python2-PyMySQL failed $NO_COLOR"   
-    echo > /etc/my.cnf.d/openstack.cnf
+    debug "$1" "$RED Install mariadb mariadb-server python2-PyMySQL failed $NO_COLOR"   
+echo > /etc/my.cnf.d/openstack.cnf
     cat > /etc/my.cnf.d/openstack.cnf <<EOF
 [mysqld]
 bind-address = $MGMT_IP
@@ -146,7 +145,7 @@ y
 y
 EOF
 
-debug "$?" "$RED Mysql configuration failed $NO_COLOR"
+    debug "$?" "Mysql configuration failed"
 echo $GREEN Finished the Mariadb install and configuration on $YELLOW $(hostname) $NO_COLOR 
 }
 
@@ -157,20 +156,20 @@ function get_database_size(){
 #$2 as the database password 
 #For example get_database_size nova novadb
 if [[ $# != 2 ]];then
-echo $RED This function need to Two parameter $NO_COLOR
+    echo $RED This function need to two parameter $NO_COLOR
 exit 1
 fi
 
 if [[ $1 = nova_api ]];then
-DB_SIZE=$(mysql -unova -p$2 -e "show databases;use information_schema;select concat(round(sum(DATA_LENGTH/1024/1024),2),'MB') as data from TABLES where table_schema='nova_api';" )
+    DB_SIZE=$(mysql -unova -p$2 -e "show databases;use information_schema;select concat(round(sum(DATA_LENGTH/1024/1024),2),'MB') as data from TABLES where table_schema='nova_api';" )
 else
-DB_SIZE=$(mysql -u$1 -p$2 -e "show databases;use information_schema;select concat(round(sum(DATA_LENGTH/1024/1024),2),'MB') as data from TABLES where table_schema='$1';" )
+    DB_SIZE=$(mysql -u$1 -p$2 -e "show databases;use information_schema;select concat(round(sum(DATA_LENGTH/1024/1024),2),'MB') as data from TABLES where table_schema='$1';" )
 fi
 
 if [[ $1 = nova || $1 = nova_api  ]];then
-local NUMS=6
+    local NUMS=6
 else
-local NUMS=5
+    local NUMS=5
 fi
 
 echo $BLUE Database $YELLOW${1}${BLUE} has already create and the size is:$NO_COLOR 
@@ -188,7 +187,7 @@ function database_create(){
 echo $BLUE      Create $1 database in mariadb  $NO_COLOR
 local USER=$1
 if [[ $1 = nova_api ]];then
-USER=nova
+    USER=nova
 fi 
 
 mysql -uroot -p$MARIADB_PASSWORD -e "CREATE DATABASE $1;GRANT ALL PRIVILEGES ON $1.* TO '$USER'@'localhost' \
@@ -211,13 +210,13 @@ __EOF__
 #Except Horizone and keystone ,each component need connect to Rabbitmq 
 echo $BLUE Install rabbitmq-server ... $NO_COLOR
 yum install rabbitmq-server  -y 1>/dev/null
-debug "$1" "$RED Install rabbitmq-server failed $NO_COLOR"
+    debug "$1" "$RED Install rabbitmq-server failed $NO_COLOR"
 systemctl enable rabbitmq-server.service 1>/dev/null 2>&1 && 
 
 sed -i "2a ${MGMT_IP}   $(hostname)" /etc/hosts
 
 systemctl start rabbitmq-server.service
-debug "$?" "systemctl start rabbitmq-server.service Faild, Did you edit the /etc/hosts correct ? "
+    debug "$?" "Start rabbitmq-server.service Faild, Did you edit the /etc/hosts correct ? "
 
 rabbitmqctl add_user openstack $RABBIT_PASS  1>/dev/null
 echo $BLUE Permit configuration, write, and read access for the openstack user ...$NO_COLOR
@@ -227,10 +226,9 @@ rabbitmqctl set_permissions openstack ".*" ".*" ".*"  1>/dev/null
 #enable rabbitmq_management boot after the os boot 
 #Use rabbitmq-web 
 
-
 rabbitmq-plugins enable rabbitmq_management 1>/dev/null 2>&1
 systemctl restart rabbitmq-server.service &&
-debug "$?" "Restart rabbitmq-server.service fail after enable rabbitmq_management "
+    debug "$?" "Restart rabbitmq-server.service fail after enable rabbitmq_management "
 echo $GREEN You can browse rabbitmq web via 15672 port $NO_COLOR
 }
 
@@ -248,6 +246,7 @@ yum install memcached python-memcached -y 1>/dev/null
 sed -i "s/127.0.0.1/$MGMT_IP/g" /etc/sysconfig/memcached
 systemctl enable memcached.service   1>/dev/null 2>&1 &&
 systemctl start memcached.service
+    debug "$?"  "Start memcached.service failed "
 }
 
 
@@ -298,48 +297,43 @@ local PORTS=8776
 local SERVICE1=volume
 ;;
 *)
-debug "1" "The second parameter is the service name: nova glance neutron cinder etc,your $2 is unkown "
+debug "1" "The second parameter is the service name:nova glance neutron cinder etc,your $2 is unkown "
 ;;
 esac 
 sleep 2
 openstack service create --name $2 --description "OpenStack ${SERVICE}" ${SERVICE1}
-debug "$?" "openstack service $2 create failed "
+    debug "$?" "openstack service $2 create failed "
 
 if [[ $2 = cinder ]];then 
-openstack service create --name cinderv2 --description "OpenStack ${SERVICE}" volumev2
-debug "$?" "openstack service volumev2 create failed "
-#else 
-#continue 
+    openstack service create --name cinderv2 --description "OpenStack ${SERVICE}" volumev2
+        debug "$?" "openstack service volumev2 create failed " 
 fi
 
 echo $BLUE Create the ${YELLOW}$SERVICE${NO_COLOR}${BLUE} service API endpoints $NO_COLOR
 
 if [[ $2 = nova ]];then 
-openstack endpoint create --region RegionOne ${SERVICE1} public http://$MGMT_IP:${PORTS}/v2.1/%\(tenant_id\)s
-openstack endpoint create --region RegionOne ${SERVICE1} internal http://$MGMT_IP:${PORTS}/v2.1/%\(tenant_id\)s
-openstack endpoint create --region RegionOne ${SERVICE1} admin http://$MGMT_IP:${PORTS}/v2.1/%\(tenant_id\)s
-debug "$?" "openstack endpoint create $2 failed "
+    openstack endpoint create --region RegionOne ${SERVICE1} public http://$MGMT_IP:${PORTS}/v2.1/%\(tenant_id\)s
+    openstack endpoint create --region RegionOne ${SERVICE1} internal http://$MGMT_IP:${PORTS}/v2.1/%\(tenant_id\)s
+    openstack endpoint create --region RegionOne ${SERVICE1} admin http://$MGMT_IP:${PORTS}/v2.1/%\(tenant_id\)s
+        debug "$?" "openstack endpoint create $2 failed "
 
 elif [[ $2 = cinder ]];then
-openstack endpoint create --region RegionOne ${SERVICE1} public http://$MGMT_IP:${PORTS}/v1/%\(tenant_id\)s
-openstack endpoint create --region RegionOne ${SERVICE1} internal http://$MGMT_IP:${PORTS}/v1/%\(tenant_id\)s
-openstack endpoint create --region RegionOne ${SERVICE1} admin http://$MGMT_IP:${PORTS}/v1/%\(tenant_id\)s
-debug "$?" "openstack endpoint create $2 failed "
+    openstack endpoint create --region RegionOne ${SERVICE1} public http://$MGMT_IP:${PORTS}/v1/%\(tenant_id\)s
+    openstack endpoint create --region RegionOne ${SERVICE1} internal http://$MGMT_IP:${PORTS}/v1/%\(tenant_id\)s
+    openstack endpoint create --region RegionOne ${SERVICE1} admin http://$MGMT_IP:${PORTS}/v1/%\(tenant_id\)s
+        debug "$?" "openstack endpoint create $2 failed "
 
-openstack endpoint create --region RegionOne volumev2 public http://$MGMT_IP:${PORTS}/v2/%\(tenant_id\)s
-openstack endpoint create --region RegionOne volumev2 internal http://$MGMT_IP:${PORTS}/v2/%\(tenant_id\)s
-openstack endpoint create --region RegionOne volumev2 admin http://$MGMT_IP:${PORTS}/v2/%\(tenant_id\)s
-debug "$?" "openstack endpoint create $2 failed "
+    openstack endpoint create --region RegionOne volumev2 public http://$MGMT_IP:${PORTS}/v2/%\(tenant_id\)s
+    openstack endpoint create --region RegionOne volumev2 internal http://$MGMT_IP:${PORTS}/v2/%\(tenant_id\)s
+    openstack endpoint create --region RegionOne volumev2 admin http://$MGMT_IP:${PORTS}/v2/%\(tenant_id\)s
+        debug "$?" "openstack endpoint create $2 failed "
 
 else 
-openstack endpoint create --region RegionOne ${SERVICE1} public http://$MGMT_IP:${PORTS}
-openstack endpoint create --region RegionOne ${SERVICE1} internal http://$MGMT_IP:${PORTS}
-openstack endpoint create --region RegionOne ${SERVICE1} admin http://$MGMT_IP:${PORTS}
-debug "$?" "openstack endpoint create $2 failed "
+    openstack endpoint create --region RegionOne ${SERVICE1} public http://$MGMT_IP:${PORTS}
+    openstack endpoint create --region RegionOne ${SERVICE1} internal http://$MGMT_IP:${PORTS}
+    openstack endpoint create --region RegionOne ${SERVICE1} admin http://$MGMT_IP:${PORTS}
+        debug "$?" "openstack endpoint create $2 failed "
 fi 
 echo $GREEN openstack ${YELLOW}$2${GREEN} endpoint create success $NO_COLOR 
 }
-
-
-
 
