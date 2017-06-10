@@ -19,18 +19,9 @@ echo $BLUE Install openstack-glance ... $NO_COLOR
 yum install openstack-glance -y  1>/dev/null
     debug "$?" "Install openstack-glance failed "
 
-#add ceph support 
-#yum install python-rbd -y 1>/dev/null
-#debug  "$?" "$RED Install python-rbd failed $NO_COLOR "
-
-#--------add ceph support 
-#mkdir -p  /etc/ceph
-#cp -f  ./configuration-files/glance/ceph/*  /etc/ceph
-#chown glance:glance /etc/ceph/ceph.client.glance.keyring
-
 echo $BLUE copy glance-api.conf and edit it $NO_COLOR
 cp -f  ./etc/controller/glance-api.conf  /etc/glance/
-#change all controller as mgmg ip
+#change all controller as MGMT ip
 sed -i "s/controller/$MGMT_IP/g"  /etc/glance/glance-api.conf
 sed -i "s/GLANCE_DBPASS/$GLANCE_DBPASS/g"  /etc/glance/glance-api.conf
 #change the glance password for keystone 
