@@ -30,76 +30,75 @@ fi
 
 #---------------compnment choose -----------
 case $1 in
-controller)
-#source ./bin/clean.sh 
-sleep 2
-yum_repos
-initialize_env
-ntp
-source ./bin/firewall.sh
-rabbitmq_configuration
-memcache
-mysql_configuration
-source ./bin/keystone.sh
-sleep 2
-source ./bin/glance.sh
-sleep 2
-source ./bin/nova.sh controller  
-sleep 2
-source ./bin/neutron.sh controller 
-sleep 2
-source ./bin/cinder.sh controller
-sleep 2
-source ./bin/dashboard.sh 
-;;
-
+    controller)
+    #source ./bin/clean.sh 
+    sleep 2
+    yum_repos
+    initialize_env
+    ntp
+    source ./bin/firewall.sh
+    rabbitmq_configuration
+    memcache
+    mysql_configuration
+    source ./bin/keystone.sh
+    sleep 2
+    source ./bin/glance.sh
+    sleep 2
+    source ./bin/nova.sh controller  
+    sleep 2
+    source ./bin/neutron.sh controller 
+    sleep 2
+    source ./bin/cinder.sh controller
+    sleep 2
+    source ./bin/dashboard.sh 
+    ;;
 compute)
-#source ./bin/clean.sh 
-yum_repos
-initialize_env
-ntp
-source ./bin/firewall.sh
-sleep 2
-source ./bin/nova.sh compute
-sleep 2
-source ./bin/neutron.sh compute
-#source ./bin/cinder.sh  compute 
-;;
+    #source ./bin/clean.sh 
+    yum_repos
+    initialize_env
+    ntp
+    source ./bin/firewall.sh
+    sleep 2
+    source ./bin/nova.sh compute
+    sleep 2
+    source ./bin/neutron.sh compute
+    #source ./bin/cinder.sh  compute 
+    ;;
 network) 
-yum_repos
-initialize_env
-ntp
-source ./bin/firewall.sh
-source ./bin/neutron.sh network
-;;
+    yum_repos
+    initialize_env
+    ntp
+    source ./bin/firewall.sh
+    source ./bin/neutron.sh network
+    ;;
 controller-as-network-node)
-#source ./bin/clean.sh 
-sleep 2
-yum_repos
-initialize_env
-ntp
-source ./bin/firewall.sh
-rabbitmq_configuration
-memcache
-mysql_configuration
-source ./bin/keystone.sh
-sleep 2
-source ./bin/glance.sh
-sleep 2
-source ./bin/nova.sh controller  
-sleep 2
-source ./bin/neutron.sh controller-as-network-node
-sleep 2
-source ./bin/cinder.sh controller
-sleep 2
-source ./bin/dashboard.sh 
-;;
+    #source ./bin/clean.sh 
+    sleep 2
+    yum_repos
+    initialize_env
+    ntp
+    source ./bin/firewall.sh
+    rabbitmq_configuration
+    memcache
+    mysql_configuration
+    source ./bin/keystone.sh
+    sleep 2
+    source ./bin/glance.sh
+    sleep 2
+    source ./bin/nova.sh controller  
+    sleep 2
+    source ./bin/neutron.sh controller-as-network-node
+    sleep 2
+    source ./bin/cinder.sh controller
+    sleep 2
+    source ./bin/dashboard.sh 
+    ;;
 check)
-source ./bin/system_info.sh
-;;
+    source ./bin/system_info.sh
+    ;;
 *)
-help
-;;
+   help
+   ;;
 esac
 
 

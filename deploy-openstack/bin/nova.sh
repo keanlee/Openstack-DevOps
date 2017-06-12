@@ -130,13 +130,13 @@ __EOF__
 
 case $1 in
 controller)
-nova_controller
-;;
+    nova_controller
+    ;;
 compute)
-nova_compute
-;;
+    nova_compute
+    ;;
 *)
-debug "1" "compute.sh just support controller and compute parameter, your $1 is not support "
-;;
+    debug "1" "compute.sh just support controller and compute parameter, your $1 is not support "
+    ;;
 esac 
 

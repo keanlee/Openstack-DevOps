@@ -111,14 +111,14 @@ __EOF__
 
 case $1 in
 controller)
-cinder_controller
-;;
+    cinder_controller
+    ;;
 compute)
-cinder_compute
-;;
+    cinder_compute
+    ;;
 *)
-debug "1" "cinder.sh just support controller and compute parameter, your $1 is not support "
-;;
+    debug "1" "cinder.sh just support controller and compute parameter, your $1 is not support "
+    ;;
 esac
 
 

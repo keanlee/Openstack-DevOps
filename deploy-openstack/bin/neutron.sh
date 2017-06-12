@@ -254,20 +254,20 @@ __EOF__
 #--------------------------------------------Main--------------------------------------------
 case $1 in
 controller)
-neutron_controller
-;;
+    neutron_controller
+    ;;
 compute)
-neutron_compute
-;;
+    neutron_compute
+    ;;
 network)
-neutron_network_node
-;;
+    neutron_network_node
+    ;;
 controller-as-network-node)
-echo $YELLOW You will deploy network node on controller ... $NO_COLOR
-neutron_controller
-neutron_network_node controller 
-;;
+    echo $YELLOW You will deploy network node on controller ... $NO_COLOR
+    neutron_controller
+    neutron_network_node controller 
+    ;;
 *)
-debug "1" "neutron.sh just support controller ,network , compute and controller-as-network-node parameter, your $1 is not support "
-;;
+    debug "1" "neutron.sh just support controller ,network , compute and controller-as-network-node parameter, your $1 is not support "
+   ;;
 esac
