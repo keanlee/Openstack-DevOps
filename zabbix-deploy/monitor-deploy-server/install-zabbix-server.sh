@@ -15,8 +15,8 @@ CYAN="$ESC[0;36m"
 
 function debug(){
 if [[ $1 -ne 0 ]]; then
-echo $RED ERROR:  $2 $NO_COLOR
-exit 1
+    echo $RED ERROR:  $2 $NO_COLOR
+    exit 1
 fi
 }
 
@@ -54,18 +54,18 @@ echo -e "\e[1;32m ----->PLEASE Login as Admin/zabbix in IP/zabbix by your Browse
 function choice(){
             if [ $1 -eq 1 ];then
 #--------------Downgrade the pacakge of systemc, since the higher version cause can't start zabbix-server daemon
-            rpm -Uvh --force ./packages/gnutls-3.1.18-8.el7.x86_64.rpm 1>/dev/null &&
-            echo "This script will be deploy zabbix-server on $GREEN $(cat /etc/redhat-release) $NO_CLOLOR"
-            install
+                rpm -Uvh --force ./packages/gnutls-3.1.18-8.el7.x86_64.rpm 1>/dev/null &&
+                echo "This script will be deploy zabbix-server on $GREEN $(cat /etc/redhat-release) $NO_CLOLOR"
+                install
             else
-            echo "This script will be deploy zabbix-server on $GREEN $(cat /etc/redhat-release) $NO_CLOLOR"
-            install
+                echo "This script will be deploy zabbix-server on $GREEN $(cat /etc/redhat-release) $NO_CLOLOR"
+                install
             fi
 }
 
 if [ $(rpm -qa | grep zabbix | wc -l) -ge 1 ];then
-source ./bin/clean.sh
-choice $OSVERSION
+    source ./bin/clean.sh
+    choice $OSVERSION
 else
-choice $OSVERSION
+    choice $OSVERSION
 fi

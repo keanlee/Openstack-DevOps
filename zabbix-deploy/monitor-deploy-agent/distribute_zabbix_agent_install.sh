@@ -15,13 +15,13 @@ cat ./README.txt
 
 SERVERIP=$1
 if [ $# = 0 ];then 
-echo $RED Usage: sh install.sh zabbix-server-ip $NO_COLOR
-exit 0
+    echo $RED Usage: sh install.sh zabbix-server-ip $NO_COLOR
+    exit 0
 fi 
 
 debug(){
     if [[ $1 != 0 ]] ; then
-        echo $RED Faild to scp install-zabbix-agent directory to traget host $NO_COLOR
+        echo $RED error: $2 $NO_COLOR
         exit 1
     fi
 }
@@ -32,9 +32,9 @@ local METADATA
 METADATA=controller   #change this for your request 
 echo $BLUE Beginning install zabbix agent on $YELLOW $METADATA  $NO_COLOR
 cat ./$METADATA | while read line ; do scp -r install-zabbix-agent/ $line:/root/; debug $? ; done   1>/dev/null 2>&1 
-debug $?
+    debug $?
 cat ./$METADATA | while read line ; do ssh -n $line /bin/bash /root/install-zabbix-agent/install-agent.sh $SERVERIP $METADATA ;debug $? ;done  2>/dev/null
-debug $?
+    debug $?
 echo $GREEN Finished install zabbix agent on host: $YELLOW  $(cat ./$METADATA) $NO_COLOR
 }
 
@@ -44,12 +44,12 @@ local METADATA
 METADATA=compute    #change this for your request
 echo $BLUE Beginning install zabbix agent on $YELLOW $METADATA  $NO_COLOR
 cat ./$METADATA | while read line ; do scp -r install-zabbix-agent/ $line:/root/; debug $? ; done  1>/dev/null 2>&1
-debug $?
+    debug $?
 cat ./$METADATA | while read line ; do ssh -n $line /bin/bash /root/install-zabbix-agent/install-agent.sh $SERVERIP $METADATA ;debug $? ;done  2>/dev/null
-debug $?
+    debug $?
 echo $GREEN Finished install zabbix agent on host: $YELLOW  $(cat ./$METADATA) $NO_COLOR
 }
-#controller
+controller
 compute
 echo $BLUE Thank for you  use this script to install zabbix agent $NO_COLOR
 

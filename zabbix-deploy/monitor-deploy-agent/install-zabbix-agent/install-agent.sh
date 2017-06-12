@@ -23,7 +23,7 @@ CYAN="$ESC[0;36m"
 function install(){
 #-----------------Disable selinux-----------------
 #sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config #disable selinux in conf file 
-setenforce 0  &&
+#setenforce 0  &&
 echo $GREEN ----->The Selinux Status: $( getenforce) $NO_COLOR
 
 #---------------install package of zabbix agent -----
@@ -38,11 +38,11 @@ sed -i "167 i HostMetadata=$METADATA"  /etc/zabbix/zabbix_agentd.conf
 #--------------iptables setip------
 STATUS=$(systemctl status firewalld | grep Active | awk -F ":" '{print $2}' | awk '{print $1}')
 if [[ $STATUS = active ]];then
-firewall-cmd --zone=public --add-port=10050/tcp --permanent 1>/dev/null 2>&1
-firewall-cmd --reload  1>/dev/null 2>&1
+    firewall-cmd --zone=public --add-port=10050/tcp --permanent 1>/dev/null 2>&1
+    firewall-cmd --reload  1>/dev/null 2>&1
 else
-iptables -A  INPUT -p tcp --dport 10050 -j ACCEPT
-iptables-save > /etc/sysconfig/iptables
+    iptables -A  INPUT -p tcp --dport 10050 -j ACCEPT
+    iptables-save > /etc/sysconfig/iptables
 fi
 
 #--------------add daemon iteam script for each host------------------- 
@@ -52,22 +52,23 @@ sed -i '294 i  UserParameter=openstack.serviceexist[*],/etc/zabbix/scripts/servi
 
 #--------------For openstack controller item ---------
 if [ $METADATA = controller ];then
-cp  /home/admin-openrc  /etc/zabbix/scripts
-cp ./script/controller/check-process-status-openstack.sh  /etc/zabbix/scripts
-sed -i '295 i UserParameter=check-process-status-openstack[*],/etc/zabbix/scripts/check-process-status-openstack.sh $1 ' /etc/zabbix/zabbix_agentd.conf
+    cp  /home/admin-openrc  /etc/zabbix/scripts
+    cp ./script/controller/check-process-status-openstack.sh  /etc/zabbix/scripts
+    sed -i '295 i UserParameter=check-process-status-openstack[*],/etc/zabbix/scripts/check-process-status-openstack.sh $1 ' /etc/zabbix/zabbix_agentd.conf
 else 
-continue 
+    continue 
 fi 
 
 #--------------add ceph support -------------------------
 if [ $METADATA = ceph ];then
-usermod -a -G ceph zabbix
+    usermod -a -G ceph zabbix
 fi
 #--------------end install zabbix agent---------------------
 chown -R zabbix:zabbix /etc/zabbix/scripts
 chmod 700 /etc/zabbix/scripts/*
 systemctl enable zabbix-agent 1>/dev/null 2>&1  
 systemctl start zabbix-agent &&
+    debug "$?" "Start zabbix-agent daemon failed,did you set the selinux off ? "
 echo -e "\e[1;32m Zabbix agent has been install on $YELLOW $(hostname) $NO_COLOR  \e[0m "
 echo -e "\e[1;32m You can go to the zabbix server page to add $YELLOW $(hostname) $NO_COLOR  \e[0m "
 echo -e "\e[1;32m The metadata  is $YELLOW $METADATA $NO_COLOR   \e[0m "
@@ -82,8 +83,8 @@ function clean(){
       }
 
 if [ $(rpm -qa | grep zabbix | wc -l) -ge 1 ];then
-clean
-install
+    clean
+    install
 else
-install
+    install
 fi
