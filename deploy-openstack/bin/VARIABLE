@@ -19,6 +19,15 @@ CONTROLLER_VIP=10.245.58.247
 NTP_SERVER_IP=10.245.58.247
 
 #----------------------------------------------------------------------------
+#--------------external network create -------------
+EXTERNAL_NETWORK_CIDR=10.245.28.0/24
+FLOATING_IP_START=10.245.28.9
+FLOATING_IP_END=10.245.28.19
+EXTERNAL_NETWORK_GATEWAY=10.245.28.1
+
+
+
+
 
 
 
