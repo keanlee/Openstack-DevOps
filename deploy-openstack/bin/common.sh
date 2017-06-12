@@ -31,9 +31,9 @@ if [[ ! -d /etc/yum.repos.d/bak/ ]];then
     mkdir /etc/yum.repos.d/bak/
 fi
 mv /etc/yum.repos.d/* /etc/yum.repos.d/bak/  1>/dev/null 2>1&
-cp -f ./repos/* /etc/yum.repos.d/ &&
+cp -f ./repos/* /etc/yum.repos.d/ 1>/dev/null 2>1&  &&
 yum clean all 1>/dev/null 2>1&
-echo $GREEN yum repos config done $NO_COLOR
+echo $GREEN yum repos configuration done $NO_COLOR
 }
 
 
@@ -184,7 +184,7 @@ function database_create(){
 #$1 is the database name (comonent name and usename) 
 #$2 is password of database
 
-echo $BLUE      Create $1 database in mariadb  $NO_COLOR
+echo $BLUE Create $YELLOW$1$BLUE database in mariadb  $NO_COLOR
 local USER=$1
 if [[ $1 = nova_api ]];then
     USER=nova

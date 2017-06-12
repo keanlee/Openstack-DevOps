@@ -73,7 +73,6 @@ network)
     ;;
 controller-as-network-node)
     #source ./bin/clean.sh 
-    sleep 2
     yum_repos
     initialize_env
     ntp
@@ -82,15 +81,10 @@ controller-as-network-node)
     memcache
     mysql_configuration
     source ./bin/keystone.sh
-    sleep 2
     source ./bin/glance.sh
-    sleep 2
     source ./bin/nova.sh controller  
-    sleep 2
     source ./bin/neutron.sh controller-as-network-node
-    sleep 2
     source ./bin/cinder.sh controller
-    sleep 2
     source ./bin/dashboard.sh 
     ;;
 check)
