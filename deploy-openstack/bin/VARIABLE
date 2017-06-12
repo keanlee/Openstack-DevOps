@@ -6,17 +6,17 @@
 #------------------------Need to edit below  first -----------------------
 
 #management network card name, both controller and all slave node (compute ,block ,network nodes) use this name for configuration 
-MGMT_IP_DEVICE=ens4
+MGMT_IP_DEVICE=ens3
 
 #Add a port to the external bridge that connects to the physical external network inter-face
 #Replace PROVIDER_INTERFACE with the name of the underlying interface that handles provider networks. For example, eth1
-PROVIDER_INTERFACE=eno2
+PROVIDER_INTERFACE=ens4
 
 #The VIP use for all slave node , ha_proxy also use this ip 
-CONTROLLER_VIP=10.245.58.247
+CONTROLLER_VIP=10.245.58.77
 
 #NTP server IP
-NTP_SERVER_IP=10.245.58.247
+NTP_SERVER_IP=10.245.58.77
 
 #----------------------------------------------------------------------------
 #--------------external network create -------------
