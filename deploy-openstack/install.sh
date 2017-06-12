@@ -86,6 +86,7 @@ controller-as-network-node)
     source ./bin/neutron.sh controller-as-network-node
     source ./bin/cinder.sh controller
     source ./bin/dashboard.sh 
+    source ./bin/initial_network.sh
     ;;
 check)
     source ./bin/system_info.sh

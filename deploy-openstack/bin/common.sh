@@ -31,7 +31,7 @@ if [[ ! -d /etc/yum.repos.d/bak/ ]];then
     mkdir /etc/yum.repos.d/bak/
 fi
 mv /etc/yum.repos.d/* /etc/yum.repos.d/bak/  1>/dev/null 2>1&
-cp -f ./repos/* /etc/yum.repos.d/ 1>/dev/null 2>1&  &&
+cp -f ./repos/* /etc/yum.repos.d/   &&
 yum clean all 1>/dev/null 2>1&
 echo $GREEN yum repos configuration done $NO_COLOR
 }

@@ -114,7 +114,7 @@ systemctl start libvirtd.service openstack-nova-compute.service
 The error message AMQP server on controller:5672 is unreachable likely indicates
 that the firewall on the controller node is preventing access to port 5672"
 
-echo $GREEN This node has alreadly runing libvirtd.service openstack-nova-compute.service $NO_COLOR 
+echo $GREEN The libvirtd.service openstack-nova-compute.service is running $NO_COLOR 
 
 cat 1>&2 <<__EOF__
 $GREEN=========================================================================================

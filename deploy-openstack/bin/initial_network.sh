@@ -25,9 +25,9 @@ neutron net-create external-net --router:external=True
 #to prevent interference with other devices onthe external network
 
 echo $BLUE Create the subnet for external network  $NO_COLOR
-neutron subnet-create ext-net $EXTERNAL_NETWORK_CIDR --name ext-subnet \ 
---allocation-pool start=$FLOATING_IP_START,end=$FLOATING_IP_END \  
---disable-dhcp --gateway $EXTERNAL_NETWORK_GATEWAY
+neutron subnet-create external-net $EXTERNAL_NETWORK_CIDR --name ext-subnet \ 
+--enable_dhcp=False --allocation-pool start=$FLOATING_IP_START,end=$FLOATING_IP_END \  
+--gateway $EXTERNAL_NETWORK_GATEWAY
 
 echo $BLUE Create a router $NO_COLOR 
 neutron router-create pub-router
