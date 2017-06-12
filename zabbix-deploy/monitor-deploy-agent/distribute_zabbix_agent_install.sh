@@ -11,10 +11,10 @@ BLUE="$ESC[0;34m"
 WHITE="$ESC[0;37m"
 #PURPLE="$ESC[0;35m"
 CYAN="$ESC[0;36m"
-cat ./README.txt
 
 SERVERIP=$1
 if [ $# = 0 ];then 
+    cat ./README.txt
     echo $RED Usage: sh install.sh zabbix-server-ip $NO_COLOR
     exit 0
 fi 
@@ -35,6 +35,7 @@ cat ./$METADATA | while read line ; do scp -r install-zabbix-agent/ $line:/root/
     debug $?
 cat ./$METADATA | while read line ; do ssh -n $line /bin/bash /root/install-zabbix-agent/install-agent.sh $SERVERIP $METADATA ;debug $? ;done  2>/dev/null
     debug $?
+cat ./$METADATA | while read line ; do ssh -n $line /bin/bash "rm -rf /root/install-zabbix-agent/" ;done 
 echo $GREEN Finished install zabbix agent on host: $YELLOW  $(cat ./$METADATA) $NO_COLOR
 }
 
