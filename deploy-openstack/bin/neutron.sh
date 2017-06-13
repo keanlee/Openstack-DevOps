@@ -178,7 +178,7 @@ yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitc
     debug "$?" "Install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch failed "
 
 #add network node on controller 
-if [[ $1 = "controller" ]];then 
+if [[ $1 = "controller" || $1 = "compute" ]];then 
     break
 else 
     echo $BLUE Copy and edite configuration file of Neutron $NO_COLOR 
@@ -206,8 +206,13 @@ chown -R root:neutron /etc/neutron/
 
 systemctl enable neutron-openvswitch-agent.service neutron-dhcp-agent.service neutron-metadata-agent.service  openvswitch.service 1>/dev/null 2>&1 
 
-systemctl start openvswitch.service
-    debug "$?" "start openvswitch.service failed"
+if [[ $1 = "compute" ]];then 
+    systemctl restart openvswitch.service
+else 
+    systemctl start openvswitch.service
+        debug "$?" "start openvswitch.service failed"
+fi
+
 echo $BLUE Create the OVS provider bridge ${YELLOW}${br_provider}${NO_COLOR} 
 ovs-vsctl add-br ${br_provider}
 
@@ -267,7 +272,12 @@ controller-as-network-node)
     neutron_controller
     neutron_network_node controller 
     ;;
+compute-as-network-node)
+    echo $YELLOW You will deploy network node on compute ... $NO_COLOR
+    neutron_compute
+    neutron_network_node compute
+    ;;
 *)
-    debug "1" "neutron.sh just support controller ,network , compute and controller-as-network-node parameter, your $1 is not support "
+    debug "1" "neutron.sh just support controller ,network , compute and controller-as-network-node neutron_network_node compute parameter, your $1 is not support "
     ;;
 esac

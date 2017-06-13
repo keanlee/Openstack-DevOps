@@ -15,7 +15,8 @@ $MAGENTA================================================================
              sh $0 compute
              sh $0 network
              sh $0 check
-             sh $0 controller-as-network-node 
+             sh $0 controller-as-network-node
+             sh $0 compute-as-network-node 
 ================================================================
 $NO_COLOR
 __EOF__
@@ -87,6 +88,19 @@ controller-as-network-node)
     source ./bin/cinder.sh controller
     source ./bin/dashboard.sh 
     source ./bin/initial_network.sh
+    ;;
+compute-as-network-node)
+    #source ./bin/clean.sh 
+    yum_repos
+    initialize_env
+    ntp
+    source ./bin/firewall.sh
+    sleep 2
+    source ./bin/nova.sh compute
+    sleep 2
+    source ./bin/neutron.sh compute
+    source ./bin/neutron.sh compute-as-network-node
+    #source ./bin/cinder.sh  compute 
     ;;
 check)
     source ./bin/system_info.sh

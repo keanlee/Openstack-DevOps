@@ -10,6 +10,8 @@ iptables -A  INPUT -p tcp --dport 80    -j ACCEPT
 iptables -A  INPUT -p tcp --dport 5672 -j ACCEPT
 #add rabbitmq web plugin port 
 iptables -A  INPUT -p tcp --dport 15672 -j ACCEPT
+#memcached
+iptables -A  INPUT -p tcp --dport 11211 -j ACCEPT
 #----------neutron-----------------------
 iptables -A  INPUT -p tcp --dport 9696 -j ACCEPT
 #----------keystone--------------------
@@ -41,6 +43,8 @@ firewall-cmd --zone=public --add-port=5000/tcp --permanent 1>/dev/null 2>&1
 firewall-cmd --zone=public --add-port=8776/tcp --permanent 1>/dev/null 2>&1
 firewall-cmd --zone=public --add-port=9292/tcp --permanent 1>/dev/null 2>&1
 firewall-cmd --zone=public --add-port=8774/tcp --permanent 1>/dev/null 2>&1
+firewall-cmd --zone=public --add-port=11211/tcp --permanent 1>/dev/null 2>&1
+
 firewall-cmd --reload  1>/dev/null 2>&1
 }
 
