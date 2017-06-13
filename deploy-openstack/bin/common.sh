@@ -134,7 +134,7 @@ systemctl daemon-reload
 systemctl restart mariadb.service
 
 echo $BLUE Set admin password for mariadb... $NO_COLOR
-mysql_secure_installation 1>/dev/null <<EOF
+mysql_secure_installation 1>/dev/null 2>&1 <<EOF
 
 y
 $MARIADB_PASSWORD
