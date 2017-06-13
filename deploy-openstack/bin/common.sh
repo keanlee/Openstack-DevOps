@@ -277,28 +277,28 @@ openstack role add --project service --user $2 admin
 echo $BLUE Create the $2 service entity $NO_COLOR
 case $2 in
 glance)
-local SERVICE=Image
-local SERVICE1=image
-local PORTS=9292
-;;
+    local SERVICE=Image
+    local SERVICE1=image
+    local PORTS=9292
+    ;;
 nova)
-local SERVICE=Compute
-local SERVICE1=compute
-local PORTS=8774
-;;
+    local SERVICE=Compute
+    local SERVICE1=compute
+    local PORTS=8774
+    ;;
 neutron)
-local SERVICE=Networking
-local SERVICE1=network 
-local PORTS=9696
-;;
+    local SERVICE=Networking
+    local SERVICE1=network 
+    local PORTS=9696
+    ;;
 cinder)
-local SERVICE=Block Storage
-local PORTS=8776
-local SERVICE1=volume
-;;
+    local SERVICE=Block Storage
+    local PORTS=8776
+    local SERVICE1=volume
+    ;;
 *)
-debug "1" "The second parameter is the service name:nova glance neutron cinder etc,your $2 is unkown "
-;;
+    debug "1" "The second parameter is the service name:nova glance neutron cinder etc,your $2 is unkown "
+    ;;
 esac 
 sleep 2
 openstack service create --name $2 --description "OpenStack ${SERVICE}" ${SERVICE1}
