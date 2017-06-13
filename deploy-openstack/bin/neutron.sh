@@ -190,14 +190,17 @@ fi
 
 cp -f  ./etc/network/dhcp_agent.ini  /etc/neutron
 cp -f ./etc/network/dnsmasq-neutron.conf /etc/neutron
-cp -f ./etc/network/l3_agent.ini    /etc/neutron
 
+
+#The Layer-3 (L3) agent provides routing services for virtual networks
+cp -f ./etc/network/l3_agent.ini    /etc/neutron
 sed -i "s/br-provider/$br_provider/g"  /etc/neutron/l3_agent.ini
 
 cp -f ./etc/network/metadata_agent.ini  /etc/neutron 
 sed -i "s/controller/$MGMT_IP/g"  /etc/neutron/metadata_agent.ini
 sed -i "s/METADATA_SECRET/$METADATA_SECRET/g" /etc/neutron/metadata_agent.ini
 
+#The ML2 plug-in uses the Open vSwitch (OVS) mechanism (agent) to build the virtual net-working framework for instances
 cp -f ./etc/network/openvswitch_agent.ini  /etc/neutron/plugins/ml2/
 sed -i "s/LOCAL_IP/$MGMT_IP/g"  /etc/neutron/plugins/ml2/openvswitch_agent.ini
 sed -i "s/br-provider/$br_provider/g" /etc/neutron/plugins/ml2/openvswitch_agent.ini

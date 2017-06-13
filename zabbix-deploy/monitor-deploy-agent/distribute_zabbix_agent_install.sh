@@ -32,10 +32,10 @@ local METADATA
 METADATA=controller   #change this for your request 
 echo $BLUE Beginning install zabbix agent on $YELLOW $METADATA  $NO_COLOR
 cat ./$METADATA | while read line ; do scp -r install-zabbix-agent/ $line:/root/; debug $? ; done   1>/dev/null 2>&1 
-    debug $?
+ 
 cat ./$METADATA | while read line ; do ssh -n $line /bin/bash /root/install-zabbix-agent/install-agent.sh $SERVERIP $METADATA ;debug $? ;done  2>/dev/null
-    debug $?
-cat ./$METADATA | while read line ; do ssh -n $line /bin/bash 'rm -rf /root/install-zabbix-agent/' ;done 
+ 
+cat ./$METADATA | while read line ; do ssh -n $line  'rm -rf /root/install-zabbix-agent/' ;done 
 echo $GREEN Finished install zabbix agent on host: $YELLOW  $(cat ./$METADATA) $NO_COLOR
 }
 
@@ -45,11 +45,11 @@ local METADATA
 METADATA=compute    #change this for your request
 echo $BLUE Beginning install zabbix agent on $YELLOW $METADATA  $NO_COLOR
 cat ./$METADATA | while read line ; do scp -r install-zabbix-agent/ $line:/root/; debug $? ; done  1>/dev/null 2>&1
-    debug $?
+    
 cat ./$METADATA | while read line ; do ssh -n $line /bin/bash /root/install-zabbix-agent/install-agent.sh $SERVERIP $METADATA ;debug $? ;done  2>/dev/null
-    debug $?
+ 
 
-cat ./$METADATA | while read line ; do ssh -n $line /bin/bash 'rm -rf /root/install-zabbix-agent/';done 
+cat ./$METADATA | while read line ; do ssh -n $line 'rm -rf /root/install-zabbix-agent/';done 
 echo $GREEN Finished install zabbix agent on host: $YELLOW  $(cat ./$METADATA) $NO_COLOR
 }
 controller
