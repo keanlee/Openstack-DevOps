@@ -15,7 +15,7 @@ CYAN="$ESC[0;36m"
 SERVERIP=$1
 if [ $# = 0 ];then 
     cat ./README.txt
-    echo $RED Usage: sh install.sh zabbix-server-ip $NO_COLOR
+    echo $CYAN Usage: sh $0 zabbix-server-ip $NO_COLOR
     exit 0
 fi 
 
@@ -39,6 +39,7 @@ cat ./$METADATA | while read line ; do ssh -n $line  'rm -rf /root/install-zabbi
 echo $GREEN Finished install zabbix agent on host: $YELLOW  $(cat ./$METADATA) $NO_COLOR
 }
 
+
 #------------------Function for compute node deploy zabbix agent --------------------------------------
 function compute(){
 local METADATA
@@ -52,6 +53,7 @@ cat ./$METADATA | while read line ; do ssh -n $line /bin/bash /root/install-zabb
 cat ./$METADATA | while read line ; do ssh -n $line 'rm -rf /root/install-zabbix-agent/';done 
 echo $GREEN Finished install zabbix agent on host: $YELLOW  $(cat ./$METADATA) $NO_COLOR
 }
+
 controller
 compute
 echo $BLUE Thank for you  use this script to install zabbix agent $NO_COLOR

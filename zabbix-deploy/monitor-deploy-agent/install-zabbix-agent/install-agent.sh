@@ -22,9 +22,17 @@ CYAN="$ESC[0;36m"
 
 function install(){
 #-----------------Disable selinux-----------------
-#sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config #disable selinux in conf file 
-#setenforce 0  &&
-echo $GREEN ----->The Selinux Status: $( getenforce) $NO_COLOR
+if [[ $(getenforce) = Enforcing ]];then
+    echo $BLUE Disable selinux $NO_COLOR
+    sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config 
+    setenforce 0  &&
+    echo $GREEN Disable the selinux by config file. The current selinux Status:$NO_COLOR $YELLOW $(getenforce) $NO_COLOR
+
+elif [[ $(getenforce) =  Permissive ]];then 
+    echo $BLUE Disable selinux $NO_COLOR
+    sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+    echo $GREEN Disable the selinux by config file. The current selinux Status:$NO_COLOR $YELLOW $(getenforce) $NO_COLOR
+fi
 
 #---------------install package of zabbix agent -----
 rpm -ivh ./packages/zabbix-agent* 1>/dev/null 2>&1 &&
