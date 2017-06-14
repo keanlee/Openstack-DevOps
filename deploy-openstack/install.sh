@@ -74,10 +74,11 @@ network)
     source ./bin/neutron.sh network
     ;;
 controller-as-network-node)
-    #source ./bin/clean.sh 
+    source ./bin/clean.sh 
     yum_repos
     initialize_env
     ntp
+    common_packages
     source ./bin/firewall.sh
     rabbitmq_configuration
     memcache
@@ -88,7 +89,7 @@ controller-as-network-node)
     source ./bin/neutron.sh controller-as-network-node
     source ./bin/cinder.sh controller
     source ./bin/dashboard.sh 
-    source ./bin/initial_network.sh
+    #source ./bin/initial_network.sh
     ;;
 compute-as-network-node)
     #source ./bin/clean.sh 
