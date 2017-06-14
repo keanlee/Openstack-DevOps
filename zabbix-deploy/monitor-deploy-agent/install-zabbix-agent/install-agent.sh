@@ -20,6 +20,14 @@ WHITE="$ESC[0;37m"
 #PURPLE="$ESC[0;35m"
 CYAN="$ESC[0;36m"
 
+
+debug(){
+    if [[ $1 != 0 ]] ; then
+        echo $RED error: $2 $NO_COLOR
+        exit 1
+    fi
+}
+
 function install(){
 #-----------------Disable selinux-----------------
 if [[ $(getenforce) = Enforcing ]];then
