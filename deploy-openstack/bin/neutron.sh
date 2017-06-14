@@ -200,6 +200,11 @@ cp -f ./etc/network/metadata_agent.ini  /etc/neutron
 sed -i "s/controller/$MGMT_IP/g"  /etc/neutron/metadata_agent.ini
 sed -i "s/METADATA_SECRET/$METADATA_SECRET/g" /etc/neutron/metadata_agent.ini
 
+local CPUs=$(lscpu | grep ^CPU\(s\) | awk -F ":" '{print $2}')
+local HALFcpus=$(expr $CPUs / 2)
+sed -i "s/valuesnumber/${HALFcpus}/g" /etc/neutron/metadata_agent.ini
+echo $BLUE set the metadata_workers value as $HALFcpus $NO_COLOR
+
 #The ML2 plug-in uses the Open vSwitch (OVS) mechanism (agent) to build the virtual net-working framework for instances
 cp -f ./etc/network/openvswitch_agent.ini  /etc/neutron/plugins/ml2/
 sed -i "s/LOCAL_IP/$MGMT_IP/g"  /etc/neutron/plugins/ml2/openvswitch_agent.ini
