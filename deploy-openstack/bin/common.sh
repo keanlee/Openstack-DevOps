@@ -73,6 +73,14 @@ yum erase firewalld* -y 1>/dev/null 2>&1
 }
 
 
+function common_packages(){
+echo $BLUE Install openstack-selinux and  python-openstackclient ...$NO_COLOR
+#RHEL and CentOS enable SELinux by default. Install the openstack-selinux package to automatically manage security policies for OpenStack services
+yum install openstack-selinux python-openstackclient -y 1>/dev/null
+    debug "$?" "$RED Install openstack-selinux python-openstackclient failed $NO_COLOR"
+
+}
+
 
 #--------------------------------------ntp server --------------------------------
 function ntp(){

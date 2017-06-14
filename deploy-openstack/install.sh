@@ -36,6 +36,7 @@ case $1 in
     sleep 2
     yum_repos
     initialize_env
+    common_packages
     ntp
     source ./bin/firewall.sh
     rabbitmq_configuration
