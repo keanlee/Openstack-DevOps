@@ -13,10 +13,10 @@ MGMT_IP_DEVICE=eth0
 PROVIDER_INTERFACE=eth1
 
 #The VIP use for all slave node , ha_proxy also use this ip 
-CONTROLLER_VIP=10.245.58.205
+CONTROLLER_VIP=192.168.1.10
 
 #NTP server IP
-NTP_SERVER_IP=10.245.58.205
+NTP_SERVER_IP=192.168.1.10
 
 
 

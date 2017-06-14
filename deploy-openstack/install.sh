@@ -4,7 +4,6 @@
 cd $(cd $(dirname $0); pwd)
 source ./bin/common.sh
 
-echo -e $CYAN $(cat ./README.txt) $NO_COLOR 
 echo $GREEN This script will be deploy OpenStack on ${NO_COLOR}${YELLOW}$(cat /etc/redhat-release) $NO_COLOR
 
 function help(){
@@ -23,6 +22,7 @@ __EOF__
 }
 
 if [[ $# = 0 || $# -gt 1 ]]; then 
+    echo -e $CYAN $(cat ./README.txt) $NO_COLOR 
     help
     exit 1
 fi
@@ -33,7 +33,6 @@ fi
 case $1 in
     controller)
     #source ./bin/clean.sh 
-    sleep 2
     yum_repos
     initialize_env
     common_packages
