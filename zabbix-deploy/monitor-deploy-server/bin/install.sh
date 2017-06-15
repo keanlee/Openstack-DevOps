@@ -59,12 +59,14 @@ setenforce 0  &&
 echo -e "\e[1;36m ----->The Selinux Status: $( getenforce) \e[0m"
 systemctl enable  httpd 1>/dev/null 2>&1
 systemctl start httpd  &&
+    debug "$?" "start httpd failed "
 echo -e "\e[1;36m ----->The httpd daemon is running \e[0m"
 
 #---------------add get zabbix database size script----------
 sed -i '294 i  UserParameter=get-zabbix-database-size,/etc/zabbix/scripts/get-zabbix-database-size.sh $1 ' /etc/zabbix/zabbix_agentd.conf &&
 systemctl enable zabbix-agent 1>/dev/null 2>&1
 systemctl start zabbix-agent &&
+    debug "$?" "start zabbix-agent faile"
 echo -e "\e[1;36m ----->The zabbix-agent daemon is running \e[0m"
 
 systemctl enable zabbix-server 1>/dev/null 2>&1

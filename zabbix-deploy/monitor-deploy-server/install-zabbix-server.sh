@@ -29,7 +29,12 @@ if [ $OS = Red ];then
 else
     OSVERSION=$(cat /etc/redhat-release | awk '{print $4}' | awk -F "." '{print $2}')
 fi
-    echo $BLUE $README $NO_COLOR
+
+function help(){
+echo -e $BLUE $README $NO_COLOR
+echo $CYAN =================================Usage as below:==================$NO_COLOR
+echo $CYAN sh $0 begin $NO_COLOR
+}
 
 function install(){
 
@@ -64,9 +69,17 @@ function choice(){
             fi
 }
 
-if [ $(rpm -qa | grep zabbix | wc -l) -ge 1 ];then
-    source ./bin/clean.sh
-    choice $OSVERSION
-else
-    choice $OSVERSION
-fi
+#------------------------------------main------------------------
+case $1 in 
+begin)
+    if [ $(rpm -qa | grep zabbix | wc -l) -ge 1 ];then
+        source ./bin/clean.sh
+        choice $OSVERSION
+    else
+        choice $OSVERSION
+    fi
+    ;;
+*)
+    help
+    ;;
+esac

@@ -23,10 +23,11 @@ NTP_SERVER_IP=192.168.1.10
 
 #----------------------------------------------------------------------------
 #--------------external network create -------------
-EXTERNAL_NETWORK_CIDR=10.245.58.0/24
-FLOATING_IP_START=10.245.58.4
-FLOATING_IP_END=10.245.58.13
-EXTERNAL_NETWORK_GATEWAY=10.245.58.1
+#-------Floating ip here:
+EXTERNAL_NETWORK_CIDR=10.245.28.0/24
+FLOATING_IP_START=10.245.28.9
+FLOATING_IP_END=10.245.28.25
+EXTERNAL_NETWORK_GATEWAY=10.245.28.1
 
 
 
