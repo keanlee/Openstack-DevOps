@@ -103,6 +103,8 @@ CINDER_PASS=cinderpass
 #---------------Controller HA proxy -----------
 #This section will be update later 
 
+#galera cluster name here
+CLUSTES=controller1,controller2,controller3
 
 
 #-------------------------------------nova compute node ------------------------------------------------------
