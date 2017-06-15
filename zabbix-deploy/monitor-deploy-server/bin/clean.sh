@@ -18,7 +18,7 @@ echo -e "\e[1;31m Your OS current installed zabbix server: $(rpm -qa | grep zabb
            rm -rf /var/lib/mysql
            rm -rf /usr/lib64/mysql
            rm -rf /etc/my.cnf
-           rm -f /etc/yum.repos.d/*
+           #rm -f /etc/yum.repos.d/*
            yum clean all   1>/dev/null 2>&1
            rm -rf /etc/httpd
            rm -rf /etc/zabbix/
