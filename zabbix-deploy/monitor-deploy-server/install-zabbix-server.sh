@@ -61,10 +61,10 @@ function choice(){
             if [ $1 -eq 1 ];then
 #--------------Downgrade the pacakge of systemc, since the higher version cause can't start zabbix-server daemon
                 rpm -Uvh --force ./packages/gnutls-3.1.18-8.el7.x86_64.rpm 1>/dev/null &&
-                echo "This script will be deploy zabbix-server on $GREEN $(cat /etc/redhat-release) $NO_CLOLOR"
+                echo $BLUE This script will be deploy zabbix-server on $GREEN $(cat /etc/redhat-release) $NO_CLOLOR
                 install
             else
-                echo "This script will be deploy zabbix-server on $GREEN $(cat /etc/redhat-release) $NO_CLOLOR"
+                echo $BLUE This script will be deploy zabbix-server on $GREEN $(cat /etc/redhat-release) $NO_CLOLOR
                 install
             fi
 }
