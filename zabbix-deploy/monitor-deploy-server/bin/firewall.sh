@@ -1,6 +1,6 @@
 #!/bin/bash 
 #-------------------this script can be help you configuer the firewall rule for zabbix server ------
-#author by lihao in March of 2017
+#author by keanlee in March of 2017
 STATUS=$(systemctl status firewalld | grep Active | awk -F ":" '{print $2}' | awk '{print $1}')
 
 function iptabels(){

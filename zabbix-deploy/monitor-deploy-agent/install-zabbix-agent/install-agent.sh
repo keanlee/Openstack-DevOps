@@ -79,6 +79,7 @@ fi
 if [ $METADATA = ceph ];then
     usermod -a -G ceph zabbix
 fi
+
 #--------------end install zabbix agent---------------------
 chown -R zabbix:zabbix /etc/zabbix/scripts
 chmod 700 /etc/zabbix/scripts/*

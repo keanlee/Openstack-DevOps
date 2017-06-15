@@ -1,5 +1,5 @@
 #!/bin/bash 
-#author by lihao
+#author by keanlee
 #------------------install zabbix packages----------------------- 
 
        yum install zabbix-server-mysql -y  1>/dev/null 
