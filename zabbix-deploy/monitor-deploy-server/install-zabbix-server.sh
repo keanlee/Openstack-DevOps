@@ -32,18 +32,19 @@ fi
     echo $BLUE $README $NO_COLOR
 
 function install(){
-#echo -e " \033[1m Begin install zabbix server  ..."
-echo -e "\e[1;36m Begin install zabbix server  ... \e[0m"
-#mkdir /etc/yum.repos.d/bak
-#mv /etc/yum.repos.d/*  /etc/yum.repos.d/bak/  1>/dev/null 2>&1 
-rm -rf /etc/yum.repos.d/* 
 
-#--------------------this functin is setup the yum repo, you can change the repo on ./repo dir
-cp ./repo/* /etc/yum.repos.d/
-#cp ./repo/zabbix3.0.repo   /etc/yum.repos.d/
-yum clean all 1>/dev/null 2>&1
-echo -e "\e[1;36m setup zabbix repos successfull \e[0m"
+#-----------------------------yum repos configuration ---------------------------
+function yum_repos(){
+if [[ ! -d /etc/yum.repos.d/bak/ ]];then
+    mkdir /etc/yum.repos.d/bak/
+fi
+mv /etc/yum.repos.d/* /etc/yum.repos.d/bak/  1>/dev/null 2>1&
+cp -f ./repos/* /etc/yum.repos.d/   &&
+yum clean all 1>/dev/null 2>1&
+echo $GREEN yum repos configuration done $NO_COLOR
+}
 
+yum_repos
 #------------------execute the install script --------
 source ./bin/install.sh 
 source ./bin/firewall.sh
