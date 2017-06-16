@@ -95,17 +95,24 @@ yum install ntp -y  1>/dev/null
     debug "$?" "Install ntp failed, please check your yum repos"
 cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 hwclock --systohc
-
-sed -i "/server 0.centos.pool.ntp.org iburst/d" /etc/ntp.conf
-sed -i "/server 1.centos.pool.ntp.org iburst/d" /etc/ntp.conf
-sed -i "/server 2.centos.pool.ntp.org iburst/d" /etc/ntp.conf
-sed -i "/server 3.centos.pool.ntp.org iburst/d" /etc/ntp.conf
-sed -i "21 i server $NTP_SERVER_IP iburst " /etc/ntp.conf
-
-ntpdate $NTP_SERVER_IP 1>/dev/null
+if [[ $1 = "server" ]];then 
+    cp -f ./etc/ntp.conf  /etc
+    sed -i "s/NTP-SERVER-IP/$NTP_SERVER_IP/g" /etc/ntp.conf
+    sed -i "s/IP-ADDR/$ALLOW_IP_RANGES/g" /etc/ntp.conf
+    sed -i "s/NETMASK-ADDR/$ALLOW_IP_NETMASK/g" /etc/ntp.conf
+    ntpdate ntp1.aliyun.com 1>/dev/null
+else 
+    sed -i "/server 0.centos.pool.ntp.org iburst/d" /etc/ntp.conf
+    sed -i "/server 1.centos.pool.ntp.org iburst/d" /etc/ntp.conf
+    sed -i "/server 2.centos.pool.ntp.org iburst/d" /etc/ntp.conf
+    sed -i "/server 3.centos.pool.ntp.org iburst/d" /etc/ntp.conf
+    sed -i "21 i server $NTP_SERVER_IP iburst " /etc/ntp.conf
+    ntpdate $NTP_SERVER_IP 1>/dev/null
+fi
 
 systemctl enable ntpd.service 1>/dev/null 2>&1 && 
 systemctl start ntpd.service
+    debug "$?" "start ntpd.service failed "
 }
 
 
