@@ -104,8 +104,8 @@ net.ipv4.conf.default.rp_filter = 0
 __EOF__
 sysctl -p 1>/dev/null 
 
-echo $BLUE Install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch $NO_COLOR 
-yum install openstack-neutron-openvswitch -y 1>/dev/null 
+echo $BLUE Install openstack-neutron-ml2 openstack-neutron-openvswitch $NO_COLOR 
+yum install openstack-neutron-ml2 openstack-neutron-openvswitch -y 1>/dev/null 
 #install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch
     debug "$?" "Install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch failed"
 

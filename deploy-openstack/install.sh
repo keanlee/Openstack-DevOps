@@ -32,9 +32,9 @@ fi
 #---------------compnment choose -----------
 case $1 in
     controller)
-    #source ./bin/clean.sh 
+    echo $BLUE Begin deploy controller on ${YELLOW}$(hostname)$NO_COLOR 
     yum_repos
-    initialize_env
+    #initialize_env
     common_packages
     ntp
     source ./bin/firewall.sh
@@ -54,18 +54,17 @@ case $1 in
     source ./bin/dashboard.sh 
     ;;
 compute)
-    #source ./bin/clean.sh 
+    echo $BLUE Begin deploy compute on ${YELLOW}$(hostname)$NO_COLOR
     yum_repos
-    initialize_env
+    #initialize_env
     ntp
-    source ./bin/firewall.sh
-    sleep 2
+    #source ./bin/firewall.sh
     source ./bin/nova.sh compute
-    sleep 2
     source ./bin/neutron.sh compute
     #source ./bin/cinder.sh  compute 
     ;;
 network) 
+    echo $BLUE Begin deploy network on ${YELLOW}$(hostname)$NO_COLOR
     yum_repos
     initialize_env
     ntp
@@ -73,7 +72,7 @@ network)
     source ./bin/neutron.sh network
     ;;
 controller-as-network-node)
-    source ./bin/clean.sh 
+    echo $BLUE Begin deploy controller as network node on ${YELLOW}$(hostname)$NO_COLOR
     yum_repos
     initialize_env
     ntp
@@ -91,7 +90,7 @@ controller-as-network-node)
     #source ./bin/initial_network.sh
     ;;
 compute-as-network-node)
-    #source ./bin/clean.sh 
+    echo $BLUE Begin deploy compute as network node on ${YELLOW}$(hostname)$NO_COLOR
     yum_repos
     initialize_env
     ntp
