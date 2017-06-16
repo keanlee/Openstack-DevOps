@@ -40,10 +40,13 @@ $MAGENTA================================================================
               $BLUE#to deploy controller as network node$NO_COLOR  
           
            ${MAGENTA}sh $0 check-controller 
-              $BLUE#to check the controller host net and disk info$NO_COLOR${MAGENTA}
+              $BLUE#to check the controller node system info$NO_COLOR${MAGENTA}
 
            ${MAGENTA}sh $0 check-compute
-              $BLUE#to check the compute host net and disk info$NO_COLOR${MAGENTA}
+              $BLUE#to check the compute node system info$NO_COLOR${MAGENTA}
+
+           ${MAGENTA}sh $0 check-network
+             $BLUE#to check the network node system info$NO_COLOR${MAGENTA}
 ================================================================
 $NO_COLOR
 __EOF__
@@ -54,15 +57,15 @@ __EOF__
 function controller(){
 echo $BLUE scp deplory script to target hosts $NO_COLOR 
 
-cat ./deploy-openstack/CONTROLLER_HOSTS | while read line ; do scp -r deploy-openstack/ \
+cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do scp -r deploy-openstack/ \
 $line:/root/; \
     debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
 
-cat ./deploy-openstack/CONTROLLER_HOSTS | while read line ; do ssh -n $line /bin/bash /root/deploy-openstack/install.sh \
+cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n $line /bin/bash /root/deploy-openstack/install.sh \
 controller | tee controller-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
     debug "$?" "bash remote execute on remote host <$line> error "; done
 
-cat ./deploy-openstack/CONTROLLER_HOSTS | while read line ; do ssh -n $line 'rm -rf /root/deploy-openstack/' ;done
+cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n $line 'rm -rf /root/deploy-openstack/' ;done
 }
 
 
@@ -70,14 +73,14 @@ cat ./deploy-openstack/CONTROLLER_HOSTS | while read line ; do ssh -n $line 'rm 
 #---------------------------------compute node deploy -----------------
 function compute(){
 echo $BLUE scp deplory script to target hosts $NO_COLOR 
-cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do scp -r deploy-openstack/ $line:/root/; \
+cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do scp -r deploy-openstack/ $line:/root/; \
     debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
 
-cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do ssh -n root@$line /bin/bash /root/deploy-openstack/install.sh \
+cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do ssh -n root@$line /bin/bash /root/deploy-openstack/install.sh \
 compute | tee compute-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
     debug "$?" "bash remote execute on remote host <$line> error "; done
 
-cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /root/deploy-openstack/';done
+cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /root/deploy-openstack/';done
 }
 
 
@@ -88,20 +91,28 @@ function check_info(){
 #check the target host net and disk info
 #for controller nodes
 if [[ $1 = "controller" ]];then 
-    cat ./deploy-openstack/CONTROLLER_HOSTS | while read line ; do scp deploy-openstack/bin/system_info.sh $line:/root/; \
+    cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do scp ./deploy-openstack/bin/system_info.sh $line:/root/; \
         debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
-    cat ./deploy-openstack/CONTROLLER_HOSTS | while read line ; do ssh -n root@$line /bin/bash /root/system_info.sh; \
+    cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n root@$line /bin/bash /root/system_info.sh; \
         debug "$?" "bash remote execute on remote host <$line> error "; done
    
-    cat ./deploy-openstack/CONTROLLER_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /root/system_info.sh';done
+    cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /root/system_info.sh';done
 elif [[ $1 = "compute" ]];then 
     #for compute nodes
-    cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do scp deploy-openstack/bin/system_info.sh $line:/root/; \
+    cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do scp ./deploy-openstack/bin/system_info.sh $line:/root/; \
         debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
-    cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do ssh -n root@$line /bin/bash /root/system_info.sh; \
+    cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do ssh -n root@$line /bin/bash /root/system_info.sh; \
         debug "$?" "bash remote execute on remote host <$line> error "; done
  
-   cat ./deploy-openstack/COMPUTE_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /root/system_info.sh';done
+    cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /root/system_info.sh';done
+elif [[ $1 = "network" ]];then 
+    #for network nodes
+    cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do scp ./deploy-openstack/bin/system_info.sh $line:/root/; \
+        debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
+    cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do ssh -n root@$line /bin/bash /root/system_info.sh; \
+        debug "$?" "bash remote execute on remote host <$line> error "; done
+
+    cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /root/system_info.sh';done
 fi
 }
 
@@ -111,13 +122,13 @@ fi
 function network_node(){
 echo $BLUE scp deplory script to target hosts $NO_COLOR 
 
-cat ./deploy-openstack/NETWORK_HOSTS | while read line ; do scp -r deploy-openstack/ $line:/root/; \
+cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do scp -r deploy-openstack/ $line:/root/; \
     debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
 
-cat ./deploy-openstack/NETWORK_HOSTS | while read line ; do ssh -n root@$line /bin/bash /root/deploy-openstack/install.sh \
+cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do ssh -n root@$line /bin/bash /root/deploy-openstack/install.sh \
 network | tee network-node-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log;done 
 
-cat ./deploy-openstack/NETWORK_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /root/deploy-openstack/' ;done 
+cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /root/deploy-openstack/' ;done 
 }
 
 
@@ -126,15 +137,15 @@ cat ./deploy-openstack/NETWORK_HOSTS | while read line ; do ssh -n root@$line 'r
 function controller_as_network_node(){
 echo $BLUE scp deplory script to target hosts $NO_COLOR 
 
-cat ./deploy-openstack/CONTROLLER_HOSTS | while read line ; do scp -r deploy-openstack/ \
+cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do scp -r deploy-openstack/ \
 $line:/root/; \
     debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
 
-cat ./deploy-openstack/CONTROLLER_HOSTS | while read line ; do ssh -n $line /bin/bash /root/deploy-openstack/install.sh \
+cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n $line /bin/bash /root/deploy-openstack/install.sh \
 controller-as-network-node | tee controller-network-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
     debug "$?" "bash remote execute on remote host <$line> error "; done
 
-cat ./deploy-openstack/CONTROLLER_HOSTS | while read line ; do ssh -n $line 'rm -rf /root/deploy-openstack/' ;done
+cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n $line 'rm -rf /root/deploy-openstack/' ;done
 }
 
 
@@ -153,6 +164,9 @@ check-controller)
     ;;
 check-compute)
     check_info compute
+    ;;
+check-network)
+    check_info network
     ;;
 controller-as-network-node)
    controller_as_network_node
