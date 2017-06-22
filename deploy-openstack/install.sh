@@ -1,5 +1,6 @@
 #!/bin/bash
 #author by keanlee on May 15th of 2017 
+#wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
 
 cd $(cd $(dirname $0); pwd)
 source ./bin/common.sh
