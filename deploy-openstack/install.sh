@@ -32,7 +32,7 @@ fi
 
 #---------------compnment choose -----------
 case $1 in
-    controller)
+controller)
     echo $BLUE Begin deploy controller on ${YELLOW}$(hostname)$NO_COLOR 
     yum_repos
     #initialize_env
@@ -43,15 +43,10 @@ case $1 in
     memcache
     mysql_configuration
     source ./bin/keystone.sh
-    sleep 2
     source ./bin/glance.sh
-    sleep 2
     source ./bin/nova.sh controller  
-    sleep 2
     source ./bin/neutron.sh controller 
-    sleep 2
     source ./bin/cinder.sh controller
-    sleep 2
     source ./bin/dashboard.sh 
     ;;
 compute)
@@ -98,9 +93,7 @@ compute-as-network-node)
     initialize_env
     ntp
     source ./bin/firewall.sh
-    sleep 2
     source ./bin/nova.sh compute
-    sleep 2
     source ./bin/neutron.sh compute
     source ./bin/neutron.sh compute-as-network-node
     #source ./bin/cinder.sh  compute 

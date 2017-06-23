@@ -73,6 +73,7 @@ __EOF__
 
 if [[ $(egrep -c '(vmx|svm)' /proc/cpuinfo) = 0 ]];then
     echo $YELLOW Your host does not support hardware acceleration $NO_COLOR
+    echo $YELLOW $(lscpu | grep ^Hypervisor) $NO_COLOR
 else 
     echo $GREEN Your host support hardware acceleration $NO_COLOR
 fi

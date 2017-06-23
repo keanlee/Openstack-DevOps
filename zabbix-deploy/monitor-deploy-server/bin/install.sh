@@ -54,6 +54,8 @@ sed -i '19 i php_value date.timezone Asia/Shanghai ' /etc/httpd/conf.d/zabbix.co
 
 
 #----------------disable selinux-------------------------
+#setsebool -P httpd_can_network_connect_db on
+
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config #disable selinux in conf file 
 setenforce 0  &&
 echo -e "\e[1;36m ----->The Selinux Status: $( getenforce) \e[0m"
