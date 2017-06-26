@@ -1,5 +1,5 @@
 #!/bin/bash
-#Author by keanlee
+#Author by keanlee on May 11th
 
 # ansi colors for formatting heredoc
 ESC=$(printf "\e")
@@ -36,12 +36,11 @@ for i in $NET_DEV_NAME
         fi
         
         IP_ADDR=$(ip addr show $i | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
-        echo ${BLUE} The IP address is :$NO_COLOR$GREEN $IP_ADDR $NO_COLOR
+        echo ${BLUE} The IP address is:$NO_COLOR$GREEN $IP_ADDR $NO_COLOR
 
            if [[ $IP_ADDR = "" ]];then
               echo $RED No IP Address with $i $NO_COLOR
            fi
-
 done
 }
 
@@ -58,7 +57,7 @@ DEVICE=$(cat /proc/partitions | awk '{print $4}' | sed -n '3,$p' | grep "[a-z]$"
 for DEVICE_ID in $DEVICE
     do 
         DISK_SIZE=$(lsblk /dev/${DEVICE_ID} | sed -n '2p' | awk '{print $4}')
-        echo $BLUE Disk name : ${YELLOW}$DEVICE_ID${NO_COLOR} $BLUE the size is:$GREEN $DISK_SIZE${NO_COLOR}
+        echo $BLUE Disk name: ${YELLOW}$DEVICE_ID${NO_COLOR} $BLUE the size is:$GREEN $DISK_SIZE${NO_COLOR}
         
 done
 }
@@ -85,6 +84,7 @@ MEMs=$(free -m | grep -i mem | awk '{print $2 "M"}')
 echo $BLUE Your OS total Mem:$NO_COLOR $GREEN${MEMs}$NO_COLOR
 }
 
+
 #----------------------------Main-----------------------------------
 cat 1>&2 <<__EOF__
 $CYAN===================================================================
@@ -93,13 +93,8 @@ $CYAN===================================================================
 $NO_COLOR
 __EOF__
 echo $BLUE Your linux distribution: ${NO_COLOR}${GREEN}$(cat /etc/redhat-release) $NO_COLOR
+
 CPU_MEM
 NET_NAME_IP
 DISK_INFO
-#cat 1>&2 <<__EOF__
-#$CYAN=================================================================
-#*****************************************************************
-#=================================================================
-#$NO_COLOR
-#__EOF__
 

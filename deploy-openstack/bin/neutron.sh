@@ -89,9 +89,9 @@ __EOF__
 #--------------------------------------------------neutron for compute node -----------------------------
 function neutron_compute(){
 cat 1>&2 <<__EOF__
-$MAGENTA=================================================================
-      Begin to deploy Neutron on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} which as compute node
-=================================================================
+$MAGENTA====================================================================
+  Begin to deploy Neutron on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} which as compute node
+====================================================================
 $NO_COLOR
 __EOF__
 

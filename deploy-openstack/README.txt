@@ -9,4 +9,4 @@ You need to: \n
 3. List controller's ip and compute's ip to relate file of deploy-openstack directory if you want to distribute deploy openstack\n
 \n
 Author: Kean Lee    \n
-Email: haoli201410@163.com \n
+E-mail: haoli201410@163.com \n

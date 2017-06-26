@@ -25,7 +25,7 @@ fi
 function help(){
 echo -e $CYAN $(cat ./deploy-openstack/README.txt) $NO_COLOR
 cat 1>&2 <<__EOF__
-$MAGENTA================================================================
+$MAGENTA========================================================================
               --------Usage as below ---------
            sh $0 controller  
               $BLUE#to deploy controller node$NO_COLOR 
@@ -46,8 +46,8 @@ $MAGENTA================================================================
               $BLUE#to check the compute node system info$NO_COLOR${MAGENTA}
 
            ${MAGENTA}sh $0 check-network
-             $BLUE#to check the network node system info$NO_COLOR${MAGENTA}
-================================================================
+              $BLUE#to check the network node system info$NO_COLOR${MAGENTA}
+========================================================================
 $NO_COLOR
 __EOF__
 }
