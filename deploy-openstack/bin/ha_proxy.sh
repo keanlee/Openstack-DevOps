@@ -4,7 +4,7 @@
 #http://www.linuxidc.com/Linux/2015-07/119512.htm
 
 function Galera(){
-yum install -y  mariadb mariadb-galera-server mariadb-galera-common galera rsync
+yum install -y  mariadb mariadb-galera-server mariadb-galera-common galera rsync  1>/dev/null
 
 sed -i '/Group=mysql/a\LimitNOFILE=65535' /usr/lib/systemd/system/mariadb.service
 systemctl daemon-reload

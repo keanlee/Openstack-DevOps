@@ -23,7 +23,9 @@ fi
 }
 
 function help(){
-echo -e $CYAN $(cat ./deploy-openstack/README.txt) $NO_COLOR
+which pv 1>/dev/null 2>&1 || rpm -ivh ./deploy-openstack/lib/pv* 1>/dev/null 2>&1
+    debug "$?" "install pv failed "
+echo -e $CYAN $(cat ./deploy-openstack/README.txt) $NO_COLOR | pv -qL 30
 cat 1>&2 <<__EOF__
 $MAGENTA========================================================================
               --------Usage as below ---------

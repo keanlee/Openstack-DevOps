@@ -23,7 +23,9 @@ __EOF__
 }
 
 if [[ $# = 0 || $# -gt 1 ]]; then 
-    echo -e $CYAN $(cat ./README.txt) $NO_COLOR 
+    which pv 1>/dev/null 2>&1 || rpm -ivh ./lib/pv* 1>/dev/null 2>&1
+        debug "$?" "install pv failed "
+    echo -e $CYAN $(cat ./README.txt) $NO_COLOR | pv -qL 30
     help
     exit 1
 fi
