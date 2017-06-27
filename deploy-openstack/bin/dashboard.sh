@@ -1,7 +1,6 @@
 #!/bin/bash
 #The Dashboard (horizon) is a web interface that enables cloud administrators and users to manage various OpenStack resources and services.
 
-#----------Test only -----
 
 function dashboard(){
 

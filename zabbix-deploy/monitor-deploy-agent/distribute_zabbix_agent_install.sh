@@ -46,26 +46,26 @@ debug(){
 
 function ssh_key(){
 echo $BLUE Generating public/private rsa key pair,skip all steps by type Enter: $NO_COLOR
-ssh-keygen -t rsa
+ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa
 if [[ $1 = "compute" ]];then
     echo $BLUE copy public key to compute hosts:  $NO_COLOR
     for ips in $(cat ./compute);
-        do ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
+        do ssh-copy-id -i /root/.ssh/id_rsa.pub  $ips;
     done
 elif [[ $1 = "controller" ]];then
     echo $BLUE copy public key to controller hosts: $NO_COLOR
     for ips in $(cat ./controller);
-        do ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
+        do ssh-copy-id -i /root/.ssh/id_rsa.pub  $ips;
    done
 elif [[ $1 = "agent" ]];then
     echo $BLUE copy public key to network hosts:  $NO_COLOR
     for ips in $(cat ./agent);
-        do ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
+        do ssh-copy-id -i /root/.ssh/id_rsa.pub  $ips;
     done
 elif [[ $1 = "storage" ]];then
     echo $BLUE copy public key to storage hosts:  $NO_COLOR
     for ips in $(cat ./storage);
-        do ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
+        do ssh-copy-id -i /root/.ssh/id_rsa.pub  $ips;
     done
 fi
 }

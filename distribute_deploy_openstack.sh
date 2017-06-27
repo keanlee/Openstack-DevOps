@@ -59,28 +59,52 @@ __EOF__
 }
 
 function ssh_key(){
-echo $BLUE Generating public/private rsa key pair,skip all steps by type Enter: $NO_COLOR
-ssh-keygen -t rsa
+echo $BLUE Generating public/private rsa key pair: $NO_COLOR
+ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa
+#-N "" tells it to use an empty passphrase (the same as two of the enters in an interactive script)
+#-f my.key tells it to store the key into my.key (change as you see fit).
+
+which sshpass 1>/dev/null 2>&1 || rpm -ivh ./deploy-openstack/lib/sshpass* 1>/dev/null 2>&1   
+
+echo $BLUE Please type the correct password for all server:$NO_COLOR
+read Password
+
 if [[ $1 = "compute" ]];then 
-    echo $BLUE copy public key to compute hosts:  $NO_COLOR
-    for ips in $(cat ./deploy-openstack/hosts/COMPUTE_HOSTS);
-        do ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
-    done 
+echo $BLUE copy public key to compute hosts:  $NO_COLOR
+for ips in $(cat ./deploy-openstack/hosts/COMPUTE_HOSTS);
+    do ssh-keyscan $ips >> ~/.ssh/known_hosts 1>/dev/null;
+done 
+for ips in $(cat ./deploy-openstack/hosts/COMPUTE_HOSTS);
+    do sshpass -p $Password ssh-copy-id -i /root/.ssh/id_rsa.pub  $ips
+done 
+
 elif [[ $1 = "controller" ]];then
-    echo $BLUE copy public key to controller hosts: $NO_COLOR
-    for ips in $(cat ./deploy-openstack/hosts/CONTROLLER_HOSTS);
-        do ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
-   done
+echo $BLUE copy public key to controller hosts: $NO_COLOR
+for ips in $(cat ./deploy-openstack/hosts/CONTROLLER_HOSTS);
+    do ssh-keyscan $ips >> ~/.ssh/known_hosts 1>/dev/null;
+done 
+for ips in $(cat ./deploy-openstack/hosts/CONTROLLER_HOSTS);
+   do sshpass -p $Password ssh-copy-id -i /root/.ssh/id_rsa.pub  $ips;
+done
+
 elif [[ $1 = "network" ]];then
-    echo $BLUE copy public key to network hosts:  $NO_COLOR
-    for ips in $(cat ./deploy-openstack/hosts/NETWORK_HOSTS);
-        do ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
-    done
+echo $BLUE copy public key to network hosts:  $NO_COLOR
+for ips in $(cat ./deploy-openstack/hosts/NETWORK_HOSTS);
+    do ssh-keyscan $ips >> ~/.ssh/known_hosts 1>/dev/null;
+done 
+for ips in $(cat ./deploy-openstack/hosts/NETWORK_HOSTS);
+    do sshpass -p $Password ssh-copy-id -i /root/.ssh/id_rsa.pub  $ips;
+done
+
 elif [[ $1 = "storage" ]];then
-    echo $BLUE copy public key to storage hosts:  $NO_COLOR
-    for ips in $(cat ./deploy-openstack/hosts/BLOCK_HOSTS);
-        do ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
-    done
+echo $BLUE copy public key to storage hosts:  $NO_COLOR
+for ips in $(cat ./deploy-openstack/hosts/BLOCK_HOSTS);
+    do ssh-keyscan $ips >> ~/.ssh/known_hosts 1>/dev/null;
+done 
+for ips in $(cat ./deploy-openstack/hosts/BLOCK_HOSTS);
+    do sshpass -p $Password ssh-copy-id -i /root/.ssh/id_rsa.pub  $ips;
+done
+
 fi
 }
 
