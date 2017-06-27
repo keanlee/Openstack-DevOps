@@ -52,30 +52,35 @@ $MAGENTA========================================================================
 
            ${MAGENTA}sh $0 ssh-key-<target-hosts-role>
               $BLUE#to create ssh-key and copy it to tartget hosts 
-            (target-hosts-role=controller,compute,network)$NO_COLOR${MAGENTA}
+            (target-hosts-role=controller,compute,network,storage)$NO_COLOR${MAGENTA}
 ========================================================================
 $NO_COLOR
 __EOF__
 }
 
 function ssh_key(){
-echo $BLUE Generating public/private rsa key pair ... $NO_COLOR
+echo $BLUE Generating public/private rsa key pair: $NO_COLOR
 ssh-keygen -t rsa
 if [[ $1 = "compute" ]];then 
-    echo $BLUE copy public key to compute hosts ... $NO_COLOR
+    echo $BLUE copy public key to compute hosts:  $NO_COLOR
     for ips in $(cat ./deploy-openstack/hosts/COMPUTE_HOSTS);
         do ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
     done 
 elif [[ $1 = "controller" ]];then
-    echo $BLUE copy public key to controller hosts ... $NO_COLOR
+    echo $BLUE copy public key to controller hosts: $NO_COLOR
     for ips in $(cat ./deploy-openstack/hosts/CONTROLLER_HOSTS);
         do ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
    done
 elif [[ $1 = "network" ]];then
-    echo $BLUE copy public key to network hosts ... $NO_COLOR
+    echo $BLUE copy public key to network hosts:  $NO_COLOR
     for ips in $(cat ./deploy-openstack/hosts/NETWORK_HOSTS);
         do ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
-   done
+    done
+elif [[ $1 = "storage" ]];then
+    echo $BLUE copy public key to storage hosts:  $NO_COLOR
+    for ips in $(cat ./deploy-openstack/hosts/BLOCK_HOSTS);
+        do ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
+    done
 fi
 }
 
