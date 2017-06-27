@@ -49,10 +49,36 @@ $MAGENTA========================================================================
 
            ${MAGENTA}sh $0 check-network
               $BLUE#to check the network node system info$NO_COLOR${MAGENTA}
+
+           ${MAGENTA}sh $0 ssh-key-<target-hosts-role>
+              $BLUE#to create ssh-key and copy it to tartget hosts 
+            (target-hosts-role=controller,compute,network)$NO_COLOR${MAGENTA}
 ========================================================================
 $NO_COLOR
 __EOF__
 }
+
+function ssh_key(){
+echo $BLUE Generating public/private rsa key pair ... $NO_COLOR
+ssh-keygen -t rsa
+if [[ $1 = "compute" ]];then 
+    echo $BLUE copy public key to compute hosts ... $NO_COLOR
+    for ips in $(cat ./deploy-openstack/hosts/COMPUTE_HOSTS);
+        do ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
+    done 
+elif [[ $1 = "controller" ]];then
+    echo $BLUE copy public key to controller hosts ... $NO_COLOR
+    for ips in $(cat ./deploy-openstack/hosts/CONTROLLER_HOSTS);
+        do ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
+   done
+elif [[ $1 = "network" ]];then
+    echo $BLUE copy public key to network hosts ... $NO_COLOR
+    for ips in $(cat ./deploy-openstack/hosts/NETWORK_HOSTS);
+        do ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
+   done
+fi
+}
+
 
 
 #----------------------------------controller node deploy ---------------------
@@ -76,13 +102,14 @@ cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n $lin
 function compute(){
 echo $BLUE scp deploy script to target hosts $NO_COLOR 
 cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do scp -r deploy-openstack/ $line:/root/; \
-    debug "$?" "Failed scp deploy script to $line host" ; done 1>/dev/null 2>&1
+    debug "$?" "Failed scp deploy script to $line host" ; done 1>/dev/null 2>&1 
 
 cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do ssh -n root@$line /bin/bash /root/deploy-openstack/install.sh \
 compute | tee compute-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
     debug "$?" "bash remote execute on remote host <$line> error "; done
 
 cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /root/deploy-openstack/';done
+
 }
 
 
@@ -171,8 +198,17 @@ check-network)
     check_info network
     ;;
 controller-as-network-node)
-   controller_as_network_node
-   ;;
+    controller_as_network_node
+    ;;
+ssh-key-compute)
+    ssh_key compute
+    ;;
+ssh-key-controller)
+    ssh_key controller
+    ;;
+ssh-key-network)
+    ssh_key network 
+    ;;
 *)
-    help
+   help
 esac

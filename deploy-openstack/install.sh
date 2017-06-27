@@ -2,6 +2,15 @@
 #author by keanlee on May 15th of 2017 
 #wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
 
+#useful
+#echo -ne '[#####                     ](33%)\r'
+#yum install tmux -y 1>/dev/null
+#echo -ne '[#############             ](66%)\r'
+#sleep 3
+#echo -ne '[##########################](100%)\r'
+#echo -ne '\n'
+
+
 cd $(cd $(dirname $0); pwd)
 source ./bin/common.sh
 
@@ -53,7 +62,7 @@ controller)
     ;;
 compute)
     echo $BLUE Begin deploy compute on ${YELLOW}$(hostname)$NO_COLOR
-    source ./bin/clean.sh
+    #source ./bin/clean.sh
     yum_repos
     initialize_env
     common_packages
