@@ -1,5 +1,5 @@
 #!/bin/bash
-#Author by keanlee on May 11th
+#Author by keanlee on May 11th of 2017
 
 # ansi colors for formatting heredoc
 ESC=$(printf "\e")

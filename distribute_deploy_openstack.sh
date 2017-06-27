@@ -59,7 +59,7 @@ __EOF__
 }
 
 function ssh_key(){
-echo $BLUE Generating public/private rsa key pair: $NO_COLOR
+echo $BLUE Generating public/private rsa key pair,skip all steps by type Enter: $NO_COLOR
 ssh-keygen -t rsa
 if [[ $1 = "compute" ]];then 
     echo $BLUE copy public key to compute hosts:  $NO_COLOR
