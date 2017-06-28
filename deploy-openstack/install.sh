@@ -64,9 +64,9 @@ compute)
     echo $BLUE Begin deploy compute on ${YELLOW}$(hostname)$NO_COLOR
     #source ./bin/clean.sh
     yum_repos
-    initialize_env
-    common_packages
-    ntp
+    #initialize_env
+    #common_packages
+    #ntp
     source ./bin/firewall.sh
     source ./bin/nova.sh compute
     source ./bin/neutron.sh compute
