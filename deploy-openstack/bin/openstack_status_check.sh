@@ -13,7 +13,7 @@ WHITE="$ESC[0;37m"
 #PURPLE="$ESC[0;35m"
 CYAN="$ESC[0;36m"
 
-source /home/admin-openrc
+source $(find / -name admin-openrc)
 
 systemctl --version >/dev/null 2>&1 && systemctl=1
 [ "$systemctl" ] || RUNLEVEL=$(LANG=C who -r | sed 's/.*run-level \([0-9]\).*/\1/')
