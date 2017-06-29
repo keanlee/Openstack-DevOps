@@ -119,7 +119,7 @@ $line:/home/; \
     debug "$?" "Failed scp deploy script to $line host" ; done 1>/dev/null 2>&1
 
 cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n $line /bin/bash /home/deploy-openstack/install.sh \
-controller | tee controller-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
+controller | tee ./log/controller-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
     debug "$?" "bash remote execute on remote host <$line> error "; done
 
 cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n $line 'rm -rf /home/deploy-openstack/' ;done
@@ -134,7 +134,7 @@ cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do scp -r deploy-
     debug "$?" "Failed scp deploy script to $line host" ; done 1>/dev/null 2>&1 
 
 cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do ssh -n root@$line /bin/bash /home/deploy-openstack/install.sh \
-compute | tee compute-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
+compute | tee ./log/compute-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
     debug "$?" "bash remote execute on remote host <$line> error "; done
 
 cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /home/deploy-openstack/';done
@@ -184,7 +184,7 @@ cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do scp -r deploy-
     debug "$?" "Failed scp deploy script to $line host" ; done 1>/dev/null 2>&1
 
 cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do ssh -n root@$line /bin/bash /home/deploy-openstack/install.sh \
-network | tee network-node-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log;done 
+network | tee ./log/network-node-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log;done 
 
 cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /home/deploy-openstack/' ;done 
 }
@@ -200,7 +200,7 @@ $line:/home/; \
     debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
 
 cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n $line /bin/bash /home/deploy-openstack/install.sh \
-controller-as-network-node | tee controller-network-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
+controller-as-network-node | tee ./log/controller-network-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
     debug "$?" "bash remote execute on remote host <$line> error "; done
 
 cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n $line 'rm -rf /home/deploy-openstack/' ;done
