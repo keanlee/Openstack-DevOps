@@ -279,8 +279,8 @@ if test "$nova"; then
     echo $BLUE == Nova managed services == $NO_COLOR
     nova service-list
 
-    echo $BLUE == Nova networks == $NO_COLOR
-    nova network-list
+    echo $BLUE == Neutron networks == $NO_COLOR
+    neutron net-list
 
     echo $BLUE == Nova instance flavors == $NO_COLOR
     # Check direct access
