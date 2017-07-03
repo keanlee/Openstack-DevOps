@@ -16,7 +16,7 @@
 
 #----------------------------------------------------neutron for controller node ----------------------
 function neutron_controller(){
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $MAGENTA=================================================================
       Begin to deploy Neutron on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} which as controller node
 =================================================================
@@ -88,7 +88,7 @@ __EOF__
 
 #--------------------------------------------------neutron for compute node -----------------------------
 function neutron_compute(){
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $MAGENTA====================================================================
   Begin to deploy Neutron on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} which as compute node
 ====================================================================
@@ -136,7 +136,7 @@ systemctl enable neutron-openvswitch-agent.service  neutron-ovs-cleanup.service 
 systemctl start neutron-openvswitch-agent.service  
     debug "$?" "start neutron-openvswitch-agent.service failed "
 
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $GREEN=====================================================================================
        
  Congratulation you finished to deploy Neutron on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
@@ -152,7 +152,7 @@ __EOF__
 
 #------------------------------------------neutron for network node -----------------------
 function neutron_network_node(){
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $GREEN=====================================================================================
        
       Begin to deploy Neutron as network node on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
@@ -204,7 +204,7 @@ sed -i "s/METADATA_SECRET/$METADATA_SECRET/g" /etc/neutron/metadata_agent.ini
 local CPUs=$(lscpu | grep ^CPU\(s\) | awk -F ":" '{print $2}')
 local HALFcpus=$(expr $CPUs / 2)
 sed -i "s/valuesnumber/${HALFcpus}/g" /etc/neutron/metadata_agent.ini
-echo $BLUE set the metadata_workers value as $HALFcpus $NO_COLOR
+echo $BLUE set the metadata_workers value as ${YELLOW}$HALFcpus $NO_COLOR
 
 #The ML2 plug-in uses the Open vSwitch (OVS) mechanism (agent) to build the virtual net-working framework for instances
 cp -f ./etc/network/openvswitch_agent.ini  /etc/neutron/plugins/ml2/
@@ -258,7 +258,7 @@ systemctl enable neutron-l3-agent.service 1>/dev/null 2>&1
 systemctl start neutron-l3-agent.service
    debug "$?" "start neutron-l3-agent failed "
 
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $GREEN=====================================================================================
        
  Congratulation you finished to deploy Neutron as network node on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}

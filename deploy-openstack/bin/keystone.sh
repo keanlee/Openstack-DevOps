@@ -144,7 +144,7 @@ echo $GREEN Created openrc file and the admin-openrc can be work normally $NO_CO
 #----------------------------Keystone ------------------
 #Execute below function to install keystone 
 
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $MAGENTA================================================================
             Begin to delpoy Keystone
 ================================================================
@@ -154,7 +154,7 @@ __EOF__
  
 keystone_main
 
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $GREEN================================================================================================================
   Congratulation you finished the ${YELLOW}KEYSTONE (include httpd mod_wsgi)${NO_COLOR}${GREEN} component 
 install.For more info about keystone you can refer /usr/share/doc/openstack-keystone-10.0.1/README.rst file      

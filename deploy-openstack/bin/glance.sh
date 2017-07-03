@@ -51,7 +51,7 @@ systemctl start openstack-glance-api.service openstack-glance-registry.service
 }
 
 function verify_glance(){
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $MAGENTA===================================================================
       Verify operation of the Image service using CirrOS, 
   a small Linux image that helps you test your OpenStack deployment
@@ -79,7 +79,7 @@ fi
 
 }
 
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $MAGENTA=================================================================
      Begin to deploy glance on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} 
 =================================================================
@@ -89,7 +89,7 @@ __EOF__
 glance_main
 verify_glance
 
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $GREEN===================================================================================
 
      Congratulation you finished the ${YELLOW}Glance${NO_COLOR} ${GREEN}component install 

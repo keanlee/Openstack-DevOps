@@ -16,7 +16,7 @@
 
 function nova_controller(){
 #nova for controllrer node 
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $MAGENTA=================================================================
             Begin to deploy nova on controller node 
 =================================================================
@@ -71,7 +71,7 @@ echo $GREEN systemctl start openstack-nova-api.service \
   openstack-nova-consoleauth.service openstack-nova-scheduler.service \
   openstack-nova-conductor.service openstack-nova-novncproxy.service $NO_COLOR 
 
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $GREEN=====================================================================
        
       Congratulation you finished to deploy nova on controller node
@@ -83,7 +83,7 @@ __EOF__
 
 function nova_compute(){
 #This section describes how to install and configure the Compute service on a compute node
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $MAGENTA=======================================================================
       Begin to deploy nova on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} which as compute node
 =======================================================================
@@ -116,7 +116,7 @@ that the firewall on the controller node is preventing access to port 5672"
 
 echo $GREEN The libvirtd.service openstack-nova-compute.service is running $NO_COLOR 
 
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $GREEN=========================================================================================
        
          Congratulation you finished to deploy nova on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
