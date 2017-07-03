@@ -177,11 +177,12 @@ echo $BLUE Install openstack-neutron openstack-neutron-ml2 openstack-neutron-ope
 yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch -y 1>/dev/null
     debug "$?" "Install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch failed "
 
-#add network node on controller 
+#add network node on controller or compute node  
 if [[ $1 = "controller" || $1 = "compute" ]];then 
     break
+   
 else 
-    echo $BLUE Copy and edite configuration file of Neutron $NO_COLOR 
+    echo $BLUE Copy and edit configuration file of Neutron $NO_COLOR 
     cp -f ./etc/network/neutron.conf  /etc/neutron
     sed -i "s/RABBIT_PASS/$RABBIT_PASS/g" /etc/neutron/neutron.conf 
     sed -i "s/controller/$CONTROLLER_VIP/g"  /etc/neutron/neutron.conf
@@ -221,7 +222,14 @@ else
         debug "$?" "start openvswitch.service failed"
 fi
 
+
 echo $BLUE Create the OVS provider bridge ${YELLOW}${br_provider}${NO_COLOR} 
+PROVIDER_INTER_ADRR=$(ip addr show ${PROVIDER_INTERFACE} | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
+if [[ $PROVIDER_INTER_ADRR != "" ]];then
+     echo $BLUE Please ignore the above error output $NO_COLOR
+     echo $BLUE Disable ${YELLOW}${PROVIDER_INTERFACE}${BLUE} ip address $NO_COLOR 
+     ip addr del dev ${PROVIDER_INTERFACE} ${PROVIDER_INTER_ADRR}
+fi 
 ovs-vsctl add-br ${br_provider}
 
 echo $BLUE Add the provider network interface:$YELLOW$PROVIDER_INTERFACE$BLUE as a port on the OVS provider bridge ${YELLOW}${br_provider}${NO_COLOR}
