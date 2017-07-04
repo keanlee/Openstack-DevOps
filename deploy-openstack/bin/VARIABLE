@@ -106,8 +106,8 @@ CINDER_PASS=cinderpass
 #---------------Controller HA proxy -----------
 #This section will be update later 
 
-#galera cluster name here
-CLUSTES=controller1,controller2,controller3
+#galera cluster ip address list  here
+CLUSTES=192.168.1.3,192.168.1.4,192.168.2.3
 
 
 #-------------------------------------nova compute node ------------------------------------------------------
