@@ -4,7 +4,7 @@
 
 function dashboard(){
 
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $MAGENTA==========================================================================
       Begin to deploy Dashboard on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} which as controller node
 ==========================================================================
@@ -29,7 +29,7 @@ openstack flavor create --id 0 --vcpus 1 --ram 512 --disk 10  m0.nano
 openstack flavor create --id 1 --vcpus 1 --ram 1024 --disk 20  m1.nano
     debug "$?"  "opnstack flavor create failed "
 
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $GREEN=====================================================================================
        
       Congratulation you finished to deploy Dashboard on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}

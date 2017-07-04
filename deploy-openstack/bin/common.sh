@@ -41,7 +41,7 @@ echo $GREEN yum repos configuration done $NO_COLOR
 #---------------------------initialize env ------------------------------------
 function initialize_env(){
 #----------------disable selinux-------------------------
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $MAGENTA==========================================================
             Begin to initialize env ...
 ==========================================================
@@ -84,7 +84,7 @@ yum install openstack-selinux python-openstackclient -y 1>/dev/null
 
 #--------------------------------------ntp server --------------------------------
 function ntp(){
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $MAGENTA==========================================================
             Begin to delpoy ntp
 ==========================================================
@@ -119,7 +119,7 @@ systemctl start ntpd.service
 
 #----------------------------------------mariadb install ------------------------------------------------
 function mysql_configuration(){
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $MAGENTA==========================================================
             Begin to delpoy Mariadb
 ==========================================================
@@ -214,7 +214,7 @@ IDENTIFIED BY '$2';GRANT ALL PRIVILEGES ON $1.* TO '$USER'@'%'  IDENTIFIED BY '$
 
 #-------------------------------rabbitmq install ----------------------------------------------
 function rabbitmq_configuration(){
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $MAGENTA==========================================================
             Begin to delpoy RabbitMQ 
 ==========================================================
@@ -272,7 +272,7 @@ function create_service_credentials(){
 #$1 is the service password 
 #$2 is the service name ,example nova glance neutron cinder etc. 
 #
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $MAGENTA==========================================================
           Create $2 service credentials 
 ==========================================================

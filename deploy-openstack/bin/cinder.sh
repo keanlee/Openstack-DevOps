@@ -2,7 +2,7 @@
 #will add ceph support later 
 
 function cinder_controller(){
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $MAGENTA=====================================================================
       Begin to deploy Cinder on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} which as controller node
 =====================================================================
@@ -35,7 +35,7 @@ systemctl enable openstack-cinder-api.service openstack-cinder-scheduler.service
 systemctl start openstack-cinder-api.service openstack-cinder-scheduler.service  openstack-cinder-backup.service
     debug "$?" "start openstack-cinder-api or cinder-scheduler failed "
 
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $GREEN=====================================================================================
        
       Congratulation you finished to deploy Cinder on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
@@ -46,7 +46,7 @@ __EOF__
 }
 
 function cinder_compute(){
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $MAGENTA=====================================================================
       Begin to deploy Cinder on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} which as compute/block node
 =====================================================================
@@ -96,7 +96,7 @@ systemctl enable openstack-cinder-volume.service target.service  1>/dev/null 2>&
 systemctl start openstack-cinder-volume.service target.service
 debug "$?"  "start openstack-cinder-volume.service target.service failed "
 
-cat 1>&2 <<__EOF__
+cat 2>&1 <<__EOF__
 $GREEN=====================================================================================
        
 Congratulation you finished to deploy Cinder on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
