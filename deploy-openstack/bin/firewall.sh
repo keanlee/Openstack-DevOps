@@ -6,6 +6,8 @@
 function iptabels(){
 iptables -I  INPUT -p tcp --dport 22    -j ACCEPT
 iptables -A  INPUT -p tcp --dport 80    -j ACCEPT
+#memcache 
+iptables -A  INPUT -p tcp --dport 11211 -j ACCEPT
 #add rabbitmq port 
 iptables -A  INPUT -p tcp --dport 5672 -j ACCEPT
 #add rabbitmq web plugin port 

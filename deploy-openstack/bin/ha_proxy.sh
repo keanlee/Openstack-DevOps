@@ -1,4 +1,6 @@
 #!/bin/bash
+#write by keanlee in June of 2017
+#https://docs.openstack.org/ha-guide/intro-ha.html#stateless-versus-stateful-services
 
 #refer docs: https://mariadb.com/kb/en/mariadb/yum/#installing-mariadb-galera-cluster-with-yum
 #http://www.linuxidc.com/Linux/2015-07/119512.htm
