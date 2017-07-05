@@ -35,6 +35,8 @@ for i in $NET_DEV_NAME
         fi  
         if [[ $NET_RUN_STATUS = 'DOWN' ]];then
             continue
+        elif [[ $NET_RUN_STATUS = 'UNKNOWN' ]];then
+            continue
         else
             echo ${BLUE} The network card Name:${NO_COLOR}$YELLOW $i${NO_COLOR} ${BLUE},the network card status:$GREEN $NET_RUN_STATUS $NO_COLOR
         fi
