@@ -42,18 +42,27 @@ fi
 
 
 #---------------compnment choose -----------
+function support_service_common(){
+yum_repos
+initialize_env
+ntp
+dns_server
+source ./bin/firewall.sh
+}
+
+function support_service_controller(){
+rabbitmq_configuration
+memcache
+mysql_configuration
+common_packages
+}
+
+
 case $1 in
 controller)
     echo $BLUE Begin deploy controller on ${YELLOW}$(hostname)$NO_COLOR 
-    yum_repos
-    initialize_env
-    common_packages
-    ntp
-    dns_server
-    source ./bin/firewall.sh
-    rabbitmq_configuration
-    memcache
-    mysql_configuration
+    support_service_common
+    support_service_controller
     source ./bin/keystone.sh
     source ./bin/glance.sh
     source ./bin/nova.sh controller  
@@ -63,37 +72,20 @@ controller)
     ;;
 compute)
     echo $BLUE Begin deploy compute on ${YELLOW}$(hostname)$NO_COLOR
-    #source ./bin/clean.sh
-    yum_repos
-    initialize_env
-    #common_packages
-    dns_server
-    ntp
-    source ./bin/firewall.sh
+    support_service_common
     source ./bin/nova.sh compute
     source ./bin/neutron.sh compute
     #source ./bin/cinder.sh  compute 
     ;;
 network) 
     echo $BLUE Begin deploy network on ${YELLOW}$(hostname)$NO_COLOR
-    yum_repos
-    initialize_env
-    dns_server
-    ntp
-    source ./bin/firewall.sh
+    support_service_common
     source ./bin/neutron.sh network
     ;;
 controller-as-network-node)
     echo $BLUE Begin deploy controller as network node on ${YELLOW}$(hostname)$NO_COLOR
-    yum_repos
-    initialize_env
-    dns_server
-    ntp
-    common_packages
-    source ./bin/firewall.sh
-    rabbitmq_configuration
-    memcache
-    mysql_configuration
+    support_service_common
+    support_service_controller
     source ./bin/keystone.sh
     source ./bin/glance.sh
     source ./bin/nova.sh controller  
@@ -104,11 +96,7 @@ controller-as-network-node)
     ;;
 compute-as-network-node)
     echo $BLUE Begin deploy compute as network node on ${YELLOW}$(hostname)$NO_COLOR
-    yum_repos
-    initialize_env
-    ntp
-    dns_server
-    source ./bin/firewall.sh
+    support_service_common
     source ./bin/nova.sh compute
     source ./bin/neutron.sh compute
     source ./bin/neutron.sh compute-as-network-node
