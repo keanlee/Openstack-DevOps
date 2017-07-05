@@ -1,17 +1,5 @@
 #!/bin/bash
 #openStack Compute can scale horizontally on standard hardware, and download images to launch instances
-
-#-----------------------Testing ----------------------
-#source ./VARIABLE
-#source ./common.sh
-#
-#debug(){
-#if [[ $1 -ne 0 ]]; then
-#echo $RED $2 $NO_COLOR
-#exit 1
-#fi
-#}
-
 #---------------compute.sh just support controller and compute parameter---------
 
 function nova_controller(){

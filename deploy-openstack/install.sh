@@ -106,8 +106,8 @@ check)
     source ./bin/system_info.sh
     ;;
 *)
-   help
-   ;;
+    help
+    ;;
 esac
 
 

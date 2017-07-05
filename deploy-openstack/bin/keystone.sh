@@ -5,6 +5,7 @@ function openrc_file_create(){
 echo $BLUE create admin-openrc and demo-openrc file $NO_COLOR
     echo >  $(pwd)/admin-openrc
     cat > $(pwd)/admin-openrc <<EOF
+#This file create by keanlee's script
 export OS_PROJECT_DOMAIN_NAME=Default
 export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_NAME=admin
@@ -17,6 +18,7 @@ EOF
 
      echo > $(pwd)/demo-openrc
      cat > $(pwd)/demo-openrc <<EOF
+#This file create by keanlee's script
 export OS_PROJECT_DOMAIN_NAME=Default
 export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_NAME=demo
