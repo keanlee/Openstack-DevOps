@@ -180,9 +180,8 @@ yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitc
 #add network node on controller or compute node  
 if [[ $1 = "controller" || $1 = "compute" ]];then 
     break
-   
 else 
-    echo $BLUE Copy and edit configuration file of Neutron $NO_COLOR 
+    echo $BLUE Copy and edit configuration file of network node $NO_COLOR 
     cp -f ./etc/network/neutron.conf  /etc/neutron
     sed -i "s/RABBIT_PASS/$RABBIT_PASS/g" /etc/neutron/neutron.conf 
     sed -i "s/controller/$CONTROLLER_VIP/g"  /etc/neutron/neutron.conf

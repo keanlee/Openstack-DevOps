@@ -181,9 +181,11 @@ exit 1
 fi
 
 if [[ $1 = nova_api ]];then
-    DB_SIZE=$(mysql -unova -p$2 -e "show databases;use information_schema;select concat(round(sum(DATA_LENGTH/1024/1024),2),'MB') as data from TABLES where table_schema='nova_api';" )
+    DB_SIZE=$(mysql -unova -p$2 -e "show databases;use information_schema;\
+select concat(round(sum(DATA_LENGTH/1024/1024),2),'MB') as data from TABLES where table_schema='nova_api';" )
 else
-    DB_SIZE=$(mysql -u$1 -p$2 -e "show databases;use information_schema;select concat(round(sum(DATA_LENGTH/1024/1024),2),'MB') as data from TABLES where table_schema='$1';" )
+    DB_SIZE=$(mysql -u$1 -p$2 -e "show databases;use information_schema;\
+select concat(round(sum(DATA_LENGTH/1024/1024),2),'MB') as data from TABLES where table_schema='$1';" )
 fi
 
 if [[ $1 = nova || $1 = nova_api  ]];then
@@ -192,7 +194,7 @@ else
     local NUMS=5
 fi
 
-echo -n $BLUE Database $YELLOW${1}${BLUE} has create and the size is:  $NO_COLOR 
+echo -n $BLUE The database $YELLOW${1}${BLUE} size is: $NO_COLOR 
 echo $DB_SIZE  | awk  '{print $'$NUMS'}' 
 }
 

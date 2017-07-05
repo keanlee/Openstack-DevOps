@@ -116,8 +116,6 @@ fi
 
 #----------------------------------controller node deploy ---------------------
 function controller(){
-echo $BLUE scp deploy script to target hosts $NO_COLOR 
-
 cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do scp -r deploy-openstack/ \
 $line:/home/; \
     debug "$?" "Failed scp deploy script to $line host" ; done 1>/dev/null 2>&1
@@ -133,7 +131,6 @@ cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n $lin
 
 #---------------------------------compute node deploy -----------------
 function compute(){
-echo $BLUE scp deploy script to target hosts $NO_COLOR 
 cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do scp -r deploy-openstack/ $line:/home/; \
     debug "$?" "Failed scp deploy script to $line host" ; done 1>/dev/null 2>&1 
 
@@ -182,7 +179,6 @@ fi
 
 #----------------------------------network node deploy-----------------------
 function network_node(){
-echo $BLUE scp deploy script to target hosts $NO_COLOR 
 
 cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do scp -r deploy-openstack/ $line:/home/; \
     debug "$?" "Failed scp deploy script to $line host" ; done 1>/dev/null 2>&1
@@ -197,7 +193,6 @@ cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do ssh -n root@$l
 
 #-----------------------------------controller as network node deploy---------------------
 function controller_as_network_node(){
-echo $BLUE scp deploy script to target hosts $NO_COLOR 
 
 cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do scp -r deploy-openstack/ \
 $line:/home/; \
