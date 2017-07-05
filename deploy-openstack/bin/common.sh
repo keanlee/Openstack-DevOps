@@ -36,8 +36,6 @@ yum clean all 1>/dev/null 2>1&
 echo $GREEN yum repos configuration done $NO_COLOR
 }
 
-
-
 #---------------------------initialize env ------------------------------------
 function initialize_env(){
 #----------------disable selinux-------------------------
@@ -194,7 +192,7 @@ else
     local NUMS=5
 fi
 
-echo $BLUE Database $YELLOW${1}${BLUE} has already create and the size is:$NO_COLOR 
+echo -n $BLUE Database $YELLOW${1}${BLUE} has create and the size is:  $NO_COLOR 
 echo $DB_SIZE  | awk  '{print $'$NUMS'}' 
 }
 

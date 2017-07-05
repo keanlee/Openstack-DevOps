@@ -70,7 +70,7 @@ fi
 
 which sshpass 1>/dev/null 2>&1 || rpm -ivh ./deploy-openstack/lib/sshpass* 1>/dev/null 2>&1   
 
-echo $BLUE Please type the correct password for  server:$NO_COLOR
+echo -n $BLUE Please type the correct password for server:  $NO_COLOR
 read Password
 
 if [[ $1 = "compute" ]];then 
