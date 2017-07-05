@@ -115,7 +115,15 @@ systemctl start ntpd.service
     debug "$?" "start ntpd.service failed "
 }
 
-
+#-----------------------------DNS server ----------------------------------
+function dns_server(){
+echo > ./resolve.conf
+    cat > ./resolve.conf <<EOF
+#Create this file by keanlee's script
+nameserver      $DNS_SERVER 
+EOF
+mv -f ./resolve.conf /etc
+}
 
 #----------------------------------------mariadb install ------------------------------------------------
 function mysql_configuration(){

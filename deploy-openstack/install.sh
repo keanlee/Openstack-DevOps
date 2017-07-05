@@ -49,6 +49,7 @@ controller)
     initialize_env
     common_packages
     ntp
+    dns_server
     source ./bin/firewall.sh
     rabbitmq_configuration
     memcache
@@ -66,6 +67,7 @@ compute)
     yum_repos
     initialize_env
     #common_packages
+    dns_server
     ntp
     source ./bin/firewall.sh
     source ./bin/nova.sh compute
@@ -76,6 +78,7 @@ network)
     echo $BLUE Begin deploy network on ${YELLOW}$(hostname)$NO_COLOR
     yum_repos
     initialize_env
+    dns_server
     ntp
     source ./bin/firewall.sh
     source ./bin/neutron.sh network
@@ -84,6 +87,7 @@ controller-as-network-node)
     echo $BLUE Begin deploy controller as network node on ${YELLOW}$(hostname)$NO_COLOR
     yum_repos
     initialize_env
+    dns_server
     ntp
     common_packages
     source ./bin/firewall.sh
@@ -103,6 +107,7 @@ compute-as-network-node)
     yum_repos
     initialize_env
     ntp
+    dns_server
     source ./bin/firewall.sh
     source ./bin/nova.sh compute
     source ./bin/neutron.sh compute
