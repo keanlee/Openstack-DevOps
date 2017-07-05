@@ -51,23 +51,24 @@ __EOF__
 if [[ $(cat /etc/selinux/config | sed -n '7p' | awk -F "=" '{print $2}') = "enforcing" ]];then 
      echo $BLUE Disable selinux $NO_COLOR
      sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
-     echo $GREEN Disable the selinux by config file. The current selinux Status:$NO_COLOR $YELLOW $(getenforce) $NO_COLOR
+     echo $GREEN Disable the selinux by config file $NO_COLOR
 fi    
 
 if [[ $(getenforce) = "Enforcing" ]];then
     setenforce 0 
+    echo $GREEN The current selinux Status:$NO_COLOR $YELLOW $(getenforce) $NO_COLOR 
 fi
 
 systemctl status NetworkManager 1>/dev/null 2>&1
 if [[ $? = 0 ]];then
     echo $BLUE Uninstall NetworkManager $NO_COLOR
-    yum erase NetworkManager  -y 1>/dev/null 2>&1
     systemctl stop NetworkManager 1>/dev/null 2>&1
+    yum erase NetworkManager  -y 1>/dev/null 2>&1
 fi
 
-which firewall-cmd  1>/dev/null 2>&1 &&
-echo $BLUE Uninstall firewalld $NO_COLOR
-yum erase firewalld* -y 1>/dev/null 2>&1
+#which firewall-cmd  1>/dev/null 2>&1 &&
+#echo $BLUE Uninstall firewalld $NO_COLOR
+#yum erase firewalld* -y 1>/dev/null 2>&1
 }
 
 
