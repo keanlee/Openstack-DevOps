@@ -59,14 +59,18 @@ __EOF__
 }
 
 function ssh_key(){
-echo $BLUE Generating public/private rsa key pair: $NO_COLOR
-ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa
-#-N "" tells it to use an empty passphrase (the same as two of the enters in an interactive script)
-#-f my.key tells it to store the key into my.key (change as you see fit).
+if [[ -e ~/.ssh/id_rsa.pub ]];then 
+    break
+else 
+    echo $BLUE Generating public/private rsa key pair: $NO_COLOR
+    ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
+    #-N "" tells it to use an empty passphrase (the same as two of the enters in an interactive script)
+    #-f my.key tells it to store the key into my.key (change as you see fit).
+fi 
 
 which sshpass 1>/dev/null 2>&1 || rpm -ivh ./deploy-openstack/lib/sshpass* 1>/dev/null 2>&1   
 
-echo $BLUE Please type the correct password for all server:$NO_COLOR
+echo $BLUE Please type the correct password for  server:$NO_COLOR
 read Password
 
 if [[ $1 = "compute" ]];then 
@@ -75,7 +79,7 @@ for ips in $(cat ./deploy-openstack/hosts/COMPUTE_HOSTS);
     do ssh-keyscan $ips >> ~/.ssh/known_hosts ;
 done 
 for ips in $(cat ./deploy-openstack/hosts/COMPUTE_HOSTS);
-    do sshpass -p $Password ssh-copy-id -i /root/.ssh/id_rsa.pub  $ips
+    do sshpass -p $Password ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips
 done 
 
 elif [[ $1 = "controller" ]];then
@@ -84,7 +88,7 @@ for ips in $(cat ./deploy-openstack/hosts/CONTROLLER_HOSTS);
     do ssh-keyscan $ips >> ~/.ssh/known_hosts ;
 done 
 for ips in $(cat ./deploy-openstack/hosts/CONTROLLER_HOSTS);
-   do sshpass -p $Password ssh-copy-id -i /root/.ssh/id_rsa.pub  $ips;
+   do sshpass -p $Password ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
 done
 
 elif [[ $1 = "network" ]];then
@@ -93,7 +97,7 @@ for ips in $(cat ./deploy-openstack/hosts/NETWORK_HOSTS);
     do ssh-keyscan $ips >> ~/.ssh/known_hosts ;
 done 
 for ips in $(cat ./deploy-openstack/hosts/NETWORK_HOSTS);
-    do sshpass -p $Password ssh-copy-id -i /root/.ssh/id_rsa.pub  $ips;
+    do sshpass -p $Password ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
 done
 
 elif [[ $1 = "storage" ]];then
@@ -102,7 +106,7 @@ for ips in $(cat ./deploy-openstack/hosts/BLOCK_HOSTS);
     do ssh-keyscan $ips >> ~/.ssh/known_hosts ;
 done 
 for ips in $(cat ./deploy-openstack/hosts/BLOCK_HOSTS);
-    do sshpass -p $Password ssh-copy-id -i /root/.ssh/id_rsa.pub  $ips;
+    do sshpass -p $Password ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
 done
 
 fi
