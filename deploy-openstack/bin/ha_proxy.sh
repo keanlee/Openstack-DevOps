@@ -86,11 +86,11 @@ rabbit_ha_queues=true
 
 function Galera(){
 yum install -y  mariadb mariadb-galera-server mariadb-galera-common galera rsync  1>/dev/null
-
 sed -i '/Group=mysql/a\LimitNOFILE=65535' /usr/lib/systemd/system/mariadb.service
 systemctl daemon-reload
 
 setenforce 0
+
 systemctl enable mariadb
 systemctl start mariadb
 
