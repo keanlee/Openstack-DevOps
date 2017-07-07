@@ -223,6 +223,7 @@ fi
 
 
 echo $BLUE Create the OVS provider bridge ${YELLOW}${br_provider}${NO_COLOR} 
+#disable the ip addr of provider internet network device
 PROVIDER_INTER_ADRR=$(ip addr show ${PROVIDER_INTERFACE} | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}')
 if [[ $PROVIDER_INTER_ADRR != "" ]];then
      echo $BLUE Please ignore the above error output $NO_COLOR
@@ -231,8 +232,8 @@ if [[ $PROVIDER_INTER_ADRR != "" ]];then
 fi 
 
 if  [[ -e /etc/sysconfig/network-scripts/ifcfg-${br_provider} ]];then
-    if [[ $(cat /etc/sysconfig/network-scripts/ifcfg-${PROVIDER_INTERFACE} | grep -i onboot=\"yes\" | wc -l) -eq 1 ]];then 
-        sed -i "s/ONBOOT=\"yes\"/ONBOOT=\"no\"/g" /etc/sysconfig/network-scripts/ifcfg-${PROVIDER_INTERFACE}
+    if [[ $(cat /etc/sysconfig/network-scripts/ifcfg-${PROVIDER_INTERFACE} | grep -i BOOTPROTO=\"dhcp\" | wc -l) -eq 1 ]];then 
+        sed -i "s/BOOTPROTO=\"dhcp\"/BOOTPROTO=\"static\"/g" /etc/sysconfig/network-scripts/ifcfg-${PROVIDER_INTERFACE}
     fi
 fi
 
@@ -253,11 +254,9 @@ systemctl start  neutron-dhcp-agent.service
     debug "$?" "start neutron-dhcp-agent failed "
 systemctl start  neutron-metadata-agent.service
     debug "$?" "start neutron-metadata-agent failed "
-
 echo $BLUE start neutron-openvswitch-agent.service $NO_COLOR
 systemctl start  neutron-openvswitch-agent.service
     debug "$?" "start neutron-openvswitch-agent failed "
-
 #for option 2
 echo $BLUE start neutron-l3-agent $NO_COLOR
 systemctl enable neutron-l3-agent.service 1>/dev/null 2>&1
