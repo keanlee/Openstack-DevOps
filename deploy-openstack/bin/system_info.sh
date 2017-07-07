@@ -23,12 +23,13 @@ $MAGENTA----------------------------------------------------------------
 $NO_COLOR
 __EOF__
 
-NET_DEV_NAME=$(cat /proc/net/dev | awk '{print $1}' | sed -n '3,$p' | awk -F ":" '{print $1}' | grep -v ^lo$ | grep -v ^macvtap* | grep -v ^tap* | grep -v ^q | grep -v ^virbr* | grep -v ^vnet )
+NET_DEV_NAME=$(cat /proc/net/dev | awk '{print $1}' | sed -n '3,$p' | awk -F ":" '{print $1}' | grep -v ^lo$ | grep -v ^macvtap* | grep -v ^tap* | \
+grep -v ^q | grep -v ^virbr* | grep -v ^vnet | grep -v ^p1p*  )
 #                                                                                              except the lo and   virtual cards:     macvtap      network name 
 for i in $NET_DEV_NAME
     do
         NET_RUNNING_STATUS=$(ip addr show $i | sed -n '1p' | awk '{print $9}')
-        if [[ $NET_RUNNING_STATUS = "ovs-system" ]];then
+        if [[ $NET_RUNNING_STATUS = "ovs-system"  ]];then
             NET_RUN_STATUS=$(ip addr show $i | sed -n '1p' | awk '{print $11}')      
         else 
             NET_RUN_STATUS=$NET_RUNNING_STATUS
