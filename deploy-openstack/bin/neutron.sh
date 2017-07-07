@@ -190,7 +190,8 @@ fi
 
 cp -f  ./etc/network/dhcp_agent.ini  /etc/neutron
 cp -f ./etc/network/dnsmasq-neutron.conf /etc/neutron
-
+echo $BLUE Kill any existing dnsmasq processes before start neutron-dhcp-agent $NO_COLOR
+pkill dnsmasq 
 
 #The Layer-3 (L3) agent provides routing services for virtual networks
 cp -f ./etc/network/l3_agent.ini    /etc/neutron
