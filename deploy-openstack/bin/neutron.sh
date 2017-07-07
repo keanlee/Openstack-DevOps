@@ -229,6 +229,13 @@ if [[ $PROVIDER_INTER_ADRR != "" ]];then
      echo $BLUE Disable ${YELLOW}${PROVIDER_INTERFACE}${BLUE} ip address $NO_COLOR 
      ip addr del dev ${PROVIDER_INTERFACE} ${PROVIDER_INTER_ADRR}
 fi 
+
+if  [[ -e /etc/sysconfig/network-scripts/ifcfg-${br_provider} ]];then
+    if [[ $(cat /etc/sysconfig/network-scripts/ifcfg-${PROVIDER_INTERFACE} | grep -i onboot=\"yes\" | wc -l) -eq 1 ]];then 
+        sed -i "s/ONBOOT=\"yes\"/ONBOOT=\"no\"/g" /etc/sysconfig/network-scripts/ifcfg-${PROVIDER_INTERFACE}
+    fi
+fi
+
 ovs-vsctl add-br ${br_provider}
 
 echo $BLUE Add the provider network interface:$YELLOW$PROVIDER_INTERFACE$BLUE as a port on the OVS provider bridge ${YELLOW}${br_provider}${NO_COLOR}
