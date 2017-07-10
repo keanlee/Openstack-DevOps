@@ -9,6 +9,7 @@ echo $BLUE create admin-openrc and demo-openrc file $NO_COLOR
 export OS_PROJECT_DOMAIN_NAME=Default
 export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_NAME=admin
+export PS1='[\u@\h \W(keystone_admin_auth)]\$ '
 export OS_USERNAME=admin
 export OS_PASSWORD=$ADMIN_PASS
 export OS_AUTH_URL=http://$MGMT_IP:35357/v3
@@ -22,6 +23,7 @@ EOF
 export OS_PROJECT_DOMAIN_NAME=Default
 export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_NAME=demo
+export PS1='[\u@\h \W(keystone_demo_auth)]\$ '
 export OS_USERNAME=demo
 export OS_PASSWORD=$DEMO_PASS
 export OS_AUTH_URL=http://$MGMT_IP:5000/v3
