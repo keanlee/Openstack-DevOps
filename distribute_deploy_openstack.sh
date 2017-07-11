@@ -38,6 +38,9 @@ $MAGENTA========================================================================
            ${MAGENTA}sh $0 network
               $BLUE#to deploy network node$NO_COLOR
                     
+           ${MAGENTA}sh $0 deploy-all
+              $BLUE#to deploy controller node ,network node,compute node$NO_COLOR
+
            ${MAGENTA}sh $0 controller-as-network-node
               $BLUE#to deploy controller as network node$NO_COLOR  
           
@@ -49,10 +52,13 @@ $MAGENTA========================================================================
 
            ${MAGENTA}sh $0 check-network
               $BLUE#to check the network node system info$NO_COLOR${MAGENTA}
+          
+           ${MAGENTA}sh $0 check-all
+              $BLUE#to check all node system info $NO_COLOR
 
            ${MAGENTA}sh $0 ssh-key-<target-hosts-role>
               $BLUE#to create ssh-key and copy it to tartget hosts 
-            (target-hosts-role=controller,compute,network,storage)$NO_COLOR${MAGENTA}
+            (target-hosts-role=controller,compute,network,storage,all)$NO_COLOR${MAGENTA}
 ========================================================================
 $NO_COLOR
 __EOF__
@@ -216,6 +222,11 @@ compute)
 network)
     network_node
     ;;
+deploy-all)
+    controller
+    network_node
+    compute
+    ;;
 check-controller)
     check_info controller 
     ;;
@@ -224,6 +235,11 @@ check-compute)
     ;;
 check-network)
     check_info network
+    ;;
+check-all)
+    check_info controller
+    check_info network
+    check_info compute    
     ;;
 controller-as-network-node)
     controller_as_network_node
@@ -236,6 +252,11 @@ ssh-key-controller)
     ;;
 ssh-key-network)
     ssh_key network 
+    ;;
+ssh-key-all)
+    ssh_key controller
+    ssh_key network
+    ssh_key compute
     ;;
 *)
    help

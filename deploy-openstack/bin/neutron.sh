@@ -153,9 +153,9 @@ __EOF__
 #------------------------------------------neutron for network node -----------------------
 function neutron_network_node(){
 cat 2>&1 <<__EOF__
-$MAGE=====================================================================================
+$MAGENTA=====================================================================================
        
-      Begin to deploy Neutron as network node on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
+      Begin to deploy Neutron as network node on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA}
  
 =====================================================================================
 $NO_COLOR
@@ -233,8 +233,8 @@ if [[ $PROVIDER_INTER_ADRR != "" ]];then
 fi 
 
 if  [[ -e /etc/sysconfig/network-scripts/ifcfg-${br_provider} ]];then
-    if [[ $(cat /etc/sysconfig/network-scripts/ifcfg-${PROVIDER_INTERFACE} | grep -i BOOTPROTO=\"dhcp\" | wc -l) -eq 1 ]];then 
-        sed -i "s/BOOTPROTO=\"dhcp\"/BOOTPROTO=\"static\"/g" /etc/sysconfig/network-scripts/ifcfg-${PROVIDER_INTERFACE}
+    if [[ $(cat /etc/sysconfig/network-scripts/ifcfg-${PROVIDER_INTERFACE} | grep -i dhcp | wc -l) -eq 1 ]];then 
+        sed -i "s/dhcp/static/g" /etc/sysconfig/network-scripts/ifcfg-${PROVIDER_INTERFACE}
     fi
 fi
 
