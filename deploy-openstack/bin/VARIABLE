@@ -6,14 +6,14 @@
 #------------------------Need to edit below  first -----------------------
 
 #management network card name, both controller and all slave node (compute ,block ,network nodes) use this name for configuration 
-MGMT_IP_DEVICE=eth0
+MGMT_IP_DEVICE=eno1
 
 #Add a port to the external bridge that connects to the physical external network inter-face
 #Replace PROVIDER_INTERFACE with the name of the underlying interface that handles provider networks. For example, eth1
-PROVIDER_INTERFACE=eth0
+PROVIDER_INTERFACE=eno3
 
 #The VIP use for all slave node , ha_proxy also use this ip 
-CONTROLLER_VIP=10.245.59.35
+CONTROLLER_VIP=10.245.58.77
 
 #NTP server IP
 NTP_SERVER_IP=10.245.58.205
@@ -69,11 +69,11 @@ RABBIT_PASS=rabbitmq
 #set keystone database password 
 KEYSTONE_DBPASS=keystone_dbpassword
 
-ADMIN_PASS=admin
+ADMIN_PASS=adminpass
 DEMO_PASS=demo
 
 #Which directory you want to store the admin-openrc file ?
-OPENRC_DIR=/home
+OPENRC_DIR=/root
 
 
 #-----------------Glance-------------

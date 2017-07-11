@@ -43,7 +43,10 @@ $MAGENTA========================================================================
 
            ${MAGENTA}sh $0 controller-as-network-node
               $BLUE#to deploy controller as network node$NO_COLOR  
-          
+           
+           ${MAGENTA}sh $0 compute-as-network-node
+              $BLUE#to deploy compute as network node$NO_COLOR
+
            ${MAGENTA}sh $0 check-controller 
               $BLUE#to check the controller node system info$NO_COLOR${MAGENTA}
 
@@ -57,7 +60,7 @@ $MAGENTA========================================================================
               $BLUE#to check all node system info $NO_COLOR
 
            ${MAGENTA}sh $0 ssh-key-<target-hosts-role>
-              $BLUE#to create ssh-key and copy it to tartget hosts 
+              $BLUE#to create ssh-key and copy it to target hosts 
             (target-hosts-role=controller,compute,network,storage,all)$NO_COLOR${MAGENTA}
 ========================================================================
 $NO_COLOR
@@ -122,12 +125,20 @@ fi
 
 #----------------------------------controller node deploy ---------------------
 function controller(){
+if [[ $# -eq 0 ]];then
+    local VALUE=controller
+elif [[ $1 = "controller-as-network-node" ]];then 
+    local VALUE=controller-as-network-node
+else 
+    debug "1" "function cannot support your parameter "
+fi 
+
 cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do scp -r deploy-openstack/ \
 $line:/home/; \
     debug "$?" "Failed scp deploy script to $line host" ; done 1>/dev/null 2>&1
 
 cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n $line /bin/bash /home/deploy-openstack/install.sh \
-controller | tee ./log/controller-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
+${VALUE} | tee ./log/${VALUE}-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
     debug "$?" "bash remote execute on remote host <$line> error "; done
 
 cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n $line 'rm -rf /home/deploy-openstack/' ;done
@@ -137,15 +148,37 @@ cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n $lin
 
 #---------------------------------compute node deploy -----------------
 function compute(){
+if [[ $# -eq 0 ]];then
+    local VALUE=compute
+elif [[ $1 = "compute-as-network-node" ]];then 
+    local VALUE=compute-as-network-node
+else 
+    debug "1" "function cannot support your parameter "
+fi 
+
+
 cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do scp -r deploy-openstack/ $line:/home/; \
     debug "$?" "Failed scp deploy script to $line host" ; done 1>/dev/null 2>&1 
 
 cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do ssh -n root@$line /bin/bash /home/deploy-openstack/install.sh \
-compute | tee ./log/compute-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
+${VALUE} | tee ./log/${VALUE}-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
     debug "$?" "bash remote execute on remote host <$line> error "; done
 
 cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /home/deploy-openstack/';done
 
+}
+
+
+#----------------------------------network node deploy-----------------------
+function network_node(){
+
+cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do scp -r deploy-openstack/ $line:/home/; \
+    debug "$?" "Failed scp deploy script to $line host" ; done 1>/dev/null 2>&1
+
+cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do ssh -n root@$line /bin/bash /home/deploy-openstack/install.sh \
+network | tee ./log/network-node-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log;done 
+
+cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /home/deploy-openstack/' ;done 
 }
 
 
@@ -182,36 +215,6 @@ fi
 }
 
 
-
-#----------------------------------network node deploy-----------------------
-function network_node(){
-
-cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do scp -r deploy-openstack/ $line:/home/; \
-    debug "$?" "Failed scp deploy script to $line host" ; done 1>/dev/null 2>&1
-
-cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do ssh -n root@$line /bin/bash /home/deploy-openstack/install.sh \
-network | tee ./log/network-node-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log;done 
-
-cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /home/deploy-openstack/' ;done 
-}
-
-
-
-#-----------------------------------controller as network node deploy---------------------
-function controller_as_network_node(){
-
-cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do scp -r deploy-openstack/ \
-$line:/home/; \
-    debug "$?" "Failed scp deplory script to $line host" ; done 1>/dev/null 2>&1
-
-cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n $line /bin/bash /home/deploy-openstack/install.sh \
-controller-as-network-node | tee ./log/controller-network-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
-    debug "$?" "bash remote execute on remote host <$line> error "; done
-
-cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n $line 'rm -rf /home/deploy-openstack/' ;done
-}
-
-
 case $1 in
 controller)
     controller
@@ -242,7 +245,10 @@ check-all)
     check_info compute    
     ;;
 controller-as-network-node)
-    controller_as_network_node
+    controller  controller_as_network_node
+    ;;
+compute-as-network-node)
+    compute  compute-as-network-node
     ;;
 ssh-key-compute)
     ssh_key compute

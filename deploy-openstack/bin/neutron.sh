@@ -137,9 +137,9 @@ systemctl start neutron-openvswitch-agent.service
     debug "$?" "start neutron-openvswitch-agent.service failed "
 
 cat 2>&1 <<__EOF__
-$MAGENTA=====================================================================================
+$GREEN=====================================================================================
        
- Congratulation you finished to deploy Neutron on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA}
+ Congratulation you finished to deploy Neutron on ${YELLOW}$(hostname)${NO_COLOR}${GREEN}
  Verify it by below command on Controller node: 
    execute: <neutron ext-list> 
           : <neutron agent-list>
