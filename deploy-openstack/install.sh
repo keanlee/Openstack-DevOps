@@ -68,7 +68,7 @@ controller)
     source ./bin/nova.sh controller  
     source ./bin/neutron.sh controller 
     source ./bin/cinder.sh controller
-    source ./bin/dashboard.sh 
+    source ./bin/dashboard.sh
     ;;
 compute)
     echo $BLUE Begin deploy compute on ${YELLOW}$(hostname)$NO_COLOR

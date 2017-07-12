@@ -14,6 +14,24 @@ WHITE="$ESC[0;37m"
 #PURPLE="$ESC[0;35m"
 CYAN="$ESC[0;36m"
 
+option=(
+controller
+compute
+network
+deploy-all
+check-controller
+check-compute
+check-network
+check-all
+controller-as-network-node
+compute-as-network-node
+ssh-key-compute
+ssh-key-controller
+ssh-key-network
+ssh-key-all
+help
+exit
+)
 
 debug(){
 if [[ $1 -ne 0 ]]; then
@@ -214,56 +232,81 @@ elif [[ $1 = "network" ]];then
 fi
 }
 
+cat 1>&2 <<__EOF__
+$MAGENTA=================================================================
+         Please Select a Option(number) To Deploy:          
+=================================================================
+$NO_COLOR
+__EOF__
 
-case $1 in
-controller)
-    controller
-    ;;
-compute)
-    compute
-    ;;
-network)
-    network_node
-    ;;
-deploy-all)
-    controller
-    network_node
-    compute
-    ;;
-check-controller)
-    check_info controller 
-    ;;
-check-compute)
-    check_info compute
-    ;;
-check-network)
-    check_info network
-    ;;
-check-all)
-    check_info controller
-    check_info network
-    check_info compute    
-    ;;
-controller-as-network-node)
-    controller  controller-as-network-node
-    ;;
-compute-as-network-node)
-    compute  compute-as-network-node
-    ;;
-ssh-key-compute)
-    ssh_key compute
-    ;;
-ssh-key-controller)
-    ssh_key controller
-    ;;
-ssh-key-network)
-    ssh_key network 
-    ;;
-ssh-key-all)
-    ssh_key controller
-    ssh_key network
-    ssh_key compute
-    ;;
-*)
-   help
-esac
+select OPTION in ${option[*]};do
+    case $OPTION in
+        controller)
+            controller
+            break
+	    ;;
+        compute)
+            compute
+            break
+  	    ;;
+        network)
+            network_node
+            break
+	    ;;
+        deploy-all)
+            controller
+            network_node
+            compute
+            break
+            ;;
+        check-controller)
+            check_info controller 
+            break
+            ;;
+        check-compute)
+            check_info compute
+            break
+	    ;;
+        check-network)
+            check_info network
+            break
+            ;;
+        check-all)
+            check_info controller
+            check_info network
+            check_info compute    
+            break
+            ;;
+        controller-as-network-node)
+            controller  controller-as-network-node
+            break
+	    ;;
+        compute-as-network-node)
+            compute  compute-as-network-node
+            break
+	    ;;
+        ssh-key-compute)
+            ssh_key compute
+            break
+ 	    ;;
+	ssh-key-controller)
+            ssh_key controller
+            break
+	    ;;
+	ssh-key-network)
+            ssh_key network 
+            break
+            ;;
+	ssh-key-all)
+            ssh_key controller
+            ssh_key network
+            ssh_key compute
+            break
+            ;;
+	help)
+            help
+            ;;
+        exit)
+            break
+   esac
+done
