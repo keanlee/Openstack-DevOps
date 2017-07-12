@@ -204,7 +204,7 @@ cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do ssh -n root@$l
 
 #-----------------------------show target host system info-------------------------------------
 function check_info(){
-#check the target host net and disk info
+#check the target host system infor
 #for controller nodes
 if [[ $1 = "controller" ]];then 
     cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do scp ./deploy-openstack/bin/system_info.sh root@$line:/home/; \
@@ -234,11 +234,15 @@ fi
 
 cat 1>&2 <<__EOF__
 $MAGENTA=================================================================
-         Please Select a Option(number) To Deploy:          
+       Thanks you use this script to deploy openstack !
+                 Author: Kean Lee
+          This script provide the below option:          
 =================================================================
 $NO_COLOR
 __EOF__
 
+PS3="Please Select a Option(number) To Execute: "
+export PS3
 select OPTION in ${option[*]};do
     case $OPTION in
         controller)
@@ -311,6 +315,6 @@ select OPTION in ${option[*]};do
             break
             ;;
         *)
-            echo $RED Invalid option. Try another one. $NO_COLOR
+            echo $RED Your imput is Invalid Option, Try another one which is listed above. $NO_COLOR
   esac
 done
