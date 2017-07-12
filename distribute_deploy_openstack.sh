@@ -245,7 +245,7 @@ check-all)
     check_info compute    
     ;;
 controller-as-network-node)
-    controller  controller_as_network_node
+    controller  controller-as-network-node
     ;;
 compute-as-network-node)
     compute  compute-as-network-node

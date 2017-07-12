@@ -1,5 +1,6 @@
 #!/bin/bash
-#yum erase openstack-selinux python-openstackclient 1>/dev/null
+#clean the env of openstack 
+yum erase openstack-selinux python-openstackclient 1>/dev/null
 echo $BLUE Begin clean the env ... $NO_COLOR
 
 #rm -rf /etc/yum.repos.d/*
@@ -84,4 +85,4 @@ rm -rf /var/log/openvswitch/
 rm -rf /etc/openstack-dashboard/ 
 rm -rf /etc/openvswitch/ 
 
- 
+
