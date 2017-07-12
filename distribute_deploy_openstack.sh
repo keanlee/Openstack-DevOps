@@ -15,7 +15,7 @@ WHITE="$ESC[0;37m"
 CYAN="$ESC[0;36m"
 
 option=(
-controller
+controller  
 compute
 network
 deploy-all
@@ -241,7 +241,7 @@ $MAGENTA=================================================================
 $NO_COLOR
 __EOF__
 
-PS3="Please Select a Option(number) To Execute: "
+PS3="$BLUE Please Select a Number To Execute: $NO_COLOR"
 export PS3
 select OPTION in ${option[*]};do
     case $OPTION in
@@ -311,7 +311,7 @@ select OPTION in ${option[*]};do
             help
             ;;
         exit)
-            echo $GREEN Goodbye! $NO_COLOR
+            echo $GREEN GoodBye !!! $NO_COLOR
             break
             ;;
         *)
