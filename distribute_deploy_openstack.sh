@@ -307,6 +307,10 @@ select OPTION in ${option[*]};do
             help
             ;;
         exit)
+            echo $GREEN Goodbye! $NO_COLOR
             break
-   esac
+            ;;
+        *)
+            echo $RED Invalid option. Try another one. $NO_COLOR
+  esac
 done
