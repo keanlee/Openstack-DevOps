@@ -15,21 +15,21 @@ WHITE="$ESC[0;37m"
 CYAN="$ESC[0;36m"
 
 option=(
-controller  
-compute
-network
-deploy-all
-check-controller
-check-compute
-check-network
-check-all
-controller-as-network-node
-compute-as-network-node
+help
+ssh-key-all
 ssh-key-compute
 ssh-key-controller
 ssh-key-network
-ssh-key-all
-help
+check-all
+check-controller
+check-compute
+check-network
+deploy-all
+deploy-controller-node
+deploy-compute-node
+deploy-network-node
+deploy-controller-as-network-node
+deploy-compute-as-network-node
 exit
 )
 
@@ -233,88 +233,74 @@ fi
 }
 
 cat 1>&2 <<__EOF__
-$MAGENTA=================================================================
+$MAGENTA===============================================================================
        Thanks you use this script to deploy openstack !
                  Author: Kean Lee
           This script provide the below option:          
-=================================================================
+===============================================================================
 $NO_COLOR
 __EOF__
 
 PS3="$BLUE Please Select a Number To Execute: $NO_COLOR"
 export PS3
 select OPTION in ${option[*]};do
+    break
+done
     case $OPTION in
-        controller)
+        deploy-controller-node)
             controller
-            break
 	    ;;
-        compute)
+        deploy-compute-node)
             compute
-            break
   	    ;;
-        network)
+        deploy-network-node)
             network_node
-            break
 	    ;;
         deploy-all)
             controller
             network_node
             compute
-            break
             ;;
         check-controller)
             check_info controller 
-            break
             ;;
         check-compute)
             check_info compute
-            break
 	    ;;
         check-network)
             check_info network
-            break
             ;;
         check-all)
             check_info controller
             check_info network
             check_info compute    
-            break
             ;;
-        controller-as-network-node)
+        deploy-controller-as-network-node)
             controller  controller-as-network-node
-            break
 	    ;;
-        compute-as-network-node)
+        deploy-compute-as-network-node)
             compute  compute-as-network-node
-            break
 	    ;;
         ssh-key-compute)
             ssh_key compute
-            break
  	    ;;
 	ssh-key-controller)
             ssh_key controller
-            break
 	    ;;
 	ssh-key-network)
             ssh_key network 
-            break
             ;;
 	ssh-key-all)
             ssh_key controller
             ssh_key network
             ssh_key compute
-            break
             ;;
 	help)
             help
             ;;
         exit)
-            echo $GREEN GoodBye !!! $NO_COLOR
-            break
+            echo $GREEN =========== GoodBye !!! =========== $NO_COLOR
             ;;
         *)
             echo $RED Your imput is Invalid Option, Try another one which is listed above. $NO_COLOR
   esac
-done
