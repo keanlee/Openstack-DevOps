@@ -6,7 +6,7 @@
 #------------------------Need to edit below  first -----------------------
 
 #management network card name, both controller and all slave node (compute ,block ,network nodes) use this name for configuration 
-MGMT_IP_DEVICE=eth1
+MGMT_IP_DEVICE=eno1
 
 #Add a port to the external bridge that connects to the physical external network inter-face
 #Replace PROVIDER_INTERFACE with the name of the underlying interface that handles provider networks. For example, eth1

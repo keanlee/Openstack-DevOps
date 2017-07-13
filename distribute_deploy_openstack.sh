@@ -45,24 +45,24 @@ which pv 1>/dev/null 2>&1 || rpm -ivh ./deploy-openstack/lib/pv* 1>/dev/null 2>&
     debug "$?" "install pv failed "
 echo -e $CYAN $(cat ./deploy-openstack/README.txt) $NO_COLOR | pv -qL 30
 cat 1>&2 <<__EOF__
-$MAGENTA========================================================================
+$MAGENTA==================================================================================
               --------Usage as below ---------
-           sh $0 controller  
+           sh $0 deploy-controller-node 
               $BLUE#to deploy controller node$NO_COLOR 
              
-           ${MAGENTA}sh $0 compute  
+           ${MAGENTA}sh $0 deploy-compute-node
               $BLUE#to deploy compute node$NO_COLOR
              
-           ${MAGENTA}sh $0 network
+           ${MAGENTA}sh $0 deploy-network-node
               $BLUE#to deploy network node$NO_COLOR
                     
            ${MAGENTA}sh $0 deploy-all
               $BLUE#to deploy controller node ,network node,compute node$NO_COLOR
 
-           ${MAGENTA}sh $0 controller-as-network-node
+           ${MAGENTA}sh $0 deploy-controller-as-network-node
               $BLUE#to deploy controller as network node$NO_COLOR  
            
-           ${MAGENTA}sh $0 compute-as-network-node
+           ${MAGENTA}sh $0 deploy-compute-as-network-node
               $BLUE#to deploy compute as network node$NO_COLOR
 
            ${MAGENTA}sh $0 check-controller 
@@ -80,7 +80,7 @@ $MAGENTA========================================================================
            ${MAGENTA}sh $0 ssh-key-<target-hosts-role>
               $BLUE#to create ssh-key and copy it to target hosts 
             (target-hosts-role=controller,compute,network,storage,all)$NO_COLOR${MAGENTA}
-========================================================================
+==================================================================================
 $NO_COLOR
 __EOF__
 }
@@ -234,9 +234,9 @@ fi
 
 cat 1>&2 <<__EOF__
 $MAGENTA===============================================================================
-       Thanks you use this script to deploy openstack !
-                 Author: Kean Lee
-          This script provide the below option:          
+            Thanks you use this script to deploy openstack !
+                         Author: Kean Lee
+                This script provide the below option:          
 ===============================================================================
 $NO_COLOR
 __EOF__
@@ -302,5 +302,5 @@ done
             echo $GREEN =========== GoodBye !!! =========== $NO_COLOR
             ;;
         *)
-            echo $RED Your imput is Invalid Option, Try another one which is listed above. $NO_COLOR
+            echo $RED Your imput is Invalid Option, Try another one which is listed above . $NO_COLOR
   esac

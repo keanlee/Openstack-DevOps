@@ -2,7 +2,7 @@
 Test Env: CentOS-7.3  \n
 Openstack Version: Newton  \n
 This script can help you deploy the openstack \n
-You need to: \n
+You MUST to do below steps before you execute this script: \n
 \n
 1. Edit the VARIABLE file before deploy  \n
 2. Place your yum repos file into ./repos directory \n
