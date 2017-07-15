@@ -26,6 +26,7 @@ __EOF__
 NET_DEV_NAME=$(cat /proc/net/dev | awk '{print $1}' | sed -n '3,$p' | awk -F ":" '{print $1}' | grep -v ^lo$ | grep -v ^macvtap* | grep -v ^tap* | \
 grep -v ^q | grep -v ^virbr* | grep -v ^vnet | grep -v ^p1p*  )
 #                                                                                              except the lo and   virtual cards:     macvtap      network name 
+echo $BLUE Your host has ${YELLOW}$(lspci | grep -i Ethernet | wc -l)${BLUE} Hardware Network cards,and used as below: ${NO_COLOR}
 for i in $NET_DEV_NAME
     do
         NET_RUNNING_STATUS=$(ip addr show $i | sed -n '1p' | awk '{print $9}')
@@ -36,8 +37,8 @@ for i in $NET_DEV_NAME
         fi  
         if [[ $NET_RUN_STATUS = 'DOWN' ]];then
             continue
-        elif [[ $NET_RUN_STATUS = 'UNKNOWN' ]];then
-            continue
+        #elif [[ $NET_RUN_STATUS = 'UNKNOWN' ]];then
+        #    continue
         else
             echo ${BLUE} The network card Name:${NO_COLOR}$YELLOW $i${NO_COLOR} ${BLUE},the network card status:$GREEN $NET_RUN_STATUS $NO_COLOR
         fi
@@ -60,10 +61,11 @@ $NO_COLOR
 __EOF__
 
 DEVICE=$(cat /proc/partitions | awk '{print $4}' | sed -n '3,$p' | grep "[a-z]$")
+echo $BLUE Your Host Has ${YELLOW}$(cat /proc/partitions | awk '{print $4}' | sed -n '3,$p' | grep "[a-z]$" | wc -l)${NO_COLOR}${BLUE} Hardware Disks $NO_COLOR
 
 for DEVICE_ID in $DEVICE
     do 
-        DISK_SIZE=$(lsblk /dev/${DEVICE_ID} | sed -n '2p' | awk '{print $4}')
+                DISK_SIZE=$(lsblk /dev/${DEVICE_ID} | sed -n '2p' | awk '{print $4}')
         echo $BLUE Disk name: ${YELLOW}$DEVICE_ID${NO_COLOR} $BLUE the size is:$GREEN $DISK_SIZE${NO_COLOR}
         
 done

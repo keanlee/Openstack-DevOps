@@ -13,7 +13,6 @@
 #Refer https://docs.openstack.org/newton/install-guide-rdo/common/get-started-networking.html to get more info 
 #refer https://wenku.baidu.com/view/46ced95180eb6294dc886c5b.html?pn=88 for openvswitch guide 
 
-
 #----------------------------------------------------neutron for controller node ----------------------
 function neutron_controller(){
 cat 2>&1 <<__EOF__
@@ -163,6 +162,19 @@ __EOF__
 
 #The network node primarily handles internal and external routing and DHCP services for vir-tual networks
 #floating ip mapping 
+
+#Private IP Address
+# A private IP address is assigned to an instance's network-interface by the DHCP server.
+# The address is visible from within the instance by using a command like “ip a”. The address is 
+# typically part of a private network and is used for communication between instances in the same
+# broadcast domain via virtual switch (L2 agent on each compute node). It can also be accessible 
+# from instances in other private networks via virtual router (L3 agent).
+
+#Floating IP Address
+# A floating IP address is a service provided by Neutron. It's not using any DHCP service or being set statically within the guest. 
+# As a matter of fact the guest's operating system has no idea that it was assigned a floating IP address. The delivery of packets to 
+# the interface with the assigned floating address is the responsibility of Neutron's L3 agent. Instances with an assigned floating IP 
+# address can be accessed from the public network by the floating IP.
 
 
 echo $BLUE To configure prerequisites:configure certain kernel networking parameters $NO_COLOR

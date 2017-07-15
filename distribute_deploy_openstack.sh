@@ -232,6 +232,19 @@ elif [[ $1 = "network" ]];then
 fi
 }
 
+function zabbix_agent_deploy(){
+local METADATA
+METADATA=compute    #change this for your request
+echo $BLUE Beginning install zabbix agent on $YELLOW $METADATA  $NO_COLOR
+cat ./$METADATA | while read line ; do scp -r install-zabbix-agent/ $line:/root/; debug $? ; done  1>/dev/null 2>&1
+
+cat ./$METADATA | while read line ; do ssh -n $line /bin/bash /root/install-zabbix-agent/install-agent.sh \
+$SERVERIP $METADATA ;debug $? ;done  2>/dev/null
+
+cat ./$METADATA | while read line ; do ssh -n $line 'rm -rf /root/install-zabbix-agent/';done
+echo $GREEN Finished install zabbix agent on host: $YELLOW  $(cat ./$METADATA) $NO_COLOR
+}
+
 cat 1>&2 <<__EOF__
 $MAGENTA===============================================================================
             Thanks you use this script to deploy openstack !
@@ -302,5 +315,5 @@ done
             echo $GREEN =========== GoodBye !!! =========== $NO_COLOR
             ;;
         *)
-            echo $RED Your imput is Invalid Option, Try another one which is listed above . $NO_COLOR
+            echo $RED Your imput is Invalid Option, Try another one option that is listed above . $NO_COLOR
   esac
