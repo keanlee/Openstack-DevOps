@@ -13,6 +13,15 @@
 #Refer https://docs.openstack.org/newton/install-guide-rdo/common/get-started-networking.html to get more info 
 #refer https://wenku.baidu.com/view/46ced95180eb6294dc886c5b.html?pn=88 for openvswitch guide 
 
+#network monitor tools
+#http://os.51cto.com/art/201404/435279.htm
+
+#Some debug command:
+#ip netns exec qrouter-bdb56fe4-eff2-4150-ad84-24427a617faf  iptables -t nat -S
+
+#network virtaul device introduction:
+#http://blog.csdn.net/tantexian/article/details/45395075
+
 #----------------------------------------------------neutron for controller node ----------------------
 function neutron_controller(){
 cat 2>&1 <<__EOF__
@@ -151,6 +160,7 @@ __EOF__
 
 #------------------------------------------neutron for network node -----------------------
 function neutron_network_node(){
+#A switchport that is configured to pass frames from all VLANs and tag them with the VLAN IDs is called a trunk port.
 cat 2>&1 <<__EOF__
 $MAGENTA=====================================================================================
        

@@ -102,6 +102,14 @@ compute-as-network-node)
     source ./bin/neutron.sh compute-as-network-node
     #source ./bin/cinder.sh  compute 
     ;;
+deploy-all-in-one)
+    echo $BLUE Begin deploy compute as network node on ${YELLOW}$(hostname)$NO_COLOR
+    support_service_common
+    support_service_controller
+    source ./bin/keystone.sh
+    source ./bin/glance.sh
+    source ./bin/nova.sh controller  
+
 check)
     source ./bin/system_info.sh
     ;;
