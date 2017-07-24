@@ -62,6 +62,8 @@ __EOF__
 source $OPENRC_DIR/admin-openrc
 #wget http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img   &&
 
+
+#glance image-create --name cirros --file /tmp/cirros-0.3.4-x86_64-disk.img --disk-format qcow2 --container-format bare --progress
 echo $BLUE Upload the image to the Image service using the QCOW2 disk format,\
 bare container format, and public visibility so all projects can access it $NO_COLOR
 sleep 5

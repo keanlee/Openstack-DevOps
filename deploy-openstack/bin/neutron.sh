@@ -186,7 +186,7 @@ __EOF__
 # the interface with the assigned floating address is the responsibility of Neutron's L3 agent. Instances with an assigned floating IP 
 # address can be accessed from the public network by the floating IP.
 
-
+#http://www.cnblogs.com/CloudMan6/p/6005081.html
 echo $BLUE To configure prerequisites:configure certain kernel networking parameters $NO_COLOR
 cat >> /etc/sysctl.conf << __EOF__
 net.ipv4.ip_forward = 1
@@ -255,9 +255,9 @@ if [[ $PROVIDER_INTER_ADRR != "" ]];then
 fi 
 
 if  [[ -e /etc/sysconfig/network-scripts/ifcfg-${br_provider} ]];then
-    if [[ $(cat /etc/sysconfig/network-scripts/ifcfg-${PROVIDER_INTERFACE} | grep -i dhcp | wc -l) -eq 1 ]];then 
-        sed -i "s/dhcp/static/g" /etc/sysconfig/network-scripts/ifcfg-${PROVIDER_INTERFACE}
-    fi
+    #if [[ $(cat /etc/sysconfig/network-scripts/ifcfg-${PROVIDER_INTERFACE} | grep -i dhcp | wc -l) -eq 1 ]];then 
+    sed -i "s/dhcp/static/g" /etc/sysconfig/network-scripts/ifcfg-${PROVIDER_INTERFACE}
+    #fi
 fi
 
 ovs-vsctl add-br ${br_provider}

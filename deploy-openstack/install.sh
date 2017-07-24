@@ -109,7 +109,7 @@ deploy-all-in-one)
     source ./bin/keystone.sh
     source ./bin/glance.sh
     source ./bin/nova.sh controller  
-
+    ;;
 check)
     source ./bin/system_info.sh
     ;;

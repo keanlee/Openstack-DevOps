@@ -124,6 +124,7 @@ mv -f ./resolve.conf /etc
 
 #----------------------------------------mariadb install ------------------------------------------------
 function mysql_configuration(){
+#change password if forgot mysql password
 cat 2>&1 <<__EOF__
 $MAGENTA==========================================================
             Begin to delpoy Mariadb
