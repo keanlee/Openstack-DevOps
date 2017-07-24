@@ -78,7 +78,7 @@ debug "$?"  "vgcreate cinder-volumes /dev/$PARTITION failed"
 #Each item in the filter array begins with a for accept or r for reject and includes a regular expression for the device name. 
 #The array must end with r/.*/ to reject any remaining devices. You can use the vgs -vvvv command to test filters
 #refer https://docs.openstack.org/newton/install-guide-rdo/cinder-storage-install.html
-sed -i "/\# Configuration option devices\/dir./a\        filter = [ "a/${PARTITION}/", "r/.*/"]"  /etc/lvm/lvm.conf
+sed -i "/\# Configuration option devices\/dir./a\        filter = [ \"a/${PARTITION}/\", "r/.*/"]"  /etc/lvm/lvm.con
 
 echo $BLUE Install openstack-cinder targetcli python-keystone ... $NO_COLOR
 yum install openstack-cinder targetcli python-keystone -y 1>/dev/null
