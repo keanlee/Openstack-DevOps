@@ -88,7 +88,7 @@ echo $BLUE Copy cinder.conf and edit it $NO_COLOR
 cp -f ./etc/compute/cinder.conf  /etc/cinder
 sed -i "s/controller/$CONTROLLER_VIP/g"   /etc/cinder/cinder.conf
 sed -i "s/RABBIT_PASS/$RABBIT_PASS/g"  /etc/cinder/cinder.conf
-sed -i "s/MANAGEMENT_INTERFACE_IP_ADDRESS/$CINDER_MANAGEMENT_INTERFACE_IP_ADDRESS/g"  /etc/cinder/cinder.conf
+sed -i "s/LOCAL_MGMT_IP/$MGMT_IP/g"  /etc/cinder/cinder.conf
 sed -i "s/CINDER_DBPASS/$CINDERDB_PASS/g"  /etc/cinder/cinder.conf
 sed -i "s/CINDER_PASS/$CINDER_PASS/g"   /etc/cinder/cinder.conf
 
