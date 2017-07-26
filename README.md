@@ -1,7 +1,8 @@
 #  Openstack
 
 ## This Repository can help you  deploy: 
-  ###                  Deploy  openstack you can follow below
+  ###                  Deploy  openstack you can follow belowi:
+
 `==================================================================================
               --------Usage as below ---------
            sh distribute_deploy_openstack.sh deploy-controller-node 
