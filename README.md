@@ -3,7 +3,7 @@
 ## This Repository can help you  deploy: 
   ###                  Deploy  openstack you can follow belowi:
 
-`==================================================================================
+=================================================================================
               --------Usage as below ---------
            sh distribute_deploy_openstack.sh deploy-controller-node 
               #to deploy controller node 
@@ -38,7 +38,7 @@
            sh distribute_deploy_openstack.sh ssh-key-<target-hosts-role>
               #to create ssh-key and copy it to target hosts 
             (target-hosts-role=controller,compute,network,storage,all)
-==================================================================================`
+=================================================================================
 
 
 
