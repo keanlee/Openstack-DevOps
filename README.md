@@ -4,7 +4,7 @@
   ###                  Deploy  openstack you can follow belowi:
 
 =================================================================================
-###             --------Usage as below ---------
+###                   Usage as below:   ###
            sh distribute_deploy_openstack.sh deploy-controller-node 
               #to deploy controller node 
              
