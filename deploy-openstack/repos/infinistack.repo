@@ -1,0 +1,54 @@
+[base]
+name=CentOS-$releasever - Base
+baseurl=http://10.245.58.107/repos/base/
+gpgcheck=0
+
+#released updates
+[updates]
+name=CentOS-$releasever - Updates
+baseurl=http://10.245.58.107/repos/extras/
+gpgcheck=0
+
+#additional packages that may be useful
+[extras]
+name=CentOS-$releasever - Extras
+baseurl=http://10.245.58.107/repos/updates/
+gpgcheck=0
+
+###############################epel
+[epel]
+name=Extra Packages for Enterprise Linux 7 - $basearch
+baseurl=http://10.245.58.107/repos/epel/
+failovermethod=priority
+enabled=1
+gpgcheck=0
+
+[openstack-newton]
+name=CentOS-openstack-newton
+baseurl=http://10.245.58.107/repos/openstack-newton/
+gpgcheck=0
+enabled=1
+
+[ceph]
+name=ceph
+baseurl=http://10.245.58.107/repos/ceph/
+gpgcheck=0
+enabled=1
+
+[qemu]
+name=qemu
+baseurl=http://10.245.58.107/repos/qemu/
+gpgcheck=0
+enabled=1
+
+[zabbix-non-supported]
+name=zabbix-non-supported
+baseurl=http://10.245.58.107/repos/zabbix-non-supported/
+gpgcheck=0
+enabled=0
+
+[zabbix]
+name=zabbix
+baseurl=http://10.245.58.107/repos/zabbix/
+gpgcheck=0
+enabled=0
