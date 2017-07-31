@@ -1,4 +1,0 @@
-[ceph]
-name=ceph
-baseurl=http://10.245.58.107/repos/ceph/
-gpgcheck=0

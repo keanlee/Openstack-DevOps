@@ -36,7 +36,7 @@ sed -i "s/NEUTRON_PASS/$NEUTRON_PASS/g"  /etc/nova/nova.conf
 sed -i "s/METADATA_SECRET/$METADATA_SECRET/g" /etc/nova/nova.conf
 
 echo $BLUE Populate the nova_api databases $NO_COLOR
-su -s /bin/sh -c "nova-manage api_db sync" nova
+su -s /bin/sh -c "nova-manage api_db sync" nova  1>/dev/null 2>&1
     debug "$?" "nova-manage api_db sync failed "
 get_database_size nova_api $NOVA_DBPASS
 

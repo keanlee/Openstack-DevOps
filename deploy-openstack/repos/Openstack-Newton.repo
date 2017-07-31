@@ -1,4 +1,0 @@
-[openstack-newton]
-name=CentOS-openstack-newton
-baseurl=http://10.245.58.107/repos/openstack-newton/
-gpgcheck=0

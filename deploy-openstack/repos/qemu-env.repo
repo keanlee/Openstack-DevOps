@@ -1,4 +1,0 @@
-[qemu]
-name=qemu
-baseurl=http://10.245.58.107/repos/qemu/
-gpgcheck=0
