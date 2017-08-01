@@ -235,8 +235,8 @@ echo $BLUE Install rabbitmq-server ... $NO_COLOR
 yum install rabbitmq-server  -y 1>/dev/null
     debug "$1" "$RED Install rabbitmq-server failed $NO_COLOR"
 systemctl enable rabbitmq-server.service 1>/dev/null 2>&1 && 
-
-sed -i "2a ${MGMT_IP}   $(hostname)" /etc/hosts
+echo "${MGMT_IP} $(hostname)" >>/etc/hosts
+#sed -i "2a ${MGMT_IP}   $(hostname)" /etc/hosts
 
 systemctl start rabbitmq-server.service
     debug "$?" "Start rabbitmq-server.service Faild, Did you edit the /etc/hosts correct ? "

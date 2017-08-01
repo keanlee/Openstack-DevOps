@@ -57,7 +57,7 @@ sed -i "s/NEUTRON_PASS/$NEUTRON_PASS/g" /etc/neutron/neutron.conf
 sed -i "s/NOVA_PASS/$NOVA_PASS/g"  /etc/neutron/neutron.conf
 
 echo $BLUE Copy plugin.ini file $NO_COLOR
-cp -f ./etc/controller/neutron/plugin.ini  /etc/neutron/plugins/ml2/ml2_conf.ini
+cp -f ./etc/controller/neutron/ml2_conf.ini  /etc/neutron/plugins/ml2/ml2_conf.ini
 
 #The Networking service initialization scripts expect a symbolic link /etc/neutron/plugin.ini 
 #pointing to the ML2 plug-in configuration file, /etc/neutron/plugins/ml2/ml2_conf.ini
@@ -220,7 +220,7 @@ cp -f ./etc/network/l3_agent.ini    /etc/neutron
 sed -i "s/br-provider/$br_provider/g"  /etc/neutron/l3_agent.ini
 
 cp -f ./etc/network/metadata_agent.ini  /etc/neutron 
-sed -i "s/controller/$MGMT_IP/g"  /etc/neutron/metadata_agent.ini
+sed -i "s/controller/$CONTROLLER_VIP/g"  /etc/neutron/metadata_agent.ini
 sed -i "s/METADATA_SECRET/$METADATA_SECRET/g" /etc/neutron/metadata_agent.ini
 
 local CPUs=$(lscpu | grep ^CPU\(s\) | awk -F ":" '{print $2}')
