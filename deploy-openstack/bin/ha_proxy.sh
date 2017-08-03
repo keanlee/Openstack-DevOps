@@ -13,6 +13,8 @@
 #semanage port -a -t mysqld_port_t -p tcp 3306
 
 #semanage permissive -a mysqld_t
+
+function __main__(){
 ESC=$(printf "\e")
 GREEN="$ESC[0;32m"
 NO_COLOR="$ESC[0;0m"
@@ -24,16 +26,14 @@ WHITE="$ESC[0;37m"
 #PURPLE="$ESC[0;35m"
 CYAN="$ESC[0;36m"
 
-
 function debug(){
 if [[ $1 -ne 0 ]]; then
     echo $RED ERROR:  $2 $NO_COLOR
     exit 1
 fi
 }
-
 source ./VARIABLE
-)
+source ../HOSTS
 #-----------------------------yum repos configuration ---------------------------
 function yum_repos(){
 if [[ ! -d /etc/yum.repos.d/bak/ ]];then
@@ -45,6 +45,76 @@ yum clean all 1>/dev/null 2>1&
 echo $GREEN yum repos configuration done $NO_COLOR
 }
 yum_repos
+}
+
+
+#------------------------------Galera ----------------------------------------------------------------
+function Galera(){
+#this function can deploy three galera node 
+
+echo  "${CONTROLLER_IP[0]}   ${CONTROLLER_HOSTNAME[0]}" >>/etc/hosts
+echo  "${CONTROLLER_IP[1]}   ${CONTROLLER_HOSTNAME[1]}" >>/etc/hosts
+echo  "${CONTROLLER_IP[2]}   ${CONTROLLER_HOSTNAME[2]}" >>/etc/hosts
+iptables -F
+systemctl stop firewalld	
+setenforce 0
+echo $BLUE Install  mariadb mariadb-galera-server mariadb-galera-common galera rsync ...$NO_COLOR
+yum install -y  mariadb mariadb-galera-server mariadb-galera-common galera rsync  1>/dev/null
+    debug "$?" "install galera mariadb fialed on $(hostname)"
+if [[ $(hostname) = ${CONTROLLER_HOSTNAME[0]} ]];then 
+    sed -i '/Group=mysql/a\LimitNOFILE=65535' /usr/lib/systemd/system/mariadb.service
+    systemctl daemon-reload
+    systemctl enable mariadb
+    systemctl start mariadb
+    echo $BLUE Set admin password for galera mariadb... $NO_COLOR
+
+mysql_secure_installation 1>/dev/null 2>&1 <<EOF
+
+y
+$GALERA_PASSWORD
+$GALERA_PASSWORD
+y
+y
+y
+y
+EOF
+    debug "$?" "GALERA admin password configuration failed"
+    systemctl stop mariadb
+
+    cp -f ../etc/ha_proxy/galera.cnf /etc/my.cnf.d/
+    sed -i "s/this-host-name/$(hostname)/g" /etc/my.cnf.d/galera.cnf
+    sed -i "s/this-host-ip/$MGMT_IP/g"  /etc/my.cnf.d/galera.cnf
+    sed -i "s/cluster-nodes/${CONTROLLER_HOSTNAME[0]},${CONTROLLER_HOSTNAME[1]},${CONTROLLER_HOSTNAME[2]}/g"  /etc/my.cnf.d/galera.cnf
+
+#start  MariaDB Galera Cluster ...
+#service mysql start --wsrep-new-cluster
+#systemctl start mariadb --wsrep-new-cluster
+    /usr/libexec/mysqld --wsrep-new-cluster --user=root &
+    echo $GREEN Finshed Galera Install On $(hostname) $NO_COLOR
+else 
+    cp -f ../etc/ha_proxy/galera.cnf /etc/my.cnf.d/
+    sed -i "s/this-host-name/$(hostname)/g" /etc/my.cnf.d/galera.cnf
+    sed -i "s/this-host-ip/$MGMT_IP/g"  /etc/my.cnf.d/galera.cnf
+    sed -i "s/cluster-nodes/${CONTROLLER_HOSTNAME[0]},${CONTROLLER_HOSTNAME[1]},${CONTROLLER_HOSTNAME[2]}/g"  /etc/my.cnf.d/galera.cnf
+    #for each node 
+    systemctl enable mariadb
+    systemctl start mariadb 
+    echo $GREEN Finshed Galera Install On $(hostname) $NO_COLOR
+fi  
+
+#check status after install and configure it 
+#mysql -uroot -p${GALERA_PASSWORD} -e "SHOW STATUS LIKE 'wsrep_%';"
+#mysql -uroot -p${GALERA_PASSWORD} -e "SHOW STATUS LIKE 'wsrep_cluster_size';"
+}
+
+
+
+
+
+
+
+
+
 
 function load_balancing(){
 yum install xinetd
@@ -111,65 +181,4 @@ rabbit_ha_queues=true
 }
 
 
-
-function Galera(){
-
-#yum repos setpup 
-#修改 /etc/hostname
-echo  "${CONTROLLER_IP[0]}   ${CONTROLLER_HOSTNAME[0]}" >>/etc/hosts
-echo  "${CONTROLLER_IP[1]}   ${CONTROLLER_HOSTNAME[1]}" >>/etc/hosts
-echo  "${CONTROLLER_IP[2]}   ${CONTROLLER_HOSTNAME[2]}" >>/etc/hosts
-iptables -F
-systemctl stop firewalld	
-setenforce 0
-echo $BLUE Install  mariadb mariadb-galera-server mariadb-galera-common galera rsync $NO_COLOR
-yum install -y  mariadb mariadb-galera-server mariadb-galera-common galera rsync  1>/dev/null
-    debug "$?" "install galera mariadb fialed on $(hostname)"
-if [[ $(hostname) = ${CONTROLLER_HOSTNAME[0]} ]];then 
-    sed -i '/Group=mysql/a\LimitNOFILE=65535' /usr/lib/systemd/system/mariadb.service
-    systemctl daemon-reload
-    systemctl enable mariadb
-    systemctl start mariadb
-    echo $BLUE Set admin password for galera mariadb... $NO_COLOR
-
-mysql_secure_installation 1>/dev/null 2>&1 <<EOF
-
-y
-$GALERA_PASSWORD
-$GALERA_PASSWORD
-y
-y
-y
-y
-EOF
-    debug "$?" "GALERA admin password configuration failed"
-    systemctl stop mariadb
-
-    cp -f ../etc/ha_proxy/galera.cnf /etc/my.cnf.d/
-    sed -i "s/this-host-name/$(hostname)/g" /etc/my.cnf.d/galera.cnf
-    sed -i "s/this-host-ip/$MGMT_IP/g"  /etc/my.cnf.d/galera.cnf
-    sed -i "s/cluster-nodes/${CONTROLLER_HOSTNAME[0]},${CONTROLLER_HOSTNAME[1]},${CONTROLLER_HOSTNAME[2]}/g"  /etc/my.cnf.d/galera.cnf
-
-#将此文件复制到node5、node6，注意要把 wsrep_node_name和 wsrep_node_address改成相应节点的 hostname和ip
-#启动 MariaDB Galera Cluster 服务
-#service mysql start --wsrep-new-cluster
-#systemctl start mariadb --wsrep-new-cluster
-    /usr/libexec/mysqld --wsrep-new-cluster --user=root &
-    echo $GREEN Finshed Galera Install On $(hostname) $NO_COLOR
-else 
-    cp -f ../etc/ha_proxy/galera.cnf /etc/my.cnf.d/
-    sed -i "s/this-host-name/$(hostname)/g" /etc/my.cnf.d/galera.cnf
-    sed -i "s/this-host-ip/$MGMT_IP/g"  /etc/my.cnf.d/galera.cnf
-    sed -i "s/cluster-nodes/${CONTROLLER_HOSTNAME[0]},${CONTROLLER_HOSTNAME[1]},${CONTROLLER_HOSTNAME[2]}/g"  /etc/my.cnf.d/galera.cnf
-    #for each node 
-    systemctl enable mariadb
-    systemctl start mariadb 
-    echo $GREEN Finshed Galera Install On $(hostname) $NO_COLOR
-fi  
-#查看集群状态
-
-#check status after install and configure it 
-#mysql -uroot -p${GALERA_PASSWORD} -e "SHOW STATUS LIKE 'wsrep_%';"
-#mysql -uroot -p${GALERA_PASSWORD} -e "SHOW STATUS LIKE 'wsrep_cluster_size';"
-}
 
