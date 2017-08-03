@@ -7,7 +7,7 @@
 
 #steps 
 #memcache no ha 
-
+#http://freeloda.blog.51cto.com/2033581/1280962  for keepalived 
 
 #for selinux open
 #semanage port -a -t mysqld_port_t -p tcp 3306
@@ -85,12 +85,28 @@ rabbit_ha_queues=true
 
 
 function Galera(){
+CONTROLLER_IP=(
+192.168.1.11
+192.168.1.5
+192.168.1.10
+)
+CONTROLLER_HOSTNAME=(
+host-192-168-1-11
+host-192-168-1-5
+host-192-168-1-10
+)
+#yum repos setpup 
+#修改 /etc/hostname
+#iptables -F
+#setenforce 0
+GALERA_PASSWORD=galera_admin
+
 yum install -y  mariadb mariadb-galera-server mariadb-galera-common galera rsync  1>/dev/null
 sed -i '/Group=mysql/a\LimitNOFILE=65535' /usr/lib/systemd/system/mariadb.service
 systemctl daemon-reload
 
-setenforce 0
 
+if [[ $(hostname) = ${CONTROLLER_HOSTNAME}[0]]]
 systemctl enable mariadb
 systemctl start mariadb
 

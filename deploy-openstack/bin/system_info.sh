@@ -84,6 +84,7 @@ if [[ $(egrep -c '(vmx|svm)' /proc/cpuinfo) = 0 ]];then
     echo $YELLOW $(lscpu | grep ^Hypervisor) $NO_COLOR
 else 
     echo $GREEN Your host support hardware acceleration $NO_COLOR
+    echo $GREEN $(dmidecode -t 1 | sed -n '7,8p' )  $NO_COLOR
 fi
 
 CPUs=$(lscpu | grep ^CPU\(s\) | awk -F ":" '{print $2}')

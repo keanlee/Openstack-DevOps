@@ -117,7 +117,9 @@ CLUSTES=192.168.1.3,192.168.1.4,192.168.2.3
 #-------------------------------------nova compute node ------------------------------------------------------
 COMPUTE_MANAGEMENT_INTERFACE_IP_ADDRESS=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
 
-
+#-----------------Heat -------------------------------------
+HEATDB_PASS=heatdb
+HEAT_PASS=heatpass
 
 
 
