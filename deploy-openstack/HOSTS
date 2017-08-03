@@ -1,0 +1,33 @@
+#!/bin/bash
+#this file use for list all host ip which  will be deploy openstack by keanlee's scipts
+#please follow the example to fill the ip address 
+
+#--------------------controller node info list -------------------
+CONTROLLER_IP=(
+192.168.1.11
+192.168.1.5
+192.168.1.10
+)
+CONTROLLER_HOSTNAME=(
+host-192-168-1-11
+host-192-168-1-5
+host-192-168-1-10
+)
+
+#------------------compute node info list -----------------------------
+COMPUTE_NODE_IP=(
+192.168.2.3
+192.158.23.32
+)
+
+
+#-----------------network node info list -------------------------------
+NETWORK_NODE_IP=(
+192.158.13.21
+)
+
+#-------------------block node info list ------------------------
+BLOCK_NODE_IP=(
+192.158.23.12
+192.158.23.32
+)

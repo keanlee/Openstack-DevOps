@@ -33,6 +33,8 @@ deploy-compute-as-network-node
 exit
 )
 
+source ./deploy-openstack/HOSTS
+
 debug(){
 if [[ $1 -ne 0 ]]; then
     echo $RED $2 $NO_COLOR
@@ -102,37 +104,37 @@ read Password
 
 if [[ $1 = "compute" ]];then 
 echo $BLUE copy public key to compute hosts:  $NO_COLOR
-for ips in $(cat ./deploy-openstack/hosts/COMPUTE_HOSTS);
+for ips in ${COMPUTE_NODE_IP[*]};
     do ssh-keyscan $ips >> ~/.ssh/known_hosts ;
 done 
-for ips in $(cat ./deploy-openstack/hosts/COMPUTE_HOSTS);
+for ips in ${COMPUTE_NODE_IP[*]};
     do sshpass -p $Password ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips
 done 
 
 elif [[ $1 = "controller" ]];then
 echo $BLUE copy public key to controller hosts: $NO_COLOR
-for ips in $(cat ./deploy-openstack/hosts/CONTROLLER_HOSTS);
+for ips in ${CONTROLLER_IP[*]};
     do ssh-keyscan $ips >> ~/.ssh/known_hosts ;
 done 
-for ips in $(cat ./deploy-openstack/hosts/CONTROLLER_HOSTS);
+for ips in ${CONTROLLER_IP[*]};
    do sshpass -p $Password ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
 done
 
 elif [[ $1 = "network" ]];then
 echo $BLUE copy public key to network hosts:  $NO_COLOR
-for ips in $(cat ./deploy-openstack/hosts/NETWORK_HOSTS);
+for ips in ${NETWORK_NODE_IP[*]};
     do ssh-keyscan $ips >> ~/.ssh/known_hosts ;
 done 
-for ips in $(cat ./deploy-openstack/hosts/NETWORK_HOSTS);
+for ips in ${NETWORK_NODE_IP[*]};
     do sshpass -p $Password ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
 done
 
 elif [[ $1 = "storage" ]];then
 echo $BLUE copy public key to storage hosts:  $NO_COLOR
-for ips in $(cat ./deploy-openstack/hosts/BLOCK_HOSTS);
+for ips in ${BLOCK_NODE_IP[*]};
     do ssh-keyscan $ips >> ~/.ssh/known_hosts ;
 done 
-for ips in $(cat ./deploy-openstack/hosts/BLOCK_HOSTS);
+for ips in ${BLOCK_NODE_IP[*]};
     do sshpass -p $Password ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
 done
 
@@ -151,15 +153,15 @@ else
     debug "1" "function cannot support your parameter "
 fi 
 
-cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do scp -r deploy-openstack/ \
-$line:/home/; \
-    debug "$?" "Failed scp deploy script to $line host" ; done 1>/dev/null 2>&1
+for ips in ${CONTROLLER_IP[*]}; do scp -r deploy-openstack/ \
+$ips:/home/; \
+    debug "$?" "Failed scp deploy script to $ips host" ; done 1>/dev/null 2>&1
 
-cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n $line /bin/bash /home/deploy-openstack/install.sh \
-${VALUE} | tee ./log/${VALUE}-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
-    debug "$?" "bash remote execute on remote host <$line> error "; done
+for ips in ${CONTROLLER_IP[*]}; do ssh -n $ips /bin/bash /home/deploy-openstack/install.sh \
+${VALUE} | tee ./log/${VALUE}-$ips-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
+    debug "$?" "bash remote execute on remote host <$ips> error "; done
 
-cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n $line 'rm -rf /home/deploy-openstack/' ;done
+for ips in ${CONTROLLER_IP[*]}; do ssh -n $ips 'rm -rf /home/deploy-openstack/' ;done
 }
 
 
@@ -175,14 +177,14 @@ else
 fi 
 
 
-cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do scp -r deploy-openstack/ $line:/home/; \
-    debug "$?" "Failed scp deploy script to $line host" ; done 1>/dev/null 2>&1 
+for ips in ${COMPUTE_NODE_IP[*]}; do scp -r deploy-openstack/ $ips:/home/; \
+    debug "$?" "Failed scp deploy script to $ips host" ; done 1>/dev/null 2>&1 
 
-cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do ssh -n root@$line /bin/bash /home/deploy-openstack/install.sh \
-${VALUE} | tee ./log/${VALUE}-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
-    debug "$?" "bash remote execute on remote host <$line> error "; done
+for ips in ${COMPUTE_NODE_IP[*]}; do ssh -n root@$ips /bin/bash /home/deploy-openstack/install.sh \
+${VALUE} | tee ./log/${VALUE}-$ips-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
+    debug "$?" "bash remote execute on remote host <$ips> error "; done
 
-cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /home/deploy-openstack/';done
+for ips in ${COMPUTE_NODE_IP[*]}; do ssh -n root@$ips 'rm -rf /home/deploy-openstack/';done
 
 }
 
@@ -190,13 +192,13 @@ cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do ssh -n root@$l
 #----------------------------------network node deploy-----------------------
 function network_node(){
 
-cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do scp -r deploy-openstack/ $line:/home/; \
-    debug "$?" "Failed scp deploy script to $line host" ; done 1>/dev/null 2>&1
+for ips in ${NETWORK_NODE_IP[*]} ; do scp -r deploy-openstack/ $ips:/home/; \
+    debug "$?" "Failed scp deploy script to $ips host" ; done 1>/dev/null 2>&1
 
-cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do ssh -n root@$line /bin/bash /home/deploy-openstack/install.sh \
-network | tee ./log/network-node-$line-$(date "+%Y-%m-%d--%H:%M")-debug.log;done 
+for ips in ${NETWORK_NODE_IP[*]}; do ssh -n root@$ips /bin/bash /home/deploy-openstack/install.sh \
+network | tee ./log/network-node-$ips-$(date "+%Y-%m-%d--%H:%M")-debug.log;done 
 
-cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /home/deploy-openstack/' ;done 
+for ips in ${NETWORK_NODE_IP[*]}; do ssh -n root@$ips 'rm -rf /home/deploy-openstack/' ;done 
 }
 
 
@@ -207,28 +209,28 @@ function check_info(){
 #check the target host system infor
 #for controller nodes
 if [[ $1 = "controller" ]];then 
-    cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do scp ./deploy-openstack/bin/system_info.sh root@$line:/home/; \
-        debug "$?" "Failed scp deploy script to $line host" ; done 1>/dev/null 2>&1
-    cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n root@$line /bin/bash /home/system_info.sh; \
-        debug "$?" "bash remote execute on remote host <$line> error "; done
+    for ips in ${CONTROLLER_IP[*]}; do scp ./deploy-openstack/bin/system_info.sh root@$ips:/home/; \
+        debug "$?" "Failed scp deploy script to $ips host" ; done 1>/dev/null 2>&1
+    for ips in ${CONTROLLER_IP[*]}; do ssh -n root@$ips /bin/bash /home/system_info.sh; \
+        debug "$?" "bash remote execute on remote host <$ips> error "; done
    
-    cat ./deploy-openstack/hosts/CONTROLLER_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /home/system_info.sh';done
+    for ips in ${CONTROLLER_IP[*]}; do ssh -n root@$ips 'rm -rf /home/system_info.sh';done
 elif [[ $1 = "compute" ]];then 
     #for compute nodes
-    cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do scp ./deploy-openstack/bin/system_info.sh root@$line:/home/; \
-        debug "$?" "Failed scp deploy script to $line host" ; done 1>/dev/null 2>&1
-    cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do ssh -n root@$line /bin/bash /home/system_info.sh; \
-        debug "$?" "bash remote execute on remote host <$line> error "; done
+    for ips in ${COMPUTE_NODE_IP[*]}; do scp ./deploy-openstack/bin/system_info.sh root@$ips:/home/; \
+        debug "$?" "Failed scp deploy script to $ips host" ; done 1>/dev/null 2>&1
+    for ips in ${COMPUTE_NODE_IP[*]}; do ssh -n root@$ips /bin/bash /home/system_info.sh; \
+        debug "$?" "bash remote execute on remote host <$ips> error "; done
  
-    cat ./deploy-openstack/hosts/COMPUTE_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /home/system_info.sh';done
+    for ips in ${COMPUTE_NODE_IP[*]}; do ssh -n root@$ips 'rm -rf /home/system_info.sh';done
 elif [[ $1 = "network" ]];then 
     #for network nodes
-    cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do scp ./deploy-openstack/bin/system_info.sh root@$line:/home/; \
-        debug "$?" "Failed scp deploy script to $line host" ; done 1>/dev/null 2>&1
-    cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do ssh -n root@$line /bin/bash /home/system_info.sh; \
-        debug "$?" "bash remote execute on remote host <$line> error "; done
+    for ips in ${NETWORK_NODE_IP[*]}; do scp ./deploy-openstack/bin/system_info.sh root@$ips:/home/; \
+        debug "$?" "Failed scp deploy script to $ips host" ; done 1>/dev/null 2>&1
+    for ips in ${NETWORK_NODE_IP[*]}; do ssh -n root@$ips /bin/bash /home/system_info.sh; \
+        debug "$?" "bash remote execute on remote host <$ips> error "; done
 
-    cat ./deploy-openstack/hosts/NETWORK_HOSTS | while read line ; do ssh -n root@$line 'rm -rf /home/system_info.sh';done
+    for ips in ${NETWORK_NODE_IP[*]}; do ssh -n root@$ips 'rm -rf /home/system_info.sh';done
 fi
 }
 
@@ -236,12 +238,12 @@ function zabbix_agent_deploy(){
 local METADATA
 METADATA=compute    #change this for your request
 echo $BLUE Beginning install zabbix agent on $YELLOW $METADATA  $NO_COLOR
-cat ./$METADATA | while read line ; do scp -r install-zabbix-agent/ $line:/root/; debug $? ; done  1>/dev/null 2>&1
+cat ./$METADATA | while read ips ; do scp -r install-zabbix-agent/ $ips:/root/; debug $? ; done  1>/dev/null 2>&1
 
-cat ./$METADATA | while read line ; do ssh -n $line /bin/bash /root/install-zabbix-agent/install-agent.sh \
+cat ./$METADATA | while read ips ; do ssh -n $ips /bin/bash /root/install-zabbix-agent/install-agent.sh \
 $SERVERIP $METADATA ;debug $? ;done  2>/dev/null
 
-cat ./$METADATA | while read line ; do ssh -n $line 'rm -rf /root/install-zabbix-agent/';done
+cat ./$METADATA | while read ips ; do ssh -n $ips 'rm -rf /root/install-zabbix-agent/';done
 echo $GREEN Finished install zabbix agent on host: $YELLOW  $(cat ./$METADATA) $NO_COLOR
 }
 

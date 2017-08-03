@@ -33,16 +33,6 @@ fi
 }
 
 source ./VARIABLE
-
-CONTROLLER_IP=(
-192.168.1.11
-192.168.1.5
-192.168.1.10
-)
-CONTROLLER_HOSTNAME=(
-host-192-168-1-11
-host-192-168-1-5
-host-192-168-1-10
 )
 #-----------------------------yum repos configuration ---------------------------
 function yum_repos(){
