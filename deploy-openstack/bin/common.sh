@@ -64,9 +64,9 @@ if [[ $? = 0 ]];then
     yum erase NetworkManager  -y 1>/dev/null 2>&1
 fi
 
-#which firewall-cmd  1>/dev/null 2>&1 &&
-#echo $BLUE Uninstall firewalld $NO_COLOR
-#yum erase firewalld* -y 1>/dev/null 2>&1
+which firewall-cmd  1>/dev/null 2>&1 &&
+echo $BLUE Uninstall firewalld $NO_COLOR
+yum erase firewalld* -y 1>/dev/null 2>&1
 }
 
 
