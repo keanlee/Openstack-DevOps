@@ -30,6 +30,7 @@ deploy-compute-node
 deploy-network-node
 deploy-controller-as-network-node
 deploy-compute-as-network-node
+galera-cluster
 exit
 )
 
@@ -146,9 +147,14 @@ fi
 #----------------------------------controller node deploy ---------------------
 function controller(){
 if [[ $# -eq 0 ]];then
+    local SCRIPT=install.sh
     local VALUE=controller
 elif [[ $1 = "controller-as-network-node" ]];then 
+    local SCRIPT=install.sh
     local VALUE=controller-as-network-node
+elif [[ $1 = "galera" ]];then 
+    local SCRIPT=bin/ha_proxy.sh galera
+    local VALUE=galera
 else 
     debug "1" "function cannot support your parameter "
 fi 
@@ -157,7 +163,7 @@ for ips in ${CONTROLLER_IP[*]}; do scp -r deploy-openstack/ \
 $ips:/home/; \
     debug "$?" "Failed scp deploy script to $ips host" ; done 1>/dev/null 2>&1
 
-for ips in ${CONTROLLER_IP[*]}; do ssh -n $ips /bin/bash /home/deploy-openstack/install.sh \
+for ips in ${CONTROLLER_IP[*]}; do ssh -n $ips /bin/bash /home/deploy-openstack/${SCRIPT} \
 ${VALUE} | tee ./log/${VALUE}-$ips-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
     debug "$?" "bash remote execute on remote host <$ips> error "; done
 
@@ -265,6 +271,9 @@ done
         deploy-controller-node)
             controller
 	    ;;
+        galera-cluster)
+            controller galera
+            ;;
         deploy-compute-node)
             compute
   	    ;;

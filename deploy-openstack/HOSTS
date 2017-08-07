@@ -4,9 +4,9 @@
 
 #--------------------controller node info list -------------------
 CONTROLLER_IP=(
-192.168.1.11
-192.168.1.5
-192.168.1.10
+10.245.60.24
+
+
 )
 
 #list controller host name 

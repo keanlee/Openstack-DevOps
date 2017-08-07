@@ -53,7 +53,11 @@ source ./bin/firewall.sh
 function support_service_controller(){
 rabbitmq_configuration
 memcache
-mysql_configuration
+if [[ $(rpm -qa | grep galera | wc -l) -ge 1 ]];then 
+    echo $YELLOW Since galera cluster has already install,so skip to deploy mariadb $NO_COLOR
+else
+    mysql_configuration
+fi
 common_packages
 }
 
