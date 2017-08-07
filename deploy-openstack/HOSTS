@@ -11,9 +11,10 @@ CONTROLLER_IP=(
 
 #list controller host name 
 CONTROLLER_HOSTNAME=(
-host-192-168-1-11
-host-192-168-1-5
-host-192-168-1-10
+controller1
+controller2
+controller3
+
 )
 
 #------------------compute node info list -----------------------------

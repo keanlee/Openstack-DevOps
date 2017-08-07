@@ -16,6 +16,8 @@ CYAN="$ESC[0;36m"
 
 option=(
 help
+edit-variable-file
+edit-hosts-file
 ssh-key-all
 ssh-key-compute
 ssh-key-controller
@@ -271,6 +273,12 @@ done
         deploy-controller-node)
             controller
 	    ;;
+        edit-variable-file)
+            vim ./deploy-openstack/bin/VARIABLE 
+            ;;
+        edit-hosts-file)
+            vim ./deploy-openstack/HOSTS
+            ;;        
         deploy-galera-cluster)
             controller galera
             ;;
