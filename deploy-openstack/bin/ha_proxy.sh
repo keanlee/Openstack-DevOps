@@ -99,6 +99,8 @@ if [[ $(hostname) = ${CONTROLLER_HOSTNAME[0]} ]];then
     sed -i '/Group=mysql/a\LimitNOFILE=65535' /usr/lib/systemd/system/mariadb.service
     systemctl daemon-reload
     systemctl enable mariadb  1>/dev/null 2>&1
+    #chown mysql:mysql /var/lib/mysql/grastate.dat
+    #chown mysql:mysql  /var/lib/mysql/galera.cache
     systemctl start mariadb
         debug "$?" "Start mairadb failed on $(hostname)"
     echo $BLUE Set admin password for galera mariadb... $NO_COLOR
@@ -124,7 +126,7 @@ EOF
 #start  MariaDB Galera Cluster ...
 #service mysql start --wsrep-new-cluster
 #systemctl start mariadb --wsrep-new-cluster
-    /usr/libexec/mysqld --wsrep-new-cluster --user=root & 1>/dev/null 
+    /usr/libexec/mysqld --wsrep-new-cluster --user=mysql & 1>/dev/null 
         debug "$?" "start galera cluster on $(hostname) failed "
     sleep 2
     echo $GREEN Finshed Galera Install On $(hostname) $NO_COLOR
