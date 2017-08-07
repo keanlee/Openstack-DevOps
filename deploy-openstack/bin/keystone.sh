@@ -93,6 +93,7 @@ chown -R keystone:keystone /etc/keystone/keystone.conf
 
 echo $BLUE Populate the Identity service database ... $NO_COLOR
 su -s /bin/sh -c "keystone-manage db_sync" keystone
+get_database_size keystone ${KEYSTONE_DBPASS}
 
 echo $BLUE Initialize Fernet key repositories ... $NO_COLOR
 keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone

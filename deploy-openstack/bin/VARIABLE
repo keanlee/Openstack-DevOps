@@ -59,7 +59,7 @@ MGMT_IP=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{p
 
 
 #set mariadb password 
-MARIADB_PASSWORD=admin
+MARIADB_PASSWORD=galera_admin
 
 #set the rabbitmq host IP and password as below 
 RABBIT_HOSTS=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
