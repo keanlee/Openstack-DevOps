@@ -90,6 +90,7 @@ sed -i "s/KEYSTONE_DBPASS/$KEYSTONE_DBPASS/g" /etc/keystone/keystone.conf
 #Since copy the conf to target need to chown 
 chown -R keystone:keystone /etc/keystone/keystone.conf
 
+
 echo $BLUE Populate the Identity service database ... $NO_COLOR
 su -s /bin/sh -c "keystone-manage db_sync" keystone
 

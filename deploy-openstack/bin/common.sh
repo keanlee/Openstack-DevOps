@@ -206,16 +206,20 @@ function database_create(){
 #create database and user in mariadb for openstack component
 #$1 is the database name (comonent name and usename) 
 #$2 is password of database
+DATABASE_NAME=$(mysql -uroot -p$MARIADB_PASSWORD -e "show databases" | grep $1 | wc -l)
+if [[ ${DATABASE_NAME} -ge 1 ]];then 
+    echo $YELLOW The database $1 exists, so skip create database $1 $NO_COLOR
+else
+    echo $BLUE Create $YELLOW$1$BLUE database in mariadb  $NO_COLOR
+    local USER=$1
+        if [[ $1 = nova_api ]];then
+            USER=nova
+        fi 
 
-echo $BLUE Create $YELLOW$1$BLUE database in mariadb  $NO_COLOR
-local USER=$1
-if [[ $1 = nova_api ]];then
-    USER=nova
-fi 
-
-mysql -uroot -p$MARIADB_PASSWORD -e "CREATE DATABASE $1;GRANT ALL PRIVILEGES ON $1.* TO '$USER'@'localhost' \
+    mysql -uroot -p$MARIADB_PASSWORD -e "CREATE DATABASE $1;GRANT ALL PRIVILEGES ON $1.* TO '$USER'@'localhost' \
 IDENTIFIED BY '$2';GRANT ALL PRIVILEGES ON $1.* TO '$USER'@'%'  IDENTIFIED BY '$2';flush privileges;"  
-    debug "$?" "Create database $1 Failed "
+        debug "$?" "Create database $1 Failed "
+fi
 }
 
 
@@ -235,8 +239,12 @@ echo $BLUE Install rabbitmq-server ... $NO_COLOR
 yum install rabbitmq-server  -y 1>/dev/null
     debug "$1" "$RED Install rabbitmq-server failed $NO_COLOR"
 systemctl enable rabbitmq-server.service 1>/dev/null 2>&1 && 
-echo "${MGMT_IP} $(hostname)" >>/etc/hosts
-#sed -i "2a ${MGMT_IP}   $(hostname)" /etc/hosts
+
+if [[ $(cat /etc/hosts | grep $(hostname) | wc -l) -ge 1 ]];then 
+    echo $YELLOW Skip to add host name with ip addr to hosts file $NO_COLOR
+else
+    echo "${MGMT_IP} $(hostname)" >>/etc/hosts
+fi 
 
 systemctl start rabbitmq-server.service
     debug "$?" "Start rabbitmq-server.service Faild, Did you edit the /etc/hosts correct ? "
