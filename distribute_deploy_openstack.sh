@@ -30,7 +30,7 @@ deploy-compute-node
 deploy-network-node
 deploy-controller-as-network-node
 deploy-compute-as-network-node
-galera-cluster
+deploy-galera-cluster
 exit
 )
 
@@ -271,7 +271,7 @@ done
         deploy-controller-node)
             controller
 	    ;;
-        galera-cluster)
+        deploy-galera-cluster)
             controller galera
             ;;
         deploy-compute-node)
