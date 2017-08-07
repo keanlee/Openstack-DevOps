@@ -6,11 +6,19 @@
 #------------------------Need to edit below  first -----------------------
 
 #management network card name, both controller and all slave node (compute ,block ,network nodes) use this name for configuration 
+#This interface use for openstack Management and api network 
 MGMT_IP_DEVICE=eno2
+
+
+#private interface , you can use MGMT_IP_DEVICE if you reouce is not enough
+PRIVATE_IP_DEVICE=eno3
+
+
 
 #Add a port to the external bridge that connects to the physical external network inter-face
 #Replace PROVIDER_INTERFACE with the name of the underlying interface that handles provider networks. For example, eth1
 PROVIDER_INTERFACE=eno2
+
 
 #The VIP use for all slave node , ha_proxy also use this ip 
 CONTROLLER_VIP=10.245.58.77
@@ -54,6 +62,7 @@ br_provider=br-ex
 #MGMT_IP is both controller and all slave node management ip 
 MGMT_IP=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
 
+PRIVATE_IP=$(ip addr show ${PRIVATE_IP_DEVICE} | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
 #-----------------------------------notice------------------------------------
 #Recommend you generate them using <openssl rand -hex 10>  command 
 

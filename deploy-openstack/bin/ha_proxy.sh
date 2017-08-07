@@ -103,7 +103,7 @@ if [[ $(hostname) = ${CONTROLLER_HOSTNAME[0]} ]];then
         debug "$?" "Start mairadb failed on $(hostname)"
     echo $BLUE Set admin password for galera mariadb... $NO_COLOR
 
-mysql_secure_installation 1>/dev/null 2>&1 <<EOF
+    mysql_secure_installation 1>/dev/null 2>&1 <<EOF
 
 y
 $GALERA_PASSWORD
@@ -146,6 +146,10 @@ fi
 #mysql -uroot -p${GALERA_PASSWORD} -e "SHOW STATUS LIKE 'wsrep_%';"
 #mysql -uroot -p${GALERA_PASSWORD} -e "SHOW STATUS LIKE 'wsrep_cluster_size';"
 }
+
+
+
+
 
 
 function load_balancing(){

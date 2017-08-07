@@ -128,7 +128,7 @@ sed -i "s/controller/$CONTROLLER_VIP/g"  /etc/neutron/neutron.conf
 sed -i "s/NEUTRON_PASS/$NEUTRON_PASS/g" /etc/neutron/neutron.conf
 
 cp -f ./etc/compute/neutron/openvswitch_agent.ini  /etc/neutron/plugins/ml2
-sed -i "s/LOCAL_IP/$MGMT_IP/g" /etc/neutron/plugins/ml2/openvswitch_agent.ini
+sed -i "s/LOCAL_IP/$PRIVATE_IP/g" /etc/neutron/plugins/ml2/openvswitch_agent.ini
 sed -i "s/br-provider/${br_provider}/g"  /etc/neutron/plugins/ml2/openvswitch_agent.ini
 
 sed -i "s/NEUTRON_PASS/$NEUTRON_PASS/g"  /etc/nova/nova.conf
@@ -230,7 +230,7 @@ echo $BLUE set the metadata_workers value as ${YELLOW}$HALFcpus $NO_COLOR
 
 #The ML2 plug-in uses the Open vSwitch (OVS) mechanism (agent) to build the virtual net-working framework for instances
 cp -f ./etc/network/openvswitch_agent.ini  /etc/neutron/plugins/ml2/
-sed -i "s/LOCAL_IP/$MGMT_IP/g"  /etc/neutron/plugins/ml2/openvswitch_agent.ini
+sed -i "s/LOCAL_IP/$PRIVATE_IP/g"  /etc/neutron/plugins/ml2/openvswitch_agent.ini
 sed -i "s/br-provider/$br_provider/g" /etc/neutron/plugins/ml2/openvswitch_agent.ini
 
 chown -R root:neutron /etc/neutron/
