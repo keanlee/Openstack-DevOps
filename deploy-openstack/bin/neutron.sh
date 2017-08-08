@@ -64,12 +64,15 @@ cp -f ./etc/controller/neutron/ml2_conf.ini  /etc/neutron/plugins/ml2/ml2_conf.i
 ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini
     debug "$?" "ln -s failed for /etc/neutron/plugin.ini "
 
-echo $BLUE Populate the database ...  $NO_COLOR
-su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf \
+if [[ $(get_database_size neutron ${NEUTRON_DBPASS} | awk '{print $6}') != "NULL" ]];then
+    echo $YELLOW Skip populate Neutron database, since it\'s has populated   $NO_COLOR
+else
+    echo $BLUE Populate the database ...  $NO_COLOR
+    su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf \
 --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron  1>/dev/null 2>&1
     get_database_size neutron $NEUTRON_DBPASS
-    debug "$?" "Populate the database of neutron failed "
-
+        debug "$?" "Populate the database of neutron failed "
+fi
 
 echo $BLUE restart openstack-nova-api.service openstack-nova-scheduler.service openstack-nova-conductor.service $NO_COLOR
 systemctl restart openstack-nova-api.service openstack-nova-scheduler.service openstack-nova-conductor.service 

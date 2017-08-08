@@ -86,6 +86,7 @@ yum_repos
 
 #------------------------------Galera ----------------------------------------------------------------
 function Galera(){
+
 #this function can deploy three galera node 
 echo  "${CONTROLLER_IP[0]}   ${CONTROLLER_HOSTNAME[0]}" >>/etc/hosts
 echo  "${CONTROLLER_IP[1]}   ${CONTROLLER_HOSTNAME[1]}" >>/etc/hosts
@@ -123,10 +124,11 @@ EOF
     sed -i "s/this-host-ip/$MGMT_IP/g"  /etc/my.cnf.d/galera.cnf
     sed -i "s/cluster-nodes/${CONTROLLER_HOSTNAME[0]},${CONTROLLER_HOSTNAME[1]},${CONTROLLER_HOSTNAME[2]}/g"  /etc/my.cnf.d/galera.cnf
 
-#start  MariaDB Galera Cluster ...
 #service mysql start --wsrep-new-cluster
 #systemctl start mariadb --wsrep-new-cluster
-    /usr/libexec/mysqld --wsrep-new-cluster --user=mysql & 1>/dev/null 
+    echo $BLUE start mariadb galera cluster ...$NO_COLOR
+    #systemctl start mariadb --wsrep-new-cluster --user=mysql 1>/dev/null
+    /usr/libexec/mysqld --wsrep-new-cluster --user=mysql &  1>/dev/null 2>&1  
         debug "$?" "start galera cluster on $(hostname) failed "
     sleep 2
     echo $GREEN Finshed Galera Install On $(hostname) $NO_COLOR
@@ -139,9 +141,10 @@ else
     systemctl enable mariadb  1>/dev/null 2>&1
     sed -i '/Group=mysql/a\LimitNOFILE=65535' /usr/lib/systemd/system/mariadb.service
     systemctl daemon-reload
+    echo $BLUE start mariadb ...$NO_COLOR
     systemctl start mariadb 
         debug "$?"  "Start mariadb failed on $(hostname)"
-    echo $GREEN Finshed Galera Install On $(hostname) $NO_COLOR
+    echo $GREEN Finshed Galera Install On ${YELLOW}$(hostname) $NO_COLOR
 fi  
 
 #check status after install and configure it 
