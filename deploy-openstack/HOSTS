@@ -19,7 +19,7 @@ controller3
 
 #------------------compute node info list -----------------------------
 COMPUTE_NODE_IP=(
-10.245.28.115
+10.245.58.248
 )
 
 

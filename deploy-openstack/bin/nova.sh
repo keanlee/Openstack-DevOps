@@ -35,9 +35,9 @@ sed -i "s/NOVA_PASS/$NOVA_PASS/g" /etc/nova/nova.conf
 sed -i "s/NEUTRON_PASS/$NEUTRON_PASS/g"  /etc/nova/nova.conf
 sed -i "s/METADATA_SECRET/$METADATA_SECRET/g" /etc/nova/nova.conf
 
-if [[ $(get_database_size nova ${NOVA_DBPASS} | awk '{print $6}') != "NULL" ]];then
-    echo $YELLOW Skip populate nova database, since it\'s has populated   $NO_COLOR
-else
+#if [[ $(get_database_size nova ${NOVA_DBPASS} | awk '{print $6}') != "NULL" ]];then
+#    echo $YELLOW Skip populate nova database, since it\'s has populated   $NO_COLOR
+#else
     echo $BLUE Populate the nova_api databases $NO_COLOR
     su -s /bin/sh -c "nova-manage api_db sync" nova  1>/dev/null 2>&1
         debug "$?" "nova-manage api_db sync failed "
@@ -48,7 +48,7 @@ else
         debug "$?"  "nova-manage db sync failed "
     get_database_size nova $NOVA_DBPASS
     echo $GREEN Populate nova database success , ignore any deprecation messages in  above output $NO_COLOR
-fi
+#fi
 
 systemctl enable openstack-nova-api.service \
 openstack-nova-consoleauth.service openstack-nova-scheduler.service \

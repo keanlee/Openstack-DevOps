@@ -7,11 +7,11 @@
 
 #management network card name, both controller and all slave node (compute ,block ,network nodes) use this name for configuration 
 #This interface use for openstack Management and api network 
-MGMT_IP_DEVICE=eno2
+MGMT_IP_DEVICE=eno1
 
 
 #private interface , you can use MGMT_IP_DEVICE if you reouce is not enough
-PRIVATE_IP_DEVICE=eno3
+PRIVATE_IP_DEVICE=eno1
 
 
 
