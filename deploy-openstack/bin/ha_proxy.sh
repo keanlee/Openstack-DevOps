@@ -131,7 +131,7 @@ EOF
     /usr/libexec/mysqld --wsrep-new-cluster --user=mysql &  1>/dev/null 2>&1  
         debug "$?" "start galera cluster on $(hostname) failed "
     sleep 2
-    echo $GREEN Finshed Galera Install On $(hostname) $NO_COLOR
+    echo $GREEN Finshed Galera Install On ${YELLOW}$(hostname) $NO_COLOR
 else 
     cp -f ../etc/ha_proxy/galera.cnf /etc/my.cnf.d/
     sed -i "s/this-host-name/$(hostname)/g" /etc/my.cnf.d/galera.cnf
