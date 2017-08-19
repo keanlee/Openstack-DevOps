@@ -16,7 +16,7 @@ controller3
 
 )
 
-#------------------compute node info list -----------------------------
+#------------------compute/block node info list -----------------------------
 COMPUTE_NODE_IP=(
 10.245.59.175
 )
@@ -27,8 +27,3 @@ NETWORK_NODE_IP=(
 192.158.13.21
 )
 
-#-------------------block node info list ------------------------
-BLOCK_NODE_IP=(
-192.158.23.12
-192.158.23.32
-)

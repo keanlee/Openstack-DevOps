@@ -29,6 +29,7 @@ check-network
 deploy-all
 deploy-controller-node
 deploy-compute-node
+deploy-block-node
 deploy-network-node
 deploy-controller-as-network-node
 deploy-compute-as-network-node
@@ -67,8 +68,11 @@ $MAGENTA========================================================================
            ${MAGENTA}sh $0 deploy-controller-as-network-node
               $BLUE#to deploy controller as network node$NO_COLOR  
            
-           ${MAGENTA}sh $0 deploy-compute-as-network-node
-              $BLUE#to deploy compute as network node$NO_COLOR
+           ${MAGENTA}sh $0 deploy-controller-as-network-node
+              $BLUE#to deploy controller as network node$NO_COLOR
+          
+           ${MAGENTA}sh $0 deploy-block-node
+              $BLUE#to deploy block node$NO_COLOR
 
            ${MAGENTA}sh $0 check-controller 
               $BLUE#to check the controller node system info$NO_COLOR${MAGENTA}
@@ -180,6 +184,8 @@ if [[ $# -eq 0 ]];then
     local VALUE=compute
 elif [[ $1 = "compute-as-network-node" ]];then 
     local VALUE=compute-as-network-node
+elif [[ $1 = "block" ]];then
+    local VALUE=deploy-block-node
 else 
     debug "1" "function cannot support your parameter "
 fi 
@@ -285,6 +291,9 @@ done
         deploy-compute-node)
             compute
   	    ;;
+        deploy-block-node)
+            compute block
+            ;;
         deploy-network-node)
             network_node
 	    ;;

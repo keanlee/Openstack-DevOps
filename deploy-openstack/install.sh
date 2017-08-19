@@ -26,6 +26,7 @@ $MAGENTA================================================================
              sh $0 check
              sh $0 controller-as-network-node
              sh $0 compute-as-network-node 
+             sh $0 deploy-block-node
 ================================================================
 $NO_COLOR
 __EOF__
@@ -113,6 +114,11 @@ deploy-all-in-one)
     source ./bin/keystone.sh
     source ./bin/glance.sh
     source ./bin/nova.sh controller  
+    ;;
+deploy-block-node)
+    echo $BLUE Begin deploy block node on ${YELLOW}$(hostname)$NO_COLOR
+    support_service_common
+    source ./bin/cinder.sh  compute
     ;;
 check)
     source ./bin/system_info.sh

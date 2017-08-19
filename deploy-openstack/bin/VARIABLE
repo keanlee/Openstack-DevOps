@@ -35,6 +35,11 @@ ALLOW_IP_RANGES=10.245.0.0
 ALLOW_IP_NETMASK=255.255.255.0
 
 
+#BLOCK-NODE ONLY
+PARTITION=(
+vda
+)
+
 
 #----------------------------------------------------------------------------
 #--------------external network create -------------

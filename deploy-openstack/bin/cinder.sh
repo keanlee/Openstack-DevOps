@@ -60,29 +60,26 @@ __EOF__
 echo $BLUE Install lvm2  $NO_COLOR
 yum install lvm2 -y 1>/dev/null
 echo $BLUE Your partitions is below:      $NO_COLOR 
-lsblk
 echo $BLUE Partitioned disk: $NO_COLOR 
-cat /proc/partitions | awk '{print $4}' | sed -n '3,$p' | grep "[a-z]$"
+#cat /proc/partitions | awk '{print $4}' | sed -n '3,$p' | grep "[a-z]$"
 systemctl enable lvm2-lvmetad.service   1>/dev/null 2>&1
 systemctl start lvm2-lvmetad.service
 debug "$?" "start lvm2-lvmetad failed "
+#PARTITION=sde
+for disk in ${PARTITION[*]};do
+   echo $BLUE Create the LVM physical volume /dev/$disk: $NO_COLOR 
+   pvcreate /dev/$disk
+        debug "$?" "pvcreate /dev/$disk failed "
 
-echo $YELLOW Please choose one form above output to create the LVM physical volume $NO_COLOR
-#read 
-PARTITION=sde
-
-echo $BLUE Create the LVM physical volume /dev/$PARTITION: $NO_COLOR 
-pvcreate /dev/$PARTITION
-debug "$?" "pvcreate /dev/$PARTITION failed "
-
-echo $BLUE Create the LVM volume group cinder-volumes: $NO_COLOR
-vgcreate cinder-volumes /dev/$PARTITION
-debug "$?"  "vgcreate cinder-volumes /dev/$PARTITION failed"
+   echo $BLUE Create the LVM volume group cinder-volumes: $NO_COLOR
+   vgcreate cinder-volumes /dev/$disk
+       debug "$?"  "vgcreate cinder-volumes /dev/$disk failed"
 
 #Each item in the filter array begins with a for accept or r for reject and includes a regular expression for the device name. 
 #The array must end with r/.*/ to reject any remaining devices. You can use the vgs -vvvv command to test filters
 #refer https://docs.openstack.org/newton/install-guide-rdo/cinder-storage-install.html
-sed -i "/\# Configuration option devices\/dir./a\        filter = [ \"a/${PARTITION}/\", \"r/.*/\"]"  /etc/lvm/lvm.conf
+   sed -i "/\# Configuration option devices\/dir./a\        filter = [ \"a/${disk}/\", \"r/.*/\"]"  /etc/lvm/lvm.conf
+done 
 
 echo $BLUE Install openstack-cinder targetcli python-keystone ... $NO_COLOR
 yum install openstack-cinder targetcli python-keystone -y 1>/dev/null
