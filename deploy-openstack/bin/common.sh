@@ -223,7 +223,6 @@ fi
 }
 
 
-
 #-------------------------------rabbitmq install ----------------------------------------------
 function rabbitmq_configuration(){
 cat 2>&1 <<__EOF__
@@ -281,7 +280,6 @@ systemctl start memcached.service
 }
 
 
-
 #----------------------------create_service_credentials----------------------
 function create_service_credentials(){
 #This function need parameter :
@@ -294,77 +292,81 @@ $MAGENTA==========================================================
 ==========================================================
 $NO_COLOR
 __EOF__
+#${#CONTROLLER_IP[@]} -eq 3
 
-echo $BLUE To create the service credentials, complete these steps: $NO_COLOR 
-
-source $OPENRC_DIR/admin-openrc
-echo $BLUE create the service credentials: $NO_COLOR
-echo $BLUE Create the $2  user  $NO_COLOR
-openstack user create --domain default --password $1  $2  &&
-
-echo $BLUE Add the admin role to the $2 user and service project $NO_COLOR
-openstack role add --project service --user $2 admin
-
-echo $BLUE Create the $2 service entity $NO_COLOR
-case $2 in
-glance)
-    local SERVICE=Image
-    local SERVICE1=image
-    local PORTS=9292
-    ;;
-nova)
-    local SERVICE=Compute
-    local SERVICE1=compute
-    local PORTS=8774
-    ;;
-neutron)
-    local SERVICE=Networking
-    local SERVICE1=network 
-    local PORTS=9696
-    ;;
-cinder)
-    local SERVICE=Block Storage
-    local PORTS=8776
-    local SERVICE1=volume
-    ;;
-*)
-    debug "1" "The second parameter is the service name:nova glance neutron cinder etc,your $2 is unkown "
-    ;;
-esac 
-sleep 2
-openstack service create --name $2 --description "OpenStack ${SERVICE}" ${SERVICE1}
-    debug "$?" "openstack service $2 create failed "
-
-if [[ $2 = cinder ]];then 
-    openstack service create --name cinderv2 --description "OpenStack ${SERVICE}" volumev2
-        debug "$?" "openstack service volumev2 create failed " 
-fi
-
-echo $BLUE Create the ${YELLOW}$SERVICE${NO_COLOR}${BLUE} service API endpoints $NO_COLOR
-
-if [[ $2 = nova ]];then 
-    openstack endpoint create --region RegionOne ${SERVICE1} public http://$MGMT_IP:${PORTS}/v2.1/%\(tenant_id\)s
-    openstack endpoint create --region RegionOne ${SERVICE1} internal http://$MGMT_IP:${PORTS}/v2.1/%\(tenant_id\)s
-    openstack endpoint create --region RegionOne ${SERVICE1} admin http://$MGMT_IP:${PORTS}/v2.1/%\(tenant_id\)s
-        debug "$?" "openstack endpoint create $2 failed "
-
-elif [[ $2 = cinder ]];then
-    openstack endpoint create --region RegionOne ${SERVICE1} public http://$MGMT_IP:${PORTS}/v1/%\(tenant_id\)s
-    openstack endpoint create --region RegionOne ${SERVICE1} internal http://$MGMT_IP:${PORTS}/v1/%\(tenant_id\)s
-    openstack endpoint create --region RegionOne ${SERVICE1} admin http://$MGMT_IP:${PORTS}/v1/%\(tenant_id\)s
-        debug "$?" "openstack endpoint create $2 failed "
-
-    openstack endpoint create --region RegionOne volumev2 public http://$MGMT_IP:${PORTS}/v2/%\(tenant_id\)s
-    openstack endpoint create --region RegionOne volumev2 internal http://$MGMT_IP:${PORTS}/v2/%\(tenant_id\)s
-    openstack endpoint create --region RegionOne volumev2 admin http://$MGMT_IP:${PORTS}/v2/%\(tenant_id\)s
-        debug "$?" "openstack endpoint create $2 failed "
-
+if [[ ${MGMT_IP} != ${CONTROLLER_IP[0]} ]];then 
+    echo $YELLOW Skip to create the service credentials $NO_COLOR
 else 
-    openstack endpoint create --region RegionOne ${SERVICE1} public http://$MGMT_IP:${PORTS}
-    openstack endpoint create --region RegionOne ${SERVICE1} internal http://$MGMT_IP:${PORTS}
-    openstack endpoint create --region RegionOne ${SERVICE1} admin http://$MGMT_IP:${PORTS}
-        debug "$?" "openstack endpoint create $2 failed "
-fi 
-echo $GREEN openstack ${YELLOW}$2${GREEN} endpoint create success $NO_COLOR 
+    echo $BLUE To create the service credentials, complete these steps: $NO_COLOR 
+    source $OPENRC_DIR/admin-openrc
+    echo $BLUE create the service credentials: $NO_COLOR
+    echo $BLUE Create the $2  user  $NO_COLOR
+    openstack user create --domain default --password $1  $2  &&
+
+    echo $BLUE Add the admin role to the $2 user and service project $NO_COLOR
+    openstack role add --project service --user $2 admin
+
+    echo $BLUE Create the $2 service entity $NO_COLOR
+    case $2 in
+    glance)
+        local SERVICE=Image
+        local SERVICE1=image
+        local PORTS=9292
+        ;;
+    nova)
+        local SERVICE=Compute
+        local SERVICE1=compute
+        local PORTS=8774
+        ;;
+    neutron)
+        local SERVICE=Networking
+        local SERVICE1=network 
+        local PORTS=9696
+        ;;
+    cinder)
+        local SERVICE=Block Storage
+        local PORTS=8776
+        local SERVICE1=volume
+        ;;
+    *)
+        debug "1" "The second parameter is the service name:nova glance neutron cinder etc,your $2 is unkown "
+        ;;
+    esac 
+    sleep 2
+    openstack service create --name $2 --description "OpenStack ${SERVICE}" ${SERVICE1}
+        debug "$?" "openstack service $2 create failed "
+
+    if [[ $2 = cinder ]];then 
+        openstack service create --name cinderv2 --description "OpenStack ${SERVICE}" volumev2
+            debug "$?" "openstack service volumev2 create failed " 
+    fi
+
+    echo $BLUE Create the ${YELLOW}$SERVICE${NO_COLOR}${BLUE} service API endpoints $NO_COLOR
+
+    if [[ $2 = nova ]];then 
+        openstack endpoint create --region RegionOne ${SERVICE1} public http://$MGMT_IP:${PORTS}/v2.1/%\(tenant_id\)s
+        openstack endpoint create --region RegionOne ${SERVICE1} internal http://$MGMT_IP:${PORTS}/v2.1/%\(tenant_id\)s
+        openstack endpoint create --region RegionOne ${SERVICE1} admin http://$MGMT_IP:${PORTS}/v2.1/%\(tenant_id\)s
+            debug "$?" "openstack endpoint create $2 failed "
+
+    elif [[ $2 = cinder ]];then
+        openstack endpoint create --region RegionOne ${SERVICE1} public http://$MGMT_IP:${PORTS}/v1/%\(tenant_id\)s
+        openstack endpoint create --region RegionOne ${SERVICE1} internal http://$MGMT_IP:${PORTS}/v1/%\(tenant_id\)s
+        openstack endpoint create --region RegionOne ${SERVICE1} admin http://$MGMT_IP:${PORTS}/v1/%\(tenant_id\)s
+            debug "$?" "openstack endpoint create $2 failed "
+
+        openstack endpoint create --region RegionOne volumev2 public http://$MGMT_IP:${PORTS}/v2/%\(tenant_id\)s
+        openstack endpoint create --region RegionOne volumev2 internal http://$MGMT_IP:${PORTS}/v2/%\(tenant_id\)s
+        openstack endpoint create --region RegionOne volumev2 admin http://$MGMT_IP:${PORTS}/v2/%\(tenant_id\)s
+            debug "$?" "openstack endpoint create $2 failed "
+
+    else 
+        openstack endpoint create --region RegionOne ${SERVICE1} public http://$MGMT_IP:${PORTS}
+        openstack endpoint create --region RegionOne ${SERVICE1} internal http://$MGMT_IP:${PORTS}
+        openstack endpoint create --region RegionOne ${SERVICE1} admin http://$MGMT_IP:${PORTS}
+            debug "$?" "openstack endpoint create $2 failed "
+    fi 
+    echo $GREEN openstack ${YELLOW}$2${GREEN} endpoint create success $NO_COLOR 
+fi
 }
 

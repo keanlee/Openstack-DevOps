@@ -25,10 +25,16 @@ echo $BLUE restart httpd.service and memcached.service $NO_COLOR
 systemctl restart httpd.service memcached.service  
     debug "$?" "systemctl restart httpd.service memcached.service Failed "
 
-echo $BLUE Create flavor for openstack user ...$NO_COLOR
-openstack flavor create --id 0 --vcpus 1 --ram 512 --disk 10  m0.nano
-openstack flavor create --id 1 --vcpus 1 --ram 1024 --disk 20  m1.nano
-    debug "$?"  "opnstack flavor create failed "
+source  $OPENRC_DIR/admin-openrc
+if [[ $(openstack flavor list | grep True | wc -l) -ge 2 ]];then 
+    echo $YELLOW Base flaovor has already create $NO_COLOR
+else
+    echo $BLUE Create flavor for openstack user ...$NO_COLOR
+    openstack flavor create --id 0 --vcpus 1 --ram 512 --disk 10  m0.nano
+    openstack flavor create --id 1 --vcpus 1 --ram 1024 --disk 20  m1.nano
+        debug "$?"  "opnstack flavor create failed "
+fi
+
 }
 dashboard
 cat 2>&1 <<__EOF__
@@ -38,7 +44,7 @@ $GREEN==========================================================================
      You can log in the dasboard with below info:
                             domain: default
                             user: admin 
-                            password: ${ADMIN_PASS}
+                            password: ${YELLOW}${ADMIN_PASS}
 
 =====================================================================================
 $NO_COLOR

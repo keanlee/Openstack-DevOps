@@ -35,7 +35,6 @@ if [[ $1 -ne 0 ]]; then
 fi
 }
 source ./VARIABLE
-source ../HOSTS
 
 #---------------------------initialize env ------------------------------------
 function initialize_env(){

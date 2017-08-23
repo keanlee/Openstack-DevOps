@@ -204,7 +204,7 @@ yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitc
 
 #add network node on controller or compute node  
 if [[ $1 = "controller" || $1 = "compute" ]];then 
-    break
+    echo $YELLOW Add network role to $1 node $NO_COLOR
 else 
     echo $BLUE Copy and edit configuration file of network node $NO_COLOR 
     cp -f ./etc/network/neutron.conf  /etc/neutron

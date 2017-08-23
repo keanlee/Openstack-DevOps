@@ -65,8 +65,6 @@ __EOF__
 
 source $OPENRC_DIR/admin-openrc
 #wget http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img   &&
-
-
 #glance image-create --name cirros --file /tmp/cirros-0.3.4-x86_64-disk.img --disk-format qcow2 --container-format bare --progress
 echo $BLUE Upload the image to the Image service using the QCOW2 disk format,\
 bare container format, and public visibility so all projects can access it $NO_COLOR
@@ -77,7 +75,7 @@ openstack image create "cirros" \
 --public
     debug "$?" "Upload image to glance failed"
 
-if [[  $(openstack image list | grep cirros | wc -l) = 1 ]];then
+if [[  $(openstack image list | grep cirros | wc -l) -ge 1 ]];then
     echo $GREEN Upload image cirros Success $NO_COLOR
 else
     debug "1" " Upload image cirros to glance Failed"
@@ -93,7 +91,13 @@ $NO_COLOR
 __EOF__
 
 glance_main
-verify_glance
+source $OPENRC_DIR/admin-openrc
+
+if [[ $(openstack image list | grep cirros | wc -l) -ge 1 ]];then 
+    echo $YELLOW Skip to verify glance $NO_COLOR
+else
+    verify_glance
+fi
 
 cat 2>&1 <<__EOF__
 $GREEN===================================================================================

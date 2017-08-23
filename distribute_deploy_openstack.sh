@@ -17,7 +17,7 @@ CYAN="$ESC[0;36m"
 option=(
 help
 edit-variable-file
-edit-hosts-file
+edit-repo-file
 ssh-key-all
 ssh-key-compute
 ssh-key-controller
@@ -37,7 +37,7 @@ deploy-galera-cluster
 exit
 )
 
-source ./deploy-openstack/HOSTS
+source ./deploy-openstack/bin/VARIABLE
 
 debug(){
 if [[ $1 -ne 0 ]]; then
@@ -282,9 +282,9 @@ done
         edit-variable-file)
             vim ./deploy-openstack/bin/VARIABLE 
             ;;
-        edit-hosts-file)
-            vim ./deploy-openstack/HOSTS
-            ;;        
+        edit-repo-file)
+            vim ./deploy-openstack/repos/infinistack.repo   
+           ;; 
         deploy-galera-cluster)
             controller galera
             ;;

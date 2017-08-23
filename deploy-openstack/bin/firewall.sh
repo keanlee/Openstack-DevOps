@@ -14,12 +14,6 @@
 function iptabels(){
 iptables -I  INPUT -p tcp --dport 22    -j ACCEPT
 iptables -A  INPUT -p tcp --dport 80    -j ACCEPT
-#add rabbitmq port 
-iptables -A  INPUT -p tcp --dport 5672 -j ACCEPT
-#add rabbitmq web plugin port 
-iptables -A  INPUT -p tcp --dport 15672 -j ACCEPT
-#memcached
-iptables -A  INPUT -p tcp --dport 11211 -j ACCEPT
 
 #For Galera mariadb 
 #On 3306, Galera Cluster uses TCP for database client connections and State Snapshot Transfers methods that require the client, (that is, mysqldump).
@@ -30,23 +24,54 @@ iptables -A  INPUT -p tcp --dport 3306 -j ACCEPT
 iptables -A  INPUT -p tcp --dport 4567 -j ACCEPT
 iptables -A  INPUT -p tcp --dport 4568 -j ACCEPT
 iptables -A  INPUT -p tcp --dport 4444 -j ACCEPT
+iptables -A  INPUT -p tcp --dport 9200 -j ACCEPT
 
-#----------neutron-----------------------
-iptables -A  INPUT -p tcp --dport 9696 -j ACCEPT
-#----------keystone--------------------
-iptables -A  INPUT -p tcp --dport 35357 -j ACCEPT
-iptables -A  INPUT -p tcp --dport 5000 -j ACCEPT
-#----------cinder---------------------
-#cinderv2
-iptables -A  INPUT -p tcp --dport 8776 -j ACCEPT
-#------------glance---------------------
-iptables -A  INPUT -p tcp --dport 9292 -j ACCEPT
+
+#----------------for haproxy -----------
+iptables -A  INPUT -p tcp --dport 8888  -j ACCEPT
+iptables -A  INPUT -p tcp --dport 10000 -j ACCEPT
+iptables -A  INPUT -p tcp --dport 10002 -j ACCEPT
+iptables -A  INPUT -p tcp --dport 10004 -j ACCEPT
+iptables -A  INPUT -p tcp --dport 10006 -j ACCEPT
+iptables -A  INPUT -p tcp --dport 10008 -j ACCEPT
+iptables -A  INPUT -p tcp --dport 10010 -j ACCEPT
+iptables -A  INPUT -p tcp --dport 10012 -j ACCEPT
+
+if [[ $1 = "controller" ]];then 
+#-------------------add rabbitmq port 
+    iptables -A  INPUT -p tcp --dport 5672 -j ACCEPT
+#-------------------add rabbitmq web plugin port 
+    iptables -A  INPUT -p tcp --dport 15672 -j ACCEPT
+#--------------------memcached
+    iptables -A  INPUT -p tcp --dport 11211 -j ACCEPT
+
+    iptables -A  INPUT -p tcp --dport 80 -j ACCEPT
 #--------------nova--------------------
-iptables -A  INPUT -p tcp --dport 8774 -j ACCEPT
-#-------------zabbix agent -------------------
-iptables -A  INPUT -p tcp --dport 10050 -j ACCEPT
-iptables -A  INPUT -p tcp --dport 10051 -j ACCEPT
-iptables-save > /etc/sysconfig/iptables
+    iptables -A  INPUT -p tcp --dport 8774 -j ACCEPT
+    iptables -A  INPUT -p tcp --dport 8775 -j ACCEPT
+    iptables -A  INPUT -p tcp --dport 6080 -j ACCEPT
+#----------neutron-----------------------
+    iptables -A  INPUT -p tcp --dport 9696 -j ACCEPT
+    iptables -A  INPUT -p tcp --dport 3260 -j ACCEPT
+#----------cinder---------------------
+    iptables -A  INPUT -p tcp --dport 8776 -j ACCEPT
+#------------glance---------------------
+    iptables -A  INPUT -p tcp --dport 9292 -j ACCEPT
+    iptables -A  INPUT -p tcp --dport 9191 -j ACCEPT
+    iptables -A  INPUT -p tcp --dport 6200,6201,873 -j ACCEPT
+#----------keystone--------------------
+    iptables -A  INPUT -p tcp --dport 5000,35357 -j ACCEPT
+    iptables -A  INPUT -p tcp --dport 4789 -j ACCEPT
+    iptables -A  INPUT -p tcp --dport 11211 -j ACCEPT
+    iptables -A  INPUT -p tcp --dport 8777 -j ACCEPT
+    iptables-save > /etc/sysconfig/iptables
+fi
+
+#for compute 
+iptables -A  INPUT -p tcp --dport 16509 -j ACCEPT
+iptables -A  INPUT -p tcp --dport 5900 -j ACCEPT
+iptables -A  INPUT -p tcp --dport 4789 -j ACCEPT
+
 }
 
 function firewalld(){

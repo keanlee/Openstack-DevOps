@@ -5,6 +5,34 @@
 #----------------Edit the below variable to adapt your Env---------------
 #------------------------Need to edit below  first -----------------------
 
+#---------------Please Follow The Example To List The Ip Address 
+
+#--------------------controller node info list -------------------
+CONTROLLER_IP=(
+10.245.32.83
+
+)
+
+#list controller host name,for galera cluster that must list the hostname here: 
+CONTROLLER_HOSTNAME=(
+controller1
+controller2
+controller3
+
+)
+
+#------------------compute/block node info list -----------------------------
+COMPUTE_NODE_IP=(
+10.245.59.175
+)
+
+
+#-----------------network node info list -------------------------------
+NETWORK_NODE_IP=(
+192.158.13.21
+)
+
+
 #management network card name, both controller and all slave node (compute ,block ,network nodes) use this name for configuration 
 #This interface use for openstack Management and api network 
 MGMT_IP_DEVICE=eno1
@@ -35,7 +63,7 @@ ALLOW_IP_RANGES=10.245.0.0
 ALLOW_IP_NETMASK=255.255.255.0
 
 
-#BLOCK-NODE ONLY
+#BLOCK-NODE ONLY---just support one disk on each block node right now 
 PARTITION=(
 vda
 )
