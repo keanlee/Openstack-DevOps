@@ -44,7 +44,7 @@ $GREEN==========================================================================
      You can log in the dasboard with below info:
                             domain: default
                             user: admin 
-                            password: ${YELLOW}${ADMIN_PASS}
+                            password: ${YELLOW}${ADMIN_PASS}${GREEN}
 
 =====================================================================================
 $NO_COLOR

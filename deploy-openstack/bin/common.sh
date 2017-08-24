@@ -248,14 +248,25 @@ fi
 systemctl start rabbitmq-server.service
     debug "$?" "Start rabbitmq-server.service Faild, Did you edit the /etc/hosts correct ? "
 
-rabbitmqctl add_user openstack $RABBIT_PASS  1>/dev/null
-echo $BLUE Permit configuration, write, and read access for the openstack user ...$NO_COLOR
-rabbitmqctl set_permissions openstack ".*" ".*" ".*"  1>/dev/null
+if [[ ${MGMT_IP} != ${CONTROLLER_IP[0]} ]];then
+    echo $BLUE Rabbitmq cluster deploy ... $NO_COLOR
+    scp root@${CONTROLLER_IP[0]}:/var/lib/rabbitmq/.erlang.cookie  /var/lib/rabbitmq/   1>/dev/null  &&
+    chown rabbitmq:rabbitmq /var/lib/rabbitmq/.erlang.cookie
+    chmod 400 /var/lib/rabbitmq/.erlang.cookie   &&
+    rabbitmqctl stop_app   1>/dev/null  &&
+    rabbitmqctl join_cluster rabbit@${CONTROLLER_HOSTNAME[0]}  1>/dev/null  &&
+    rabbitmqctl start_app  1>/dev/null
+else
+    rabbitmqctl add_user openstack $RABBIT_PASS  1>/dev/null
+    echo $BLUE Permit configuration, write, and read access for the openstack user ...$NO_COLOR
+    rabbitmqctl set_permissions openstack ".*" ".*" ".*"  1>/dev/null
+fi
 
+sed -i '/Group=rabbitmq/a\LimitNOFILE=10240' /usr/lib/systemd/system/rabbitmq-server.service
+systemctl daemon-reload
 #rabbitmq-plugins list
 #enable rabbitmq_management boot after the os boot 
 #Use rabbitmq-web 
-
 rabbitmq-plugins enable rabbitmq_management 1>/dev/null 2>&1
 systemctl restart rabbitmq-server.service &&
     debug "$?" "Restart rabbitmq-server.service fail after enable rabbitmq_management "
@@ -278,7 +289,6 @@ systemctl enable memcached.service   1>/dev/null 2>&1 &&
 systemctl start memcached.service
     debug "$?"  "Start memcached.service failed "
 }
-
 
 #----------------------------create_service_credentials----------------------
 function create_service_credentials(){

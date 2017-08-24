@@ -277,7 +277,13 @@ select OPTION in ${option[*]};do
 done
     case $OPTION in
         deploy-controller-node)
-            controller
+            if [[ ${#CONTROLLER_IP[*]} -ge 3 ]];then
+                controller galera
+                controller
+            else
+                controller
+            fi
+
 	    ;;
         edit-variable-file)
             vim ./deploy-openstack/bin/VARIABLE 

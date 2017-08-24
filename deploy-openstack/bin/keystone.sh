@@ -93,7 +93,7 @@ yum install openstack-keystone httpd mod_wsgi -y  1>/dev/null
 
 #Edit keystone configuration file 
 cp -f ./etc/controller/keystone.conf   /etc/keystone/
-sed -i "s/controller/$CONTROLLER_VIP/g"  /etc/keystone/keystone.conf
+sed -i "s/controller/${MGMT_IP}/g"  /etc/keystone/keystone.conf
 sed -i "s/KEYSTONE_DBPASS/$KEYSTONE_DBPASS/g" /etc/keystone/keystone.conf
 
 #Since copy the conf to target need to chown 
@@ -129,6 +129,8 @@ systemctl start httpd.service
 
 if [[ ${MGMT_IP} != ${CONTROLLER_IP[0]} ]];then                                                                                
     echo $YELLOW Skip to create keystone administrative account $NO_COLOR
+#---execute this function to create openrc file 
+    openrc_file_create                           
 else
 #----------execute function to create keystone administrative account 
     create_keystone_administrative_account
@@ -148,13 +150,11 @@ openstack --os-auth-url http://${CONTROLLER_VIP}:5000/v3 --os-project-domain-nam
 --os-user-domain-name default --os-project-name demo --os-username demo \
 --os-auth-type password --os-password ${DEMO_PASS} token issue   &&
    echo $GREEN Verify operation of the Identity service success $NO_COLOR  &&
+   openrc_file_create 
 fi
 
 echo $BLUE Check the admin-openrc file which location at ${YELLOW}$OPENRC_DIR${NO_COLOR}${BLUE} whether or not work $NO_COLOR 
 source  $OPENRC_DIR/admin-openrc 
-
-#execute this function to create openrc file 
-openrc_file_create                           
 
 #Request an authentication token
 openstack token issue
@@ -172,8 +172,16 @@ $MAGENTA================================================================
 $NO_COLOR
 __EOF__
 
- 
 keystone_main
+
+#add credential-keys and fernet-keys support for the other two node
+if [[ ${MGMT_IP} != ${CONTROLLER_IP[0]} ]];then
+    echo $BLUE Make sure that all controller has same credential-keys and frenet-keys $NO_COLOR
+    scp -r root@${CONTROLLER_IP[0]}:/etc/keystone/credential-keys/ /etc/keystone/
+    scp -r root@${CONTROLLER_IP[0]}:/etc/keystone/fernet-keys/ /etc/keystone/
+    chown -R keystone:keystone /etc/keystone/credential-keys/
+    chown -R keystone:keystone /etc/keystone/fernet-keys/ 
+fi
 
 cat 2>&1 <<__EOF__
 $GREEN================================================================================================================

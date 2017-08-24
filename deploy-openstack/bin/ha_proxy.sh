@@ -86,7 +86,32 @@ yum_repos
 #------------------------------Galera ----------------------------------------------------------------
 function Galera(){
 
-#this function can deploy three galera node 
+if [[ -e ~/.ssh/id_rsa.pub ]];then
+    echo $BLUE the id_rsa.pub file has already exist $NO_COLOR
+else
+    echo $BLUE Generating public/private rsa key pair: $NO_COLOR
+    ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa  1>/dev/null
+    #-N "" tells it to use an empty passphrase (the same as two of the enters in an interactive script)
+    #-f my.key tells it to store the key into my.key (change as you see fit).
+fi
+
+which sshpass 1>/dev/null 2>&1 || rpm -ivh ../lib/sshpass* 1>/dev/null 2>&1
+echo $BLUE copy public key to controller hosts:  $NO_COLOR
+if [[ -e  ~/.ssh/known_hosts ]];then
+    echo $BLUE know_hosts file exist $NO_COLOR
+else
+    touch ~/.ssh/known_hosts
+fi
+
+for ips in ${CONTROLLER_IP[*]};
+    do ssh-keyscan $ips >> ~/.ssh/known_hosts ;
+done
+
+for ips in ${CONTROLLER_IP[*]};
+   do sshpass -p ${PASSWORD_EACH_NODE} ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
+done
+
+#add hostname with ip addr to hosts file 
 echo  "${CONTROLLER_IP[0]}   ${CONTROLLER_HOSTNAME[0]}" >>/etc/hosts
 echo  "${CONTROLLER_IP[1]}   ${CONTROLLER_HOSTNAME[1]}" >>/etc/hosts
 echo  "${CONTROLLER_IP[2]}   ${CONTROLLER_HOSTNAME[2]}" >>/etc/hosts
@@ -118,7 +143,7 @@ EOF
     debug "$?" "GALERA admin password configuration failed"
     systemctl stop mariadb
 
-    cp -f ../etc/ha_proxy/galera.cnf /etc/my.cnf.d/
+    cp -f ../etc/HA/galera.cnf /etc/my.cnf.d/
     sed -i "s/this-host-name/$(hostname)/g" /etc/my.cnf.d/galera.cnf
     sed -i "s/this-host-ip/$MGMT_IP/g"  /etc/my.cnf.d/galera.cnf
     sed -i "s/cluster-nodes/${CONTROLLER_HOSTNAME[0]},${CONTROLLER_HOSTNAME[1]},${CONTROLLER_HOSTNAME[2]}/g"  /etc/my.cnf.d/galera.cnf
@@ -132,7 +157,7 @@ EOF
     sleep 2
     echo $GREEN Finshed Galera Install On ${YELLOW}$(hostname) $NO_COLOR
 else 
-    cp -f ../etc/ha_proxy/galera.cnf /etc/my.cnf.d/
+    cp -f ../etc/HA/galera.cnf /etc/my.cnf.d/
     sed -i "s/this-host-name/$(hostname)/g" /etc/my.cnf.d/galera.cnf
     sed -i "s/this-host-ip/$MGMT_IP/g"  /etc/my.cnf.d/galera.cnf
     sed -i "s/cluster-nodes/${CONTROLLER_HOSTNAME[0]},${CONTROLLER_HOSTNAME[1]},${CONTROLLER_HOSTNAME[2]}/g"  /etc/my.cnf.d/galera.cnf
