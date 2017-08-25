@@ -253,9 +253,14 @@ if [[ ${MGMT_IP} != ${CONTROLLER_IP[0]} ]];then
     scp root@${CONTROLLER_IP[0]}:/var/lib/rabbitmq/.erlang.cookie  /var/lib/rabbitmq/   1>/dev/null  &&
     chown rabbitmq:rabbitmq /var/lib/rabbitmq/.erlang.cookie
     chmod 400 /var/lib/rabbitmq/.erlang.cookie   &&
+    systemctl restart rabbitmq-server.service
     rabbitmqctl stop_app   1>/dev/null  &&
     rabbitmqctl join_cluster rabbit@${CONTROLLER_HOSTNAME[0]}  1>/dev/null  &&
     rabbitmqctl start_app  1>/dev/null
+    if [[ ${MGMT_IP} = ${CONTROLLER_IP[2]} ]];then 
+        echo $BLUE Check the rabbitmq cluster status: $NO_COLOR
+        rabbitmqctl cluster_status
+    fi
 else
     rabbitmqctl add_user openstack $RABBIT_PASS  1>/dev/null
     echo $BLUE Permit configuration, write, and read access for the openstack user ...$NO_COLOR

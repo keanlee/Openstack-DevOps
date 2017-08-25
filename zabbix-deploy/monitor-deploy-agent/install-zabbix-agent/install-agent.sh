@@ -57,6 +57,7 @@ if [[ $STATUS = active ]];then
     firewall-cmd --zone=public --add-port=10050/tcp --permanent 1>/dev/null 2>&1
     firewall-cmd --reload  1>/dev/null 2>&1
 else
+    iptables -I INPUT  -p tcp -m tcp --dport 10050 -j ACCEPT
     iptables -A  INPUT -p tcp --dport 10050 -j ACCEPT
     iptables-save > /etc/sysconfig/iptables
 fi

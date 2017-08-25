@@ -182,11 +182,16 @@ fi
 
 
 function load_balancing(){
-yum install xinetd
+yum install xinetd  -y 1>/dev/null 
 # load-balancing client
-yum install haproxy
+yum install haproxy keepalived  -y 1>/dev/null
+cp -f ../etc/HA/haproxy.cfg  /etc/haproxy/
 
-yum install keepalived 
+#Configure the kernel parameter to allow non-local IP binding. 
+#This allows running HAProxy instances to bind to a VIP for failover. 
+echo "net.ipv4.ip_nonlocal_bind = 1" >> /etc/sysctl.conf
+sysctl -p
+
 }
 
 function rabbitmq_ha(){
