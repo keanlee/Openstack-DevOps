@@ -17,7 +17,6 @@
 #--------------------controller node's ip list here -------------------
 #galera node's ip list here
 CONTROLLER_IP=(
-
 )
 #list controller host name,for galera cluster that must list the hostname here: 
 CONTROLLER_HOSTNAME=(

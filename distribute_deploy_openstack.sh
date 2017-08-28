@@ -306,13 +306,20 @@ select OPTION in ${option[*]};do
 done
     case $OPTION in
         deploy-controller-node)
-            if [[ ${#CONTROLLER_IP[*]} -ge 3 ]];then
+            if [[ ${#CONTROLLER_IP[*]} -ge 3 ]] && [[ ${#CONTROLLER_HOSTNAME[*]} -ge 3 ]];then
                 controller galera
                 controller
-            else
-                controller
+            else 
+                continue
             fi
-	    ;;
+            if [[ $(echo $CONTROLLER_VIP | awk -F "." '{print $1 $2 $3}') -eq $(echo ${CONTROLLER_IP[0]} | awk -F "." '{print $1 $2 $3}' ) ]];then
+                controller
+            elif [[ ${#COMPUTE_NODE_IP[*]} -eq 0 ]] && [[ ${#CONTROLLER_IP[*]} -eq 1 ]];then 
+                controller
+            else 
+                debug "1" "The ${YELLOW}CONTROLLER_VIP${RED} must be a network segment with controller's ip"
+            fi
+            ;;
         Edit-env-variable)
             vim ./deploy-openstack/bin/VARIABLE 
             ;;
