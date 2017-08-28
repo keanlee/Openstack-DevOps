@@ -258,6 +258,8 @@ if [[ ${MGMT_IP} != ${CONTROLLER_IP[0]} ]];then
     rabbitmqctl join_cluster rabbit@${CONTROLLER_HOSTNAME[0]}  1>/dev/null  &&
     rabbitmqctl start_app  1>/dev/null
     if [[ ${MGMT_IP} = ${CONTROLLER_IP[2]} ]];then 
+        echo $BLUE Set the ha-mode policy key: $NO_COLOR
+        rabbitmqctl set_policy ha-all '^(?!amq\.).*' '{"ha-mode": "all"}'
         echo $BLUE Check the rabbitmq cluster status: $NO_COLOR
         rabbitmqctl cluster_status
     fi
@@ -287,6 +289,11 @@ function memcache(){
 #The Identity service authentication mechanism for services uses Memcached to cache tokens. 
 #The memcached service typically runs on the controller node. 
 #For production deployments, we recommend enabling a combination of firewalling, authentication, and encryption to secure it.
+
+#For HA
+#Most OpenStack services can use Memcached to store ephemeral data such as tokens. Although Memcached does 
+#not support typical forms of redundancy such as clustering, OpenStack services can use almost any number of 
+#instances by configuring multiple hostnames or IP addresses.
 echo $BLUE Install memcached python-memcached ... $NO_COLOR 
 yum install memcached python-memcached -y 1>/dev/null
 sed -i "s/127.0.0.1/$MGMT_IP/g" /etc/sysconfig/memcached

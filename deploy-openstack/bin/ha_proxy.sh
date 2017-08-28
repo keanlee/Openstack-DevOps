@@ -89,7 +89,7 @@ function Galera(){
 if [[ -e ~/.ssh/id_rsa.pub ]];then
     echo $BLUE the id_rsa.pub file has already exist $NO_COLOR
 else
-    echo $BLUE Generating public/private rsa key pair: $NO_COLOR
+    echo $BLUE Generating public/private rsa key pair $NO_COLOR
     ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa  1>/dev/null
     #-N "" tells it to use an empty passphrase (the same as two of the enters in an interactive script)
     #-f my.key tells it to store the key into my.key (change as you see fit).
@@ -183,9 +183,21 @@ fi
 
 function load_balancing(){
 yum install xinetd  -y 1>/dev/null 
+
 # load-balancing client
+#Generally, we use round-robin to distribute load amongst instances of active/active services. 
+#Alternatively, Galera uses stick-table options to ensure that incoming connection to virtual IP (VIP) are 
+#directed to only one of the available back ends. This helps avoid lock contention and prevent deadlocks, although 
+#Galera can run active/active. Used in combination with 
+#the httpchk option, this ensure only nodes that are in sync with their peers are allowed to handle requests.
 yum install haproxy keepalived  -y 1>/dev/null
 cp -f ../etc/HA/haproxy.cfg  /etc/haproxy/
+
+cat >> /etc/sysconfig/clustercheck __EOF__
+
+
+__EOF__
+
 
 #Configure the kernel parameter to allow non-local IP binding. 
 #This allows running HAProxy instances to bind to a VIP for failover. 

@@ -14,30 +14,34 @@
 #
 ###########################################################################################################
 
-#--------------------controller node info list -------------------
+#--------------------controller node's ip list here -------------------
+#galera node's ip list here
 CONTROLLER_IP=(
-10.245.32.83
 
 )
-
 #list controller host name,for galera cluster that must list the hostname here: 
 CONTROLLER_HOSTNAME=(
-controller1
-controller2
-controller3
 
 )
 
-#------------------compute/block node info list -----------------------------
+
+#------------------Compute node ip list  here -----------------------------
 COMPUTE_NODE_IP=(
-10.245.59.175
+
 )
 
 
-#-----------------network node info list -------------------------------
+#-----------------Network node ip list here -------------------------------
+# Sigle network list here 
 NETWORK_NODE_IP=(
-192.158.13.21
+
 )
+
+#------------------Block node ip list here --------
+BLOCK_NODE_IP=(
+
+)
+
 
 ###########################################################################################################
 #
@@ -49,18 +53,18 @@ NETWORK_NODE_IP=(
 
 #management network card name, both controller and all slave node (compute ,block ,network nodes) use this name for configuration 
 #This interface use for openstack Management and api network 
-MGMT_IP_DEVICE=eno1
+MGMT_IP_DEVICE=eth0
 
 
-#private interface , you can use MGMT_IP_DEVICE if you reouce is not enough
-PRIVATE_IP_DEVICE=eno1
+#private network interface , you can use MGMT_IP_DEVICE if you reouce is not enough
+PRIVATE_IP_DEVICE=eth0
 
 #Add a port to the external bridge that connects to the physical external network inter-face
 #Replace PROVIDER_INTERFACE with the name of the underlying interface that handles provider networks. For example, eth1
-PROVIDER_INTERFACE=eno2
+PROVIDER_INTERFACE=eth0
 
 
-#The VIP use for all slave node , ha_proxy also use this ip 
+#The VIP use for all slave node , HA also use this Virtual Ip Address
 CONTROLLER_VIP=10.245.58.77
 
 #NTP server IP
@@ -77,11 +81,6 @@ vda
 
 #set the dns server ip here 
 DNS_SERVER=10.245.255.120
-
-
-
-
-
 
 
 
