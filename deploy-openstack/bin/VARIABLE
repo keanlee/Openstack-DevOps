@@ -72,11 +72,13 @@ PROVIDER_INTERFACE=eth0
 #For no controller ha mode,please use controller ip as VIP
 CONTROLLER_VIP=10.245.58.77
 #router id for the keepavlied 
+
+#The range is: 1-255
 ROUTER_ID=123
 PRIORITY_NUMS=(
 100
-98
-87
+60
+43
 )
 
 #NTP server IP
@@ -90,7 +92,7 @@ PASSWORD_EACH_NODE=iforgot
 #BLOCK-NODE ONLY---
 #Note:  just support one disk on each block node right now 
 PARTITION=(
-vda
+vdb
 )
 
 #set the dns server ip here 
