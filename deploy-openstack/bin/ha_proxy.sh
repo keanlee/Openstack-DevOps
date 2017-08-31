@@ -14,74 +14,13 @@
 
 #semanage permissive -a mysqld_t
 
-function __main__(){
 cd $(cd $(dirname $0); pwd)
 
-ESC=$(printf "\e")
-GREEN="$ESC[0;32m"
-NO_COLOR="$ESC[0;0m"
-RED="$ESC[0;31m"
-MAGENTA="$ESC[0;35m"
-YELLOW="$ESC[0;33m"
-BLUE="$ESC[0;34m"
-WHITE="$ESC[0;37m"
-#PURPLE="$ESC[0;35m"
-CYAN="$ESC[0;36m"
-
-function debug(){
-if [[ $1 -ne 0 ]]; then
-    echo $RED ERROR:  $2 $NO_COLOR
-    exit 1
-fi
-}
-source ./VARIABLE
-
-#---------------------------initialize env ------------------------------------
-function initialize_env(){
-#----------------disable selinux-------------------------
-cat 2>&1 <<__EOF__
-$MAGENTA==========================================================
-            Begin to initialize env ...
-==========================================================
-$NO_COLOR
-__EOF__
-
-if [[ $(cat /etc/selinux/config | sed -n '7p' | awk -F "=" '{print $2}') = "enforcing" ]];then
-     echo $BLUE Disable selinux $NO_COLOR
-     sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
-     echo $GREEN Disable the selinux by config file $NO_COLOR
-fi
-
-if [[ $(getenforce) = "Enforcing" ]];then
-    setenforce 0
-    echo $GREEN The current selinux Status:$NO_COLOR $YELLOW $(getenforce) $NO_COLOR 
-fi
-
-systemctl status NetworkManager 1>/dev/null 2>&1
-if [[ $? = 0 ]];then
-    echo $BLUE Uninstall NetworkManager $NO_COLOR
-    systemctl stop NetworkManager 1>/dev/null 2>&1
-    yum erase NetworkManager  -y 1>/dev/null 2>&1
-fi
-
-which firewall-cmd  1>/dev/null 2>&1 &&
-echo $BLUE Uninstall firewalld $NO_COLOR
-yum erase firewalld* -y 1>/dev/null 2>&1
-}
-
-#-----------------------------yum repos configuration ---------------------------
-function yum_repos(){
-if [[ ! -d /etc/yum.repos.d/bak/ ]];then
-    mkdir /etc/yum.repos.d/bak/
-fi
-mv /etc/yum.repos.d/* /etc/yum.repos.d/bak/  1>/dev/null 2>&1
-cp -f ../repos/* /etc/yum.repos.d/ 2>/dev/null
-yum clean all 1>/dev/null 2>1&
-echo $GREEN yum repos configuration done $NO_COLOR
-}
-yum_repos
-}
-
+#Set the Env...
+source ./common.sh ha
+yum_repos ha
+initialize_env
+source ./firewall.sh
 
 #------------------------------Galera ----------------------------------------------------------------
 function Galera(){
@@ -103,8 +42,12 @@ else
     touch ~/.ssh/known_hosts
 fi
 
-for ips in ${CONTROLLER_IP[*]};
-    do ssh-keyscan $ips >> ~/.ssh/known_hosts ;
+for ips in ${CONTROLLER_IP[*]};do
+        if [[ $(cat ~/.ssh/known_hosts | grep $ips | wc -l) -ge 2 ]];then        
+            continue
+        else
+            ssh-keyscan $ips >> ~/.ssh/known_hosts ;
+        fi
 done
 
 for ips in ${CONTROLLER_IP[*]};
@@ -177,61 +120,80 @@ fi
 }
 
 
-
-
-
-
 function load_balancing(){
-yum install xinetd  -y 1>/dev/null 
-
 # load-balancing client
 #Generally, we use round-robin to distribute load amongst instances of active/active services. 
 #Alternatively, Galera uses stick-table options to ensure that incoming connection to virtual IP (VIP) are 
 #directed to only one of the available back ends. This helps avoid lock contention and prevent deadlocks, although 
 #Galera can run active/active. Used in combination with 
 #the httpchk option, this ensure only nodes that are in sync with their peers are allowed to handle requests.
+
+yum install xinetd  -y 1>/dev/null 
+echo $BLUE Install haproxy keepalived ...$NO_COLOR
 yum install haproxy keepalived  -y 1>/dev/null
+echo $BLUE Config the haproxy for controller $NO_COLOR
 cp -f ../etc/HA/haproxy.cfg  /etc/haproxy/
+sed -i "s/<Virtual IP>/${CONTROLLER_VIP}/g"  /etc/haproxy/haproxy.cfg
 
-cat >> /etc/sysconfig/clustercheck __EOF__
+sed -i "s/controller1-hostname/${CONTROLLER_HOSTNAME[0]}/g"  /etc/haproxy/haproxy.cfg
+sed -i "s/controller2-hostname/${CONTROLLER_HOSTNAME[1]}/g"  /etc/haproxy/haproxy.cfg
+sed -i "s/controller3-hostname/${CONTROLLER_HOSTNAME[2]}/g"  /etc/haproxy/haproxy.cfg
 
-
-__EOF__
+sed -i "s/CONTROLLER1_IP/${CONTROLLER_IP[0]}/g" /etc/haproxy/haproxy.cfg
+sed -i "s/CONTROLLER2_IP/${CONTROLLER_IP[1]}/g" /etc/haproxy/haproxy.cfg
+sed -i "s/CONTROLLER3_IP/${CONTROLLER_IP[2]}/g" /etc/haproxy/haproxy.cfg
 
 
 #Configure the kernel parameter to allow non-local IP binding. 
 #This allows running HAProxy instances to bind to a VIP for failover. 
+echo $BLUE Config the keepalived for controller $NO_COLOR
 echo "net.ipv4.ip_nonlocal_bind = 1" >> /etc/sysctl.conf
-sysctl -p
+sysctl -p  1>/dev/null
+cp -f ../etc/HA/keepalived.conf /etc/keepalived/
+cp -f ../etc/HA/haproxy-status-check.sh   /etc/keepalived/
+chmod 777 /etc/keepalived/haproxy-status-check.sh
+if [[ $MGMT_IP = ${CONTROLLER_IP[0]} ]];then 
+    sed -i "s/ROLEs/MASTER/g"   /etc/keepalived/keepalived.conf
+    sed -i "s/priority_nums/${PRIORITY_NUMS[0]}/g" /etc/keepalived/keepalived.conf 
+    sed -i "s/controller_peer1/${CONTROLLER_IP[1]}/g" /etc/keepalived/keepalived.conf
+    sed -i "s/controller_peer2/${CONTROLLER_IP[2]}/g" /etc/keepalived/keepalived.conf
+elif [[ $MGMT_IP = ${CONTROLLER_IP[1]} ]];then
+    sed -i "s/ROLEs/BACKUP/g"   /etc/keepalived/keepalived.conf
+    sed -i "s/priority_nums/${PRIORITY_NUMS[1]}/g" /etc/keepalived/keepalived.conf
+    sed -i "s/controller_peer1/${CONTROLLER_IP[0]}/g" /etc/keepalived/keepalived.conf
+    sed -i "s/controller_peer2/${CONTROLLER_IP[2]}/g" /etc/keepalived/keepalived.conf
+elif [[ $MGMT_IP = ${CONTROLLER_IP[2]} ]];then 
+   sed -i "s/ROLEs/BACKUP/g"   /etc/keepalived/keepalived.conf
+   sed -i "s/priority_nums/${PRIORITY_NUMS[2]}/g" /etc/keepalived/keepalived.conf
+   sed -i "s/controller_peer1/${CONTROLLER_IP[0]}/g" /etc/keepalived/keepalived.conf
+   sed -i "s/controller_peer2/${CONTROLLER_IP[1]}/g" /etc/keepalived/keepalived.conf
+else
+   continue 
+fi
 
+sed -i "s/VIP_NETWORK_DEVICE/${MGMT_IP_DEVICE}/g"  /etc/keepalived/keepalived.conf
+sed -i "s/ROUTER_ID/${ROUTER_ID}/g"  /etc/keepalived/keepalived.conf 
+sed -i "s/CONTROLLER_VIP/${CONTROLLER_VIP}/g"  /etc/keepalived/keepalived.conf 
+sed -i "s/LOCAL_IP/${MGMT_IP}/g" /etc/keepalived/keepalived.conf 
+#vrrp_script chk_http_port  ADD this next time 
+echo $BLUE Start the keepalived.service ...  $NO_COLOR
+systemctl enable haproxy  1>/dev/null 2>&1
+systemctl enable keepalived.service 1>/dev/null 2>&1 &&
+systemctl start keepalived.service  &&
+    debug "$?" "Start keepalived.service failed "
+sleep 3
+HAPROXY_STATUS=$(systemctl status haproxy | grep Active | awk -F ":" '{print $2}' | awk '{print $1}')
+if [[ $HAPROXY_STATUS = "inactive" ]];then 
+    echo $BLUE The ha-porxy Status: ${RED}inactive $NO_COLOR
+elif [[ $HAPROXY_STATUS = "active" ]];then
+    echo $BLUE The ha-porxy Status: ${GREEN}active $NO_COLOR
+else
+    echo $BLUE The ha-porxy Status: ${YELLOW}${{HAPROXY_STATUS} $NO_COLOR
+fi
 }
 
+
 function rabbitmq_ha(){
-yum install rabbitmq-server 
-scp /var/lib/rabbitmq/.erlang.cookie root@NODE:/var/lib/rabbitmq/.erlang.cookie
-chown rabbitmq:rabbitmq /var/lib/rabbitmq/.erlang.cookie
-chmod 400 /var/lib/rabbitmq/.erlang.cookie
-
-echo $BLUE Verify that the nodes are running:$NO_COLOR
-rabbitmqctl cluster_status
-
-#Run the following commands on each node except the first one:
-rabbitmqctl stop_app
-rabbitmqctl join_cluster --ram rabbit@rabbit1
-rabbitmqctl start_app
-
-#check the status again ...
-rabbitmqctl cluster_status 
-
-#If the cluster is working, you can create usernames and passwords for the queues.
-rabbitmqctl add_user openstack $RABBIT_PASS  1>/dev/null
-echo $BLUE Permit configuration, write, and read access for the openstack user ...$NO_COLOR
-rabbitmqctl set_permissions openstack ".*" ".*" ".*"  1>/dev/null
-
-#To ensure that all queues except those with auto-generated names are mirrored across all running nodes,
-# set the ha-mode policy key to all by running the following command on one of the nodes:
-rabbitmqctl set_policy ha-all '^(?!amq\.).*' '{"ha-mode": "all"}'
-
 
 #for openstack services to use Rabbit HA queues 
 #edit it to conf file 
@@ -265,13 +227,11 @@ rabbit_ha_queues=true
 
 case $1 in 
     galera)
-       __main__
-       initialize_env
-       iptables -F
        Galera
+       load_balancing
        ;;
     *)
-        debug "1" "unsupport parameter !!!"
+        debug "1" " ${YELLOW}$1${RED} is unsupport parameter !!!"
 esac 
 
 

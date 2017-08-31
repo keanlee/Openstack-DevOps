@@ -2,19 +2,28 @@
 #This script will prepare the env for install openstack 
 #Include function ntp mysql rabbitmq memcache  
 
-# ansi colors for formatting heredoc
-ESC=$(printf "\e")
-GREEN="$ESC[0;32m"
-NO_COLOR="$ESC[0;0m"
-RED="$ESC[0;31m"
-MAGENTA="$ESC[0;35m"
-YELLOW="$ESC[0;33m"
-BLUE="$ESC[0;34m"
-WHITE="$ESC[0;37m"
-#PURPLE="$ESC[0;35m"
-CYAN="$ESC[0;36m"
+#-----------------------------yum repos configuration ---------------------------
+function yum_repos(){
+if [[ ! -d /etc/yum.repos.d/bak/ ]];then
+    mkdir /etc/yum.repos.d/bak/
+fi
+mv /etc/yum.repos.d/* /etc/yum.repos.d/bak/  1>/dev/null 2>&1
 
-source ./bin/VARIABLE  
+if [[ $1 = "ha" ]];then 
+    cp -f ../repos/* /etc/yum.repos.d/ 1>/dev/null
+else
+    cp -f ./repos/* /etc/yum.repos.d/ 1>/dev/null 
+fi 
+
+yum clean all 1>/dev/null 2>1&
+echo $GREEN yum repos configuration done $NO_COLOR
+}
+
+if [[ $1 = "ha" ]];then 
+    source ./VARIABLE
+else
+    source ./bin/VARIABLE  
+fi
 
 function debug(){
 if [[ $1 -ne 0 ]]; then 
@@ -23,18 +32,6 @@ if [[ $1 -ne 0 ]]; then
 fi
 }
 
-
-
-#-----------------------------yum repos configuration ---------------------------
-function yum_repos(){
-if [[ ! -d /etc/yum.repos.d/bak/ ]];then
-    mkdir /etc/yum.repos.d/bak/
-fi
-mv /etc/yum.repos.d/* /etc/yum.repos.d/bak/  1>/dev/null 2>&1
-cp -f ./repos/* /etc/yum.repos.d/ 2>/dev/null 
-yum clean all 1>/dev/null 2>1&
-echo $GREEN yum repos configuration done $NO_COLOR
-}
 
 #---------------------------initialize env ------------------------------------
 function initialize_env(){
@@ -304,21 +301,19 @@ systemctl start memcached.service
 
 #----------------------------create_service_credentials----------------------
 function create_service_credentials(){
-#This function need parameter :
+#This function need two parameter :
 #$1 is the service password 
-#$2 is the service name ,example nova glance neutron cinder etc. 
-#
+#$2 is the service name ,example nova glance neutron cinder. 
+
+if [[ ${MGMT_IP} != ${CONTROLLER_IP[0]} ]];then 
+    echo $YELLOW Skip to create the $2 service credentials $NO_COLOR
+else 
 cat 2>&1 <<__EOF__
 $MAGENTA==========================================================
           Create $2 service credentials 
 ==========================================================
 $NO_COLOR
 __EOF__
-#${#CONTROLLER_IP[@]} -eq 3
-
-if [[ ${MGMT_IP} != ${CONTROLLER_IP[0]} ]];then 
-    echo $YELLOW Skip to create the service credentials $NO_COLOR
-else 
     echo $BLUE To create the service credentials, complete these steps: $NO_COLOR 
     source $OPENRC_DIR/admin-openrc
     echo $BLUE create the service credentials: $NO_COLOR

@@ -20,15 +20,13 @@ Edit-env-variable
 Config-repository
 SSH-key-nodes
 Check-nodes-system-info
-deploy-all
-deploy-controller-node
-deploy-compute-node
-deploy-block-node
-deploy-network-node
-deploy-controller-as-network-node
-deploy-compute-as-network-node
-deploy-galera-cluster
-exit
+Deploy-all
+Deploy-controller-node
+Deploy-compute-node
+Deploy-block-node
+Deploy-network-node
+Deploy-galera-cluster
+Exit
 )
 
 source ./deploy-openstack/bin/VARIABLE
@@ -47,48 +45,33 @@ echo -e $CYAN $(cat ./deploy-openstack/README.txt) $NO_COLOR | pv -qL 30
 cat 1>&2 <<__EOF__
 $MAGENTA==================================================================================
               --------Usage as below ---------
-           sh $0 deploy-controller-node 
-              $BLUE#to deploy controller node$NO_COLOR 
+           sh $0 Deploy-controller-node 
+              $BLUE#To deploy controller/controller-as-network node$NO_COLOR 
              
-           ${MAGENTA}sh $0 deploy-compute-node
-              $BLUE#to deploy compute node$NO_COLOR
+           ${MAGENTA}sh $0 Deploy-compute-node
+              $BLUE#To deploy compute/compute-as-network/compute-as-block node$NO_COLOR
              
-           ${MAGENTA}sh $0 deploy-network-node
-              $BLUE#to deploy network node$NO_COLOR
+           ${MAGENTA}sh $0 Deploy-network-node
+              $BLUE#To deploy network node (single) $NO_COLOR
                     
-           ${MAGENTA}sh $0 deploy-all
-              $BLUE#to deploy controller node ,network node,compute node$NO_COLOR
-
-           ${MAGENTA}sh $0 deploy-controller-as-network-node
-              $BLUE#to deploy controller as network node$NO_COLOR  
-           
-           ${MAGENTA}sh $0 deploy-controller-as-network-node
-              $BLUE#to deploy controller as network node$NO_COLOR
+           ${MAGENTA}sh $0 Deploy-all
+              $BLUE#To deploy controller node,network node,compute node,block node$NO_COLOR
           
-           ${MAGENTA}sh $0 deploy-block-node
-              $BLUE#to deploy block node$NO_COLOR
+           ${MAGENTA}sh $0 Deploy-block-node
+              $BLUE#To deploy block node (single)$NO_COLOR
 
-           ${MAGENTA}sh $0 check-controller 
-              $BLUE#to check the controller node system info$NO_COLOR${MAGENTA}
+           ${MAGENTA}sh $0 Check-nodes-system-info
+              $BLUE#To check all node system info $NO_COLOR
 
-           ${MAGENTA}sh $0 check-compute
-              $BLUE#to check the compute node system info$NO_COLOR${MAGENTA}
-
-           ${MAGENTA}sh $0 check-network
-              $BLUE#to check the network node system info$NO_COLOR${MAGENTA}
-          
-           ${MAGENTA}sh $0 check-all
-              $BLUE#to check all node system info $NO_COLOR
-
-           ${MAGENTA}sh $0 ssh-key-<target-hosts-role>
-              $BLUE#to create ssh-key and copy it to target hosts 
-            (target-hosts-role=controller,compute,network,storage,all)$NO_COLOR${MAGENTA}
+           ${MAGENTA}sh $0 SSH-key-nodes
+              $BLUE#Generating a new SSH key and adding it to the target hosts $NO_COLOR${MAGENTA}
 ==================================================================================
 $NO_COLOR
 __EOF__
 }
 
 function ssh_key(){
+#make sure that all node can reachable from deploy host
 for ips in ${CONTROLLER_IP[*]};do
     ping -c 1 ${ips} 1>/dev/null 2>&1
         debug "$?" "The ${YELLOW}$ips${RED} which belongs to CONTROLLER_IP is unreachable from Deploy Host"       
@@ -109,15 +92,15 @@ for ips in ${BLOCK_NODE_IP[*]};do
         debug "$?" "The ${YELLOW}$ips${RED} which belongs to BLOCK_NODE_IP is unreachable from Deploy Host"
 done
 
-#ssh key to nodes
+#do ssh-key to nodes
 if [[ -e ~/.ssh/id_rsa.pub ]];then 
-    break
-else 
-    echo $BLUE Generating public/private rsa key pair $NO_COLOR
-    ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa 1>/dev/null
-    #-N "" tells it to use an empty passphrase (the same as two of the enters in an interactive script)
-    #-f my.key tells it to store the key into my.key (change as you see fit).
-fi 
+    rm -rf ~/.ssh/id_rsa*
+fi
+echo $BLUE Generating public/private rsa key pair $NO_COLOR
+ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa 1>/dev/null
+#-N "" tells it to use an empty passphrase (the same as two of the enters in an interactive script)
+#-f my.key tells it to store the key into my.key (change as you see fit).
+ 
 
 which sshpass 1>/dev/null 2>&1 || rpm -ivh ./deploy-openstack/lib/sshpass* 1>/dev/null 2>&1   
 
@@ -130,43 +113,63 @@ else
     touch ~/.ssh/known_hosts
 fi
 
+if [[ ${#CONTROLLER_IP[*]} -ge 1 ]];then
+    echo $BLUE copy public key to controller hosts: $NO_COLOR
+    for ips in ${CONTROLLER_IP[*]};do
+        if [[ $(cat ~/.ssh/known_hosts | grep $ips | wc -l) -ge 2 ]];then        
+            sed -i "/${ips}/d" ~/.ssh/known_hosts
+            ssh-keyscan $ips >> ~/.ssh/known_hosts 
+        else
+            ssh-keyscan $ips >> ~/.ssh/known_hosts
+        fi
+    done
+    for ips in ${CONTROLLER_IP[*]};
+        do sshpass -p $Password ssh-copy-id -i ~/.ssh/id_rsa.pub $ips;
+    done
+fi
+
 if [[ ${#COMPUTE_NODE_IP[*]} -ge 1 ]];then 
     echo $BLUE copy public key to compute hosts:  $NO_COLOR
-    for ips in ${COMPUTE_NODE_IP[*]};
-        do ssh-keyscan $ips >> ~/.ssh/known_hosts ;
+    for ips in ${COMPUTE_NODE_IP[*]};do
+        if [[ $(cat ~/.ssh/known_hosts | grep $ips | wc -l) -ge 2 ]];then 
+            sed -i "/${ips}/d" ~/.ssh/known_hosts
+            ssh-keyscan $ips >> ~/.ssh/known_hosts 
+        else 
+            ssh-keyscan $ips >> ~/.ssh/known_hosts
+        fi
     done 
     for ips in ${COMPUTE_NODE_IP[*]};
         do sshpass -p $Password ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
     done 
 fi
 
-if [[ ${#CONTROLLER_IP[*]} -ge 1 ]];then
-    echo $BLUE copy public key to controller hosts: $NO_COLOR
-    for ips in ${CONTROLLER_IP[*]};
-        do ssh-keyscan $ips >> ~/.ssh/known_hosts;
-    done 
-    for ips in ${CONTROLLER_IP[*]};
-        do sshpass -p $Password ssh-copy-id -i ~/.ssh/id_rsa.pub $ips ;
-    done
-fi
-
 if [[ ${#NETWORK_NODE_IP[*]} -ge 1 ]];then
     echo $BLUE copy public key to network hosts:  $NO_COLOR
-    for ips in ${NETWORK_NODE_IP[*]};
-        do ssh-keyscan $ips >> ~/.ssh/known_hosts ;
+    for ips in ${NETWORK_NODE_IP[*]};do
+        if [[ $(cat ~/.ssh/known_hosts | grep $ips | wc -l) -ge 2 ]];then        
+            sed -i "/${ips}/d" ~/.ssh/known_hosts
+            ssh-keyscan $ips >> ~/.ssh/known_hosts 
+        else
+            ssh-keyscan $ips >> ~/.ssh/known_hosts
+        fi
     done 
     for ips in ${NETWORK_NODE_IP[*]};
-        do sshpass -p $Password ssh-copy-id -i ~/.ssh/id_rsa.pub $ips ;
+        do sshpass -p $Password ssh-copy-id -i ~/.ssh/id_rsa.pub $ips;
     done
 fi
 
 if [[ ${#BLOCK_NODE_IP[*]} -ge 1 ]];then
     echo $BLUE copy public key to storage hosts:  $NO_COLOR
-    for ips in ${BLOCK_NODE_IP[*]};
-        do ssh-keyscan $ips >> ~/.ssh/known_hosts ;
+    for ips in ${BLOCK_NODE_IP[*]};do
+        if [[ $(cat ~/.ssh/known_hosts | grep $ips | wc -l) -ge 2 ]];then        
+            sed -i "/${ips}/d" ~/.ssh/known_hosts
+            ssh-keyscan $ips >> ~/.ssh/known_hosts
+        else
+            ssh-keyscan $ips >> ~/.ssh/known_hosts 
+        fi
     done 
     for ips in ${BLOCK_NODE_IP[*]};
-        do sshpass -p $Password ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips ;
+        do sshpass -p $Password ssh-copy-id -i ~/.ssh/id_rsa.pub  $ips;
     done
 fi
 }
@@ -246,6 +249,7 @@ function check_info(){
 #check the target host system infor
 #for controller nodes
 if [[ ${#CONTROLLER_IP[*]} -ge 1 ]];then 
+    #for controller nodes
     echo $MAGENTA  Check Controller/Galera Node System Info: $NO_COLOR
     for ips in ${CONTROLLER_IP[*]}; do scp ./deploy-openstack/bin/system_info.sh root@$ips:/home/; \
         debug "$?" "Failed scp deploy script to $ips host" ; done 1>/dev/null 2>&1
@@ -266,6 +270,7 @@ if [[ ${#COMPUTE_NODE_IP[*]} -ge 1 ]];then
     for ips in ${COMPUTE_NODE_IP[*]}; do ssh -n root@$ips 'rm -rf /home/system_info.sh';done
 fi
 
+
 if [[ ${#NETWORK_NODE_IP[*]} -ge 1 ]];then 
     #for network nodes
     echo $MAGENTA  Check Network Node System Info: $NO_COLOR
@@ -278,7 +283,7 @@ if [[ ${#NETWORK_NODE_IP[*]} -ge 1 ]];then
 fi
 
 if [[ ${#BLOCK_NODE_IP[*]} -ge 1 ]];then
-    #for network nodes
+    #for block nodes
     echo $MAGENTA  Check Block Node System Info: $NO_COLOR
     for ips in ${BLOCK_NODE_IP[*]}; do scp ./deploy-openstack/bin/system_info.sh root@$ips:/home/; \
         debug "$?" "Failed scp deploy script to $ips host" ; done 1>/dev/null 2>&1
@@ -305,19 +310,24 @@ select OPTION in ${option[*]};do
     break
 done
     case $OPTION in
-        deploy-controller-node)
-            if [[ ${#CONTROLLER_IP[*]} -ge 3 ]] && [[ ${#CONTROLLER_HOSTNAME[*]} -ge 3 ]];then
-                controller galera
-                controller
+        Deploy-controller-node)
+            if [[ ${#CONTROLLER_IP[*]} -eq 3 ]] && [[ ${#CONTROLLER_HOSTNAME[*]} -eq 3 ]];then
+                if [[ $(echo $CONTROLLER_VIP | awk -F "." '{print $1 $2 }') -eq $(echo ${CONTROLLER_IP[0]} | awk -F "." '{print $1 $2 }' ) ]];then
+                    controller galera
+                    controller
+                else
+                    debug "1" "The ${YELLOW}CONTROLLER_VIP${RED} must be a network segment with controller's ip"
+                fi
             else 
-                continue
-            fi
-            if [[ $(echo $CONTROLLER_VIP | awk -F "." '{print $1 $2 $3}') -eq $(echo ${CONTROLLER_IP[0]} | awk -F "." '{print $1 $2 $3}' ) ]];then
-                controller
-            elif [[ ${#COMPUTE_NODE_IP[*]} -eq 0 ]] && [[ ${#CONTROLLER_IP[*]} -eq 1 ]];then 
-                controller
-            else 
-                debug "1" "The ${YELLOW}CONTROLLER_VIP${RED} must be a network segment with controller's ip"
+                if [[ ${#CONTROLLER_IP[*]} -eq 1 ]] && [[ ${NETWORK_NODE_IP[0]} = ${CONTROLLER_IP[0]} ]];then 
+                    controller  controller-as-network-node
+                elif [[ ${#CONTROLLER_IP[*]} -eq 1 ]] && [[ ${NETWORK_NODE_IP[0]} != ${CONTROLLER_IP[0]} ]];then
+                    controller
+                elif [[ ${#NETWORK_NODE_IP[*]} -gt 1 ]];then 
+                    debug "1" "The ${YELLOW}NETWORK_NODE_IP${RED} just support one right now (No HA right now)"
+                else 
+                    debug "1" "Deployer doesn't know how to deploy controller node,please check the variable "
+                fi
             fi
             ;;
         Edit-env-variable)
@@ -326,19 +336,29 @@ done
         Config-repository)
             vim ./deploy-openstack/repos/infinistack.repo   
            ;; 
-        deploy-galera-cluster)
+        Deploy-galera-cluster)
             controller galera
             ;;
-        deploy-compute-node)
-            compute
+        Deploy-compute-node)
+            if [[ ${#COMPUTE_NODE_IP[*]} -eq 1 ]] && [[ ${NETWORK_NODE_IP[0]} = ${COMPUTE_NODE_IP[0]} ]];then
+                 compute  compute-as-network-node
+                 if [[ ${#BLOCK_NODE_IP[*]} -eq 1 ]] && [[ ${COMPUTE_NODE_IP[0]} = ${BLOCK_NODE_IP[0]} ]];then 
+                    compute block
+                 fi 
+            elif [[ ${NETWORK_NODE_IP[0]} != ${COMPUTE_NODE_IP[0]} ]] && [[ ${COMPUTE_NODE_IP[0]} = ${BLOCK_NODE_IP[0]} ]];then 
+                compute 
+                compute block 
+            else
+                compute
+            fi 
   	    ;;
-        deploy-block-node)
+        Deploy-block-node)
             compute block
             ;;
-        deploy-network-node)
+        Deploy-network-node)
             network_node
 	    ;;
-        deploy-all)
+        Deploy-all)
             controller
             network_node
             compute
@@ -346,19 +366,13 @@ done
         Check-nodes-system-info)
             check_info 
             ;;
-        deploy-controller-as-network-node)
-            controller  controller-as-network-node
-	    ;;
-        deploy-compute-as-network-node)
-            compute  compute-as-network-node
-	    ;;
         SSH-key-nodes)
             ssh_key 
             ;;
 	Help)
             help
             ;;
-        exit)
+        Exit)
             echo $GREEN =========== GoodBye !!! =========== $NO_COLOR
             ;;
         *)
