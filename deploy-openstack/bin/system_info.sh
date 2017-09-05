@@ -1,4 +1,17 @@
 #!/bin/bash
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License
+
 #Author by keanlee on May 11th of 2017
 
 # ansi colors for formatting heredoc
@@ -18,7 +31,7 @@ function NET_NAME_IP(){
 
 cat 1>&2 <<__EOF__
 $MAGENTA----------------------------------------------------------------
-     Network Cards on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} list below: 
+     Network Cards info as below: 
 ----------------------------------------------------------------
 $NO_COLOR
 __EOF__
@@ -26,7 +39,7 @@ __EOF__
 NET_DEV_NAME=$(cat /proc/net/dev | awk '{print $1}' | sed -n '3,$p' | awk -F ":" '{print $1}' | grep -v ^lo$ | grep -v ^macvtap* | grep -v ^tap* | \
 grep -v ^q | grep -v ^virbr* | grep -v ^vnet | grep -v ^p1p*  )
 #                                                                                              except the lo and   virtual cards:     macvtap      network name 
-echo $BLUE Your host has ${YELLOW}$(lspci | grep -i Ethernet | wc -l)${BLUE} Hardware Network cards,and used as below: ${NO_COLOR}
+echo $BLUE Your host has ${GREEN}$(lspci | grep -i Ethernet | wc -l)${BLUE} Hardware Network cards,and used as below: ${NO_COLOR}
 for i in $NET_DEV_NAME
     do
         NET_RUNNING_STATUS=$(ip addr show $i | sed -n '1p' | awk '{print $9}')
@@ -55,13 +68,13 @@ done
 function DISK_INFO(){
 cat 1>&2 <<__EOF__
 $MAGENTA----------------------------------------------------------------
-     Disk info on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} list below: 
+     Disk info as below: 
 ----------------------------------------------------------------
 $NO_COLOR
 __EOF__
 
 DEVICE=$(cat /proc/partitions | awk '{print $4}' | sed -n '3,$p' | grep "[a-z]$")
-echo $BLUE Your Host Has ${YELLOW}$(cat /proc/partitions | awk '{print $4}' | sed -n '3,$p' | grep "[a-z]$" | wc -l)${NO_COLOR}${BLUE} Hardware Disks $NO_COLOR
+echo $BLUE Your Host Has ${GREEN}$(cat /proc/partitions | awk '{print $4}' | sed -n '3,$p' | grep "[a-z]$" | wc -l)${NO_COLOR}${BLUE} Hardware Disks $NO_COLOR
 
 for DEVICE_ID in $DEVICE
     do 
@@ -74,7 +87,7 @@ done
 function CPU_MEM(){
 cat 1>&2 <<__EOF__
 $MAGENTA----------------------------------------------------------------
-     CPUs and MEMs info on ${YELLOW}$(hostname)${NO_COLOR}${MAGENTA} list below: 
+     CPUs and MEMs info as below: 
 ----------------------------------------------------------------
 $NO_COLOR
 __EOF__
@@ -89,6 +102,7 @@ fi
 
 CPUs=$(lscpu | grep ^CPU\(s\) | awk -F ":" '{print $2}')
 echo $BLUE Your OS CPU\(s\) is: $NO_COLOR $GREEN${CPUs}$NO_COLOR
+echo $BLUE Your OS Numa Node\(s\):${GREEN}$(lscpu | grep ^NUMA\ node\(s\): | awk -F ":" '{print $2}')  $NO_COLOR
 
 MEMs=$(free -m | grep -i mem | awk '{print $2 "M"}')
 echo $BLUE Your OS total Mem:$NO_COLOR $GREEN${MEMs}$NO_COLOR
@@ -98,7 +112,7 @@ echo $BLUE Your OS total Mem:$NO_COLOR $GREEN${MEMs}$NO_COLOR
 #----------------------------Main-----------------------------------
 cat 1>&2 <<__EOF__
 $CYAN===================================================================
-    ############## HOSTNAME: $YELLOW$(hostname)${CYAN} ###############
+       ############ HOSTNAME: $YELLOW$(hostname)${CYAN} ############
 ===================================================================
 $NO_COLOR
 __EOF__

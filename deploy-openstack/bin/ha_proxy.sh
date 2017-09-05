@@ -1,4 +1,17 @@
 #!/bin/bash
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License
+#
 #write by keanlee in June of 2017
 #https://docs.openstack.org/ha-guide/intro-ha.html#stateless-versus-stateful-services
 
@@ -129,9 +142,13 @@ function load_balancing(){
 #the httpchk option, this ensure only nodes that are in sync with their peers are allowed to handle requests.
 
 yum install xinetd  -y 1>/dev/null 
+
+#Ensure your HAProxy installation is not a single point of failure, 
+#it is advisable to have multiple HAProxy instances running.
+#You can also ensure the availability by other means, using Keepalived or Pacemaker.
 echo $BLUE Install haproxy keepalived ...$NO_COLOR
 yum install haproxy keepalived  -y 1>/dev/null
-echo $BLUE Config the haproxy for controller $NO_COLOR
+echo $BLUE Config the haproxy for controller node $NO_COLOR
 cp -f ../etc/HA/haproxy.cfg  /etc/haproxy/
 sed -i "s/<Virtual IP>/${CONTROLLER_VIP}/g"  /etc/haproxy/haproxy.cfg
 
@@ -163,12 +180,12 @@ elif [[ $MGMT_IP = ${CONTROLLER_IP[1]} ]];then
     sed -i "s/controller_peer1/${CONTROLLER_IP[0]}/g" /etc/keepalived/keepalived.conf
     sed -i "s/controller_peer2/${CONTROLLER_IP[2]}/g" /etc/keepalived/keepalived.conf
 elif [[ $MGMT_IP = ${CONTROLLER_IP[2]} ]];then 
-   sed -i "s/ROLEs/BACKUP/g"   /etc/keepalived/keepalived.conf
-   sed -i "s/priority_nums/${PRIORITY_NUMS[2]}/g" /etc/keepalived/keepalived.conf
-   sed -i "s/controller_peer1/${CONTROLLER_IP[0]}/g" /etc/keepalived/keepalived.conf
-   sed -i "s/controller_peer2/${CONTROLLER_IP[1]}/g" /etc/keepalived/keepalived.conf
+    sed -i "s/ROLEs/BACKUP/g"   /etc/keepalived/keepalived.conf
+    sed -i "s/priority_nums/${PRIORITY_NUMS[2]}/g" /etc/keepalived/keepalived.conf
+    sed -i "s/controller_peer1/${CONTROLLER_IP[0]}/g" /etc/keepalived/keepalived.conf
+    sed -i "s/controller_peer2/${CONTROLLER_IP[1]}/g" /etc/keepalived/keepalived.conf
 else
-   continue 
+    continue 
 fi
 
 sed -i "s/VIP_NETWORK_DEVICE/${MGMT_IP_DEVICE}/g"  /etc/keepalived/keepalived.conf
@@ -194,7 +211,6 @@ fi
 
 
 function rabbitmq_ha(){
-
 #for openstack services to use Rabbit HA queues 
 #edit it to conf file 
 transport_url = rabbit://RABBIT_USER:RABBIT_PASS@rabbit1:5672,

@@ -1,4 +1,17 @@
 #!/bin/bash 
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License
+#
 #This script will prepare the env for install openstack 
 #Include function ntp mysql rabbitmq memcache  
 
@@ -47,6 +60,8 @@ if [[ $(cat /etc/selinux/config | sed -n '7p' | awk -F "=" '{print $2}') = "enfo
      echo $BLUE Disable selinux $NO_COLOR
      sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
      echo $GREEN Disable the selinux by config file $NO_COLOR
+else
+     echo $YELLOW The Selinux has been change to disable on the config file $NO_COLOR
 fi    
 
 if [[ $(getenforce) = "Enforcing" ]];then
@@ -56,13 +71,15 @@ fi
 
 systemctl status NetworkManager 1>/dev/null 2>&1
 if [[ $? = 0 ]];then
-    echo $BLUE Uninstall NetworkManager $NO_COLOR
+    echo $BLUE Uninstall NetworkManager ... $NO_COLOR
     systemctl stop NetworkManager 1>/dev/null 2>&1
     yum erase NetworkManager  -y 1>/dev/null 2>&1
+else 
+    echo $YELLOW No NetworkManager Installed $NO_COLOR
 fi
 
 which firewall-cmd  1>/dev/null 2>&1 &&
-echo $BLUE Uninstall firewalld $NO_COLOR
+echo $BLUE Uninstall firewalld ...$NO_COLOR
 yum erase firewalld* -y 1>/dev/null 2>&1
 }
 

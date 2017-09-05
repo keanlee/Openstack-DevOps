@@ -1,4 +1,17 @@
 #!/bin/bash
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License
+
 #Wirte by keanlee on May 19th 
 
 #------------------------------This script can help you depoly a lots of controller node and compute node 
@@ -44,27 +57,31 @@ which pv 1>/dev/null 2>&1 || rpm -ivh ./deploy-openstack/lib/pv* 1>/dev/null 2>&
 echo -e $CYAN $(cat ./deploy-openstack/README.txt) $NO_COLOR | pv -qL 30
 cat 1>&2 <<__EOF__
 $MAGENTA==================================================================================
-              --------Usage as below ---------
-           sh $0 Deploy-controller-node 
+                 --------Usage as below ---------
+           ${MAGENTA}1. SSH-key-nodes
+              $BLUE#Generating a new SSH key and adding it to the target hosts $NO_COLOR
+           
+           ${MAGENTA}2. Check-nodes-system-info
+              $BLUE#To check all node system info CPU/Mem/NIC/Disk $NO_COLOR
+
+           ${MAGENTA}3. Deploy-controller-node 
               $BLUE#To deploy controller/controller-as-network node$NO_COLOR 
              
-           ${MAGENTA}sh $0 Deploy-compute-node
+           ${MAGENTA}4. Deploy-compute-node
               $BLUE#To deploy compute/compute-as-network/compute-as-block node$NO_COLOR
-             
-           ${MAGENTA}sh $0 Deploy-network-node
-              $BLUE#To deploy network node (single) $NO_COLOR
-                    
-           ${MAGENTA}sh $0 Deploy-all
-              $BLUE#To deploy controller node,network node,compute node,block node$NO_COLOR
           
-           ${MAGENTA}sh $0 Deploy-block-node
-              $BLUE#To deploy block node (single)$NO_COLOR
-
-           ${MAGENTA}sh $0 Check-nodes-system-info
-              $BLUE#To check all node system info $NO_COLOR
-
-           ${MAGENTA}sh $0 SSH-key-nodes
-              $BLUE#Generating a new SSH key and adding it to the target hosts $NO_COLOR${MAGENTA}
+           ${MAGENTA}5. Deploy-block-node
+              $BLUE#To deploy block node (Single with No HA)$NO_COLOR
+   
+           ${MAGENTA}6. Deploy-network-node
+              $BLUE#To deploy network node (Single with No HA) $NO_COLOR
+                     
+           ${MAGENTA}7. Deploy-galera-cluster
+              $BLUE#To deploy galera cluster（Separate with the controller） $NO_COLOR         
+           
+           ${MAGENTA}8. Deploy-all
+              $BLUE#To deploy controller node,network node,compute node,block node$NO_COLOR${MAGENTA}
+          
 ==================================================================================
 $NO_COLOR
 __EOF__
@@ -100,8 +117,6 @@ echo $BLUE Generating public/private rsa key pair $NO_COLOR
 ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa 1>/dev/null
 #-N "" tells it to use an empty passphrase (the same as two of the enters in an interactive script)
 #-f my.key tells it to store the key into my.key (change as you see fit).
- 
-
 which sshpass 1>/dev/null 2>&1 || rpm -ivh ./deploy-openstack/lib/sshpass* 1>/dev/null 2>&1   
 
 echo -n $BLUE Please type the correct password for server:  $NO_COLOR
@@ -178,6 +193,7 @@ fi
 
 #----------------------------------controller node deploy ---------------------
 function controller(){
+#deploy controller node and galera node 
 if [[ $# -eq 0 ]];then
     local SCRIPT=install.sh
     local VALUE=controller
@@ -206,6 +222,7 @@ for ips in ${CONTROLLER_IP[*]}; do ssh -n $ips 'rm -rf /home/deploy-openstack/' 
 
 #---------------------------------compute node deploy -----------------
 function compute(){
+#Deploy the compute node and block node
 if [[ $# -eq 0 ]];then
     local VALUE=compute
 elif [[ $1 = "compute-as-network-node" ]];then 
@@ -216,22 +233,30 @@ else
     debug "1" "function cannot support your parameter "
 fi 
 
+if [[ $1 = "block" ]];then
+    for ips in ${BLOCK_NODE_IP[*]}; do scp -r deploy-openstack/ $ips:/home/; \
+        debug "$?" "Failed scp deploy script to $ips host" ; done 1>/dev/null 2>&1 
 
-for ips in ${COMPUTE_NODE_IP[*]}; do scp -r deploy-openstack/ $ips:/home/; \
-    debug "$?" "Failed scp deploy script to $ips host" ; done 1>/dev/null 2>&1 
-
-for ips in ${COMPUTE_NODE_IP[*]}; do ssh -n root@$ips /bin/bash /home/deploy-openstack/install.sh \
+    for ips in ${BLOCK_NODE_IP[*]}; do ssh -n root@$ips /bin/bash /home/deploy-openstack/install.sh \
 ${VALUE} | tee ./log/${VALUE}-$ips-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
-    debug "$?" "bash remote execute on remote host <$ips> error "; done
+        debug "$?" "bash remote execute on remote host <$ips> error "; done
 
-for ips in ${COMPUTE_NODE_IP[*]}; do ssh -n root@$ips 'rm -rf /home/deploy-openstack/';done
+    for ips in ${BLOCK_NODE_IP[*]}; do ssh -n root@$ips 'rm -rf /home/deploy-openstack/';done
+else
+    for ips in ${COMPUTE_NODE_IP[*]}; do scp -r deploy-openstack/ $ips:/home/; \
+        debug "$?" "Failed scp deploy script to $ips host" ; done 1>/dev/null 2>&1 
+    for ips in ${COMPUTE_NODE_IP[*]}; do ssh -n root@$ips /bin/bash /home/deploy-openstack/install.sh \
+${VALUE} | tee ./log/${VALUE}-$ips-$(date "+%Y-%m-%d--%H:%M")-debug.log ; \
+        debug "$?" "bash remote execute on remote host <$ips> error "; done
 
+    for ips in ${COMPUTE_NODE_IP[*]}; do ssh -n root@$ips 'rm -rf /home/deploy-openstack/';done
+fi
 }
 
 
 #----------------------------------network node deploy-----------------------
 function network_node(){
-
+#Only deploy the network node 
 for ips in ${NETWORK_NODE_IP[*]} ; do scp -r deploy-openstack/ $ips:/home/; \
     debug "$?" "Failed scp deploy script to $ips host" ; done 1>/dev/null 2>&1
 
@@ -331,11 +356,13 @@ done
             fi
             ;;
         Edit-env-variable)
-            vim ./deploy-openstack/bin/VARIABLE 
+            which vim 1>/dev/null 2>&1  || vi ./deploy-openstack/bin/VARIABLE
+            vim ./deploy-openstack/bin/VARIABLE 2>/dev/null  
             ;;
         Config-repository)
-            vim ./deploy-openstack/repos/infinistack.repo   
-           ;; 
+            which vim 1>/dev/null 2>&1 || vi ./deploy-openstack/repos/*
+            vim ./deploy-openstack/repos/*  2>/dev/null
+            ;; 
         Deploy-galera-cluster)
             controller galera
             ;;
@@ -373,7 +400,9 @@ done
             help
             ;;
         Exit)
+            echo $GREEN =================================== $NO_COLOR
             echo $GREEN =========== GoodBye !!! =========== $NO_COLOR
+            echo $GREEN =================================== $NO_COLOR
             ;;
         *)
             echo $RED Your typed is Invalid Option, Try another one option that is listed above !!! $NO_COLOR

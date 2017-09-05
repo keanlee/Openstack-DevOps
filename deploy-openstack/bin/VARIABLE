@@ -66,20 +66,14 @@ PRIVATE_IP_DEVICE=eth0
 #Replace PROVIDER_INTERFACE with the name of the underlying interface that handles provider networks. For example, eth1
 PROVIDER_INTERFACE=eth0
 
+#The block block interface,Default:MGMT_IP_DEVICE
+BLOCK_IP_DEVICE=${MGMT_IP_DEVICE}
 
 #The VIP use for all slave node , HA also use this Virtual Ip Address
 #The vip must be a network segment with controller's ip
 #For no controller ha mode,please use controller ip as VIP
 CONTROLLER_VIP=10.245.58.77
-#router id for the keepavlied 
 
-#The range is: 1-255
-ROUTER_ID=123
-PRIORITY_NUMS=(
-100
-60
-43
-)
 
 #NTP server IP
 NTP_SERVER_IP=10.245.58.205
@@ -100,6 +94,11 @@ DNS_SERVER=10.245.255.120
 
 
 
+
+
+
+###########################################################################################################################################
+###########################################################################################################################################
 ###########################################################################################################
 #
 #
@@ -107,6 +106,15 @@ DNS_SERVER=10.245.255.120
 #
 #
 ###########################################################################################################
+
+#router id for the keepavlied 
+#The range is: 1-255
+ROUTER_ID=123
+PRIORITY_NUMS=(
+100
+60
+43
+)
 
 #for ntp server USE only
 ALLOW_IP_RANGES=10.245.0.0
@@ -121,9 +129,6 @@ FLOATING_IP_START=10.245.28.9
 FLOATING_IP_END=10.245.28.25
 EXTERNAL_NETWORK_GATEWAY=10.245.28.1
 
-
-
-
 #------------------------------optional for edit -----------------------
 #openvswitch 
 #which bridge name you want to create 
@@ -134,11 +139,12 @@ EXTERNAL_NETWORK_GATEWAY=10.245.28.1
 #no need to change this 
 br_provider=br-ex
 
-
 #MGMT_IP is both controller and all slave node management ip 
 MGMT_IP=$(ip addr show $MGMT_IP_DEVICE | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
 
 PRIVATE_IP=$(ip addr show ${PRIVATE_IP_DEVICE} | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
+
+BLOCK_IP=$(ip addr show ${BLOCK_IP_DEVICE} | grep 'inet[^6]' | sed -n '1p' | awk '{print $2}' | awk -F "/" '{print $1}')
 #-----------------------------------notice------------------------------------
 #Recommend you generate them using <openssl rand -hex 10>  command 
 
@@ -193,6 +199,7 @@ CINDERDB_PASS=cinderdb
 CINDER_PASS=cinderpass
 
 #---------------Controller HA proxy -----------
+
 #This section will be update later 
 
 #galera config here

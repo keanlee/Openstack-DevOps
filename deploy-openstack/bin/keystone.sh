@@ -1,4 +1,17 @@
 #!/bin/bash
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License
+#
 #author by keanlee 
 
 
@@ -119,14 +132,14 @@ keystone-manage bootstrap --bootstrap-password ${ADMIN_PASS} \
 fi 
 
 echo $BLUE Configure the Apache HTTP server ... $NO_COLOR
-sed -i "/ServerName www.example.com:80/a\ServerName $MGMT_IP" /etc/httpd/conf/httpd.conf  1>/dev/null
+sed -i "/ServerName www.example.com:80/a\ServerName ${CONTROLLER_VIP}" /etc/httpd/conf/httpd.conf  1>/dev/null
 echo $BLUE Create a link to the /usr/share/keystone/wsgi-keystone.conf file: $NO_COLOR
 
 ln -s /usr/share/keystone/wsgi-keystone.conf /etc/httpd/conf.d/     1>/dev/null
 
 systemctl enable httpd.service     1>/dev/null 2>&1
 systemctl start httpd.service
-
+    debug "$?" "Start the httpd.service failed "
 if [[ ${MGMT_IP} != ${CONTROLLER_IP[0]} ]];then                                                                                
     echo $YELLOW Skip to create keystone administrative account $NO_COLOR
 #---execute this function to create openrc file 

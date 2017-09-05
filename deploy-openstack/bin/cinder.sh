@@ -1,4 +1,18 @@
 #!/bin/bash 
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License
+#
+
 #will add ceph support later 
 
 function cinder_controller(){
@@ -21,7 +35,7 @@ echo $BLUE copy the cinder conf file and edit it $NO_COLOR
 cp -f ./etc/controller/cinder.conf  /etc/cinder 
 sed -i "s/controller/$MGMT_IP/g"   /etc/cinder/cinder.conf
 sed -i "s/RABBIT_PASS/$RABBIT_PASS/g"  /etc/cinder/cinder.conf
-sed -i "s/MY_IP/$MY_IP/g"   /etc/cinder/cinder.conf
+sed -i "s/MY_IP/${MGMT_IP}/g"   /etc/cinder/cinder.conf
 sed -i "s/CINDER_DBPASS/$CINDERDB_PASS/g"  /etc/cinder/cinder.conf
 sed -i "s/CINDER_PASS/$CINDER_PASS/g"  /etc/cinder/cinder.conf
 
@@ -89,7 +103,7 @@ echo $BLUE Copy cinder.conf and edit it $NO_COLOR
 cp -f ./etc/compute/cinder.conf  /etc/cinder
 sed -i "s/controller/$CONTROLLER_VIP/g"   /etc/cinder/cinder.conf
 sed -i "s/RABBIT_PASS/$RABBIT_PASS/g"  /etc/cinder/cinder.conf
-sed -i "s/LOCAL_MGMT_IP/$MGMT_IP/g"  /etc/cinder/cinder.conf
+sed -i "s/LOCAL_MGMT_IP/${BLOCK_IP}/g"  /etc/cinder/cinder.conf
 sed -i "s/CINDER_DBPASS/$CINDERDB_PASS/g"  /etc/cinder/cinder.conf
 sed -i "s/CINDER_PASS/$CINDER_PASS/g"   /etc/cinder/cinder.conf
 
