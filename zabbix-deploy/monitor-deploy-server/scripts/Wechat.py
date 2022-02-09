@@ -15,8 +15,8 @@ class WeChat(object):
         # init attribute
         def __init__(self,url):
                 self.__url = url.rstrip('/')
-                self.__corpid = 'wxd0d7b4c71e25a03d'
-                self.__secret = 'JRCe0uswY2H6V_3yMP1Lm3mAPyXLRtgzilg6PPVNGLW4WhWxvAxSOZVo1HzM4tQq'
+                self.__corpid = 'wxd0d7b4c71e25a03'
+                self.__secret = 'JRCe0uswY2H6V_3yMP1Lm3mAPyXLRtgzilg6PPVNGLW4WhWxvAxSOZVo1HzM4tQ'
                 self.__toparty = '2'
                 self.__agentid = '1'
 
